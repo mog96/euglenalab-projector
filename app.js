@@ -3,14 +3,16 @@ var app = {
     startDate: new Date(),
 };
 
-var initializeProjector = function(cb_fn) {
+// MARK: - Projector Helper Functions
+
+var initializeProjector = function(callback) {
     var net = require('net');
     var client = new net.Socket();
     client.connect(32001, 'localhost', function() {
-        cb_fn(null, client);
+        callback(null, client);
     });
     client.on('error', function(err) {
-        cb_fn(err, client);
+        // callback(err, client);
     });
 };
 
@@ -39,10 +41,8 @@ initializeProjector(function(err, projector) {
     if (err) {
         console.log("==== projector failed ====");
         console.log(err);
-        // err = fName + ' initializeProjector ' + err;
-        // return callback(err);
     } else {
         app.projector = projector;
     }
 });
-projectorSet(projector, 0, 0, 0, 1);
+projectorSet(app.projector, 0, 0, 0, 1);

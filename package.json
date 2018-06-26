@@ -1,22 +1,17 @@
 {
-  "name": "bpu",
+  "name": "euglena-projector",
   "version": "0.0.0",
-  "description": "general rasberry pi bpu for microscope",
+  "description": "server that communicates with an Ivation projector",
   "main": "bpu.js",
   "dependencies": {
-    "async": "~1.4.2",
-    "http": "0.0.0",
-    "log4js": "^0.6.29",
     "net": "~1.0.2",
-    "socket.io": "~1.3.5",
-    "socket.io-client": "~1.3.5",
-    "tar.gz": "~0.1.1",
-    "wiring-pi": "~2.1.0"
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "clitton",
+  "author": "mateog",
   "license": "BSD-2-Clause"
 }
