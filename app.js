@@ -1,7 +1,6 @@
 var app = {
-    //Basic
-    name:'app.js',
-    startDate:new Date(),
+    name: 'app.js',
+    startDate: new Date(),
 };
 
 var initializeProjector = function(cb_fn) {
@@ -32,6 +31,10 @@ var projectorSet = function(projector, x, y, color, alpha) {
 
 // MARK: - Run
 
+var canvasWidth = 640;
+var canvasHeight = 480;
+// Math.round(canvasHeight * 640 / width) // Set width
+// Math.round(canvasHeight * 480 / height) // Set height
 initializeProjector(function(err, projector) {
     if (err) {
         console.log("==== projector failed ====");
@@ -42,11 +45,4 @@ initializeProjector(function(err, projector) {
         app.projector = projector;
     }
 });
-var canvasWidth = 640;
-var canvasHeight = 480;
-var projectorSetObj = {
-    sentTime: new Date().getTime(),
-    projectorX: Math.round(canvasHeight * 640 / width),
-    projectorY: Math.round(canvasHeight * 480 / height)
-}
-projectorSet(projectorSetObj, 0, 0);
+projectorSet(projector, 0, 0, 0, 1);
