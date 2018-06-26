@@ -27,6 +27,7 @@ var projectorSet = function(projector, x, y, color, alpha) {
     console.log('projector = {' + x + ', ' + y + ', ' + color + ', ' + alpha + '}');
 
     if (projector != null && x != null && y != null && color != null && alpha != null) {
+        console.log('writing')
         projector.write('{\"x\": ' + x + ', \"y\": ' + y + ', \"color\": ' + color + ', \"alpha\": ' + alpha + '}\n');
     }
 };
@@ -45,4 +46,6 @@ initializeProjector(function(err, projector) {
         app.projector = projector;
     }
 });
-projectorSet(app.projector, 0, 0, 0, 1);
+for (var i = 0; i < canvasHeight; i++) {
+  projectorSet(app.projector, i, i, 0, 1);
+}
