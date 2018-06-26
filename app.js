@@ -26,7 +26,7 @@ var projectorSet = function(projector, x, y, color, alpha) {
     console.log('projector = {' + x + ', ' + y + ', ' + color + ', ' + alpha + '}');
 
     if (projector != null && x != null && y != null && color != null && alpha != null) {
-        projector.write('{\"x\": ' + x + ', \"y\": ' + y + ', \"color\": ' + color + ', \"clear\": ' + clear + '}\n');
+        projector.write('{\"x\": ' + x + ', \"y\": ' + y + ', \"color\": ' + color + ', \"alpha\": ' + alpha + '}\n');
     }
 };
 
