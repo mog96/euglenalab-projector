@@ -1,7 +1,7 @@
 #include "ofApp.h"
 #include "ofAppGLFWWindow.h"
 
-using namespace ofxCv;
+// using namespace ofxCv;
 using namespace cv;
 
 //--------------------------------------------------------------
