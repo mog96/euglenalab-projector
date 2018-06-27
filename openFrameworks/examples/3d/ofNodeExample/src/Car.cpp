@@ -7,7 +7,7 @@ void Car::setup(){
     material.setDiffuseColor(ofFloatColor::green);
     // This is how we append the 2 headlamps to the car.
     // Calling setParent, we are telling to the lights that they are
-    // a child of the object car, and that teir movement are relative to
+    // a child of the object car, and that their movements are relative to
     // the movement of the car
 
     lightL.setParent(geometry);
@@ -15,8 +15,8 @@ void Car::setup(){
     
     lightL.move(-45,20,-51);
     lightR.move(45,20,-51);
-    lightL.tilt(-20);
-    lightR.tilt(-20);
+    lightL.tiltDeg(-20);
+    lightR.tiltDeg(-20);
 	lightL.setSpotlight();
 	lightR.setSpotlight();
 	lightL.setDiffuseColor(ofFloatColor::yellow);
@@ -48,10 +48,14 @@ void Car::brake(){
     acceleration -= 0.1;
 }
 
-void Car::accellerate(){
+void Car::accelerate(){
     acceleration += 0.1;
 }
 
 void Car::steer(float dir){
-    geometry.rotate(dir, 0, 1, 0); // the rotation happens on the y axis
+    geometry.rotateDeg(dir, 0, 1, 0); // the rotation happens on the y axis
+}
+
+const ofNode & Car::getNode() const{
+	return geometry;
 }

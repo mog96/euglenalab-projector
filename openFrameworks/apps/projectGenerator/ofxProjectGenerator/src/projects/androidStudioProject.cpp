@@ -4,9 +4,9 @@
 #include "Utils.h"
 #include <regex>
 
-string AndroidStudioProject::LOG_NAME = "AndroidStudioProject";
+std::string AndroidStudioProject::LOG_NAME = "AndroidStudioProject";
 
-AndroidStudioProject::AndroidStudioProject(string target)
+AndroidStudioProject::AndroidStudioProject(std::string target)
     : baseProject(target){
 
 }
@@ -14,7 +14,7 @@ AndroidStudioProject::AndroidStudioProject(string target)
 bool AndroidStudioProject::createProjectFile(){
     
     // Make sure project name doesn't include "-"
-    string packageName = projectName;
+    std::string packageName = projectName;
     ofStringReplace(packageName, "-", "");
     
     ofDirectory dir(projectDir);
@@ -22,8 +22,8 @@ bool AndroidStudioProject::createProjectFile(){
 
     // build.gradle
     ofFile gradleFile(ofFilePath::join(projectDir, "build.gradle"));
-    string src = ofFilePath::join(templatePath,"build.gradle");
-    string dst = gradleFile.path();
+    std::string src = ofFilePath::join(templatePath,"build.gradle");
+    std::string dst = gradleFile.path();
 
     if(!gradleFile.exists()){
         if(!ofFile::copyFromTo(src,dst)){
@@ -41,7 +41,6 @@ bool AndroidStudioProject::createProjectFile(){
         }
     }
     
-    
     // Android.manifest
     ofFile manifest(ofFilePath::join(projectDir,"AndroidManifest.xml"));
     if(!manifest.exists()){
@@ -53,40 +52,7 @@ bool AndroidStudioProject::createProjectFile(){
             findandreplaceInTexfile(dst, "TEMPLATE_PACKAGE_NAME", packageName);
         }
     }
-    
 
-    
-    // config.make
-    ofFile config(ofFilePath::join(projectDir,"config.make"));
-    if(!config.exists()){
-        src = ofFilePath::join(templatePath,"config.make");
-        dst = config.path();
-        if(!ofFile::copyFromTo(src,dst)){
-            ofLogError(LOG_NAME) << "error copying config.make template from " << src << " to " << dst;
-        }
-    }
-
-    
-    // launcher image
-   /* ofFile launcher(ofFilePath::join(projectDir,"ic_launcher-web.png"));
-    if(!launcher.exists()){
-        src = ofFilePath::join(templatePath,"ic_launcher-web.png");
-        dst = launcher.path();
-        if(!ofFile::copyFromTo(src,dst)){
-            ofLogError(LOG_NAME) << "error copying ic_launcher-web.png from " << src << " to " << dst;
-            return false;
-        }
-    }*/
-    
-    ofFile makefile(ofFilePath::join(projectDir,"Makefile"));
-    if(!makefile.exists()){
-        src = ofFilePath::join(templatePath,"Makefile");
-        dst = makefile.path();
-        if(!ofFile::copyFromTo(src,dst)){
-            ofLogError(LOG_NAME) << "error copying Makefile template from " << src << " to " << dst;
-        }
-    }
-    
     // gitignore
     ofFile gitignore(ofFilePath::join(projectDir,".gitignore"));
     if(!gitignore.exists()){
@@ -97,11 +63,6 @@ bool AndroidStudioProject::createProjectFile(){
         }
     }
 
-
-    
-    // jni folder
-    ofDirectory(ofFilePath::join(templatePath,"jni")).copyTo(ofFilePath::join(projectDir,"jni"));
-
     // res folder
     ofDirectory(ofFilePath::join(templatePath,"res")).copyTo(ofFilePath::join(projectDir,"res"));
     findandreplaceInTexfile(ofFilePath::join(projectDir,"res/values/strings.xml"), "TEMPLATE_APP_NAME", projectName);
@@ -109,11 +70,16 @@ bool AndroidStudioProject::createProjectFile(){
     // srcJava folder
     ofDirectory(ofFilePath::join(templatePath,"srcJava")).copyTo(ofFilePath::join(projectDir,"srcJava"));
     
-    string from = ofFilePath::join(projectDir,"srcJava/cc/openFrameworks/APP_NAME");
-    string to = ofFilePath::join(projectDir,"srcJava/cc/openFrameworks/"+projectName);
+    std::string from = ofFilePath::join(projectDir,"srcJava/cc/openframeworks/APP_NAME");
+    std::string to = ofFilePath::join(projectDir,"srcJava/cc/openframeworks/"+projectName);
     
     findandreplaceInTexfile(ofFilePath::join(from,"OFActivity.java"), "TEMPLATE_APP_NAME", projectName);
     ofDirectory(from).moveTo(to, true, true);
+
+    // Gradle wrapper
+    ofDirectory(ofFilePath::join(templatePath,"gradle")).copyTo(ofFilePath::join(projectDir,"gradle"));
+    ofFile::copyFromTo(ofFilePath::join(templatePath,"gradlew"), ofFilePath::join(projectDir,"gradlew"));
+    ofFile::copyFromTo(ofFilePath::join(templatePath,"gradlew.bat"), ofFilePath::join(projectDir,"gradlew.bat"));
     
     return true;
 
