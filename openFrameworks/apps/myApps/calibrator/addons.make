@@ -1,3 +1,3 @@
-ofxCv
+# ofxCv
 ofxNetwork
 ofxJSON
