@@ -35,9 +35,9 @@ public:
 	void	setWindowPosition(int x, int y);
 	void	setWindowShape(int w, int h);
 
-	glm::vec2	getWindowPosition();
-	glm::vec2	getWindowSize();
-	glm::vec2	getScreenSize();
+	ofPoint	getWindowPosition();
+	ofPoint	getWindowSize();
+	ofPoint	getScreenSize();
 
 	void			setOrientation(ofOrientation orientation);
 	ofOrientation	getOrientation();
@@ -47,7 +47,7 @@ public:
 	int		getWidth();
 	int		getHeight();
 
-	void	setWindowTitle(std::string title);
+	void	setWindowTitle(string title);
 
 	ofWindowMode 	getWindowMode();
 
@@ -64,7 +64,7 @@ public:
 	EGLSurface getEGLSurface();
 
 	ofCoreEvents & events();
-	std::shared_ptr<ofBaseRenderer> & renderer();
+	shared_ptr<ofBaseRenderer> & renderer();
 
 
 private:
@@ -74,7 +74,6 @@ private:
 	static int mousedown_cb(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData);
 	static int mouseup_cb(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData);
 	static int mousemoved_cb(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData);
-    static int touch_cb(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData);
 	void update();
 	void draw();
 	EGLDisplay display;
@@ -83,7 +82,7 @@ private:
     static ofxAppEmscriptenWindow * instance;
     bool bEnableSetupScreen;
     ofCoreEvents _events;
-    std::shared_ptr<ofBaseRenderer> _renderer;
+    shared_ptr<ofBaseRenderer> _renderer;
 };
 
 #endif /* OFAPPEMSCRIPTENWINDOW_H_ */

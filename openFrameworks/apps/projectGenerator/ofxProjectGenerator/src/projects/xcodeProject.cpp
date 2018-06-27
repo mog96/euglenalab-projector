@@ -54,7 +54,7 @@ STRINGIFY(
             <key>explicitFileType</key>
             <string>FILETYPE</string>
             <key>fileEncoding</key>
-            <string>4</string>
+            <string>30</string>
             <key>isa</key>
             <string>PBXFileReference</string>
             <key>name</key>
@@ -155,8 +155,6 @@ STRINGIFY(
           <array>
 		  <string>"-D__MACOSX_CORE__"</string>
 		  <string>"-mtune=native"</string>
-		  <string>"-Wreturn-type"</string>
-		  <string>"-Werror=return-type"</string>
           </array>
 
 );
@@ -168,15 +166,6 @@ STRINGIFY(
           <key>OTHER_CFLAGS</key>
           <array>
           </array>
-
-);
-
-//-----------------------------------------------------------------
-const char Defines[] =
-STRINGIFY(
-
-          <key>GCC_PREPROCESSOR_DEFINITIONS</key>
-          <array></array>
 
 );
 
@@ -244,22 +233,22 @@ xcodeProject::xcodeProject(std::string target)
 
 void xcodeProject::saveScheme(){
 
-    std::string schemeFolder = projectDir + projectName + ".xcodeproj" + "/xcshareddata/xcschemes/";
+	string schemeFolder = projectDir + projectName + ".xcodeproj" + "/xcshareddata/xcschemes/";
     if (ofDirectory::doesDirectoryExist(schemeFolder)){
         ofDirectory::removeDirectory(schemeFolder, true);
     }
 	ofDirectory::createDirectory(schemeFolder, false, true);
     
 	if(target=="osx"){
-		std::string schemeToD = projectDir  + projectName + ".xcodeproj" + "/xcshareddata/xcschemes/" + projectName + " Debug.xcscheme";
+		string schemeToD = projectDir  + projectName + ".xcodeproj" + "/xcshareddata/xcschemes/" + projectName + " Debug.xcscheme";
 		ofFile::copyFromTo(ofFilePath::join(templatePath, "emptyExample.xcodeproj/xcshareddata/xcschemes/emptyExample Debug.xcscheme"), schemeToD);
 	
-		std::string schemeToR = projectDir  + projectName + ".xcodeproj" + "/xcshareddata/xcschemes/" + projectName + " Release.xcscheme";
+		string schemeToR = projectDir  + projectName + ".xcodeproj" + "/xcshareddata/xcschemes/" + projectName + " Release.xcscheme";
 		ofFile::copyFromTo(ofFilePath::join(templatePath, "emptyExample.xcodeproj/xcshareddata/xcschemes/emptyExample Release.xcscheme"), schemeToR);
 	    findandreplaceInTexfile(schemeToD, "emptyExample", projectName);
 	    findandreplaceInTexfile(schemeToR, "emptyExample", projectName);
 	}else{
-		std::string schemeTo = projectDir  + projectName + ".xcodeproj" + "/xcshareddata/xcschemes/" + projectName + ".xcscheme";
+		string schemeTo = projectDir  + projectName + ".xcodeproj" + "/xcshareddata/xcschemes/" + projectName + ".xcscheme";
 		ofFile::copyFromTo(ofFilePath::join(templatePath, "emptyExample.xcodeproj/xcshareddata/xcschemes/emptyExample.xcscheme"), schemeTo);
 	    findandreplaceInTexfile(schemeTo, "emptyExample", projectName);
 	}
@@ -273,8 +262,8 @@ void xcodeProject::saveScheme(){
 
 void xcodeProject::saveWorkspaceXML(){
 
-    std::string workspaceFolder = projectDir + projectName + ".xcodeproj" + "/project.xcworkspace/";
-    std::string xcodeProjectWorkspace = workspaceFolder + "contents.xcworkspacedata";    
+	string workspaceFolder = projectDir + projectName + ".xcodeproj" + "/project.xcworkspace/";
+	string xcodeProjectWorkspace = workspaceFolder + "contents.xcworkspacedata";    
 
     
     if (ofFile::doesFileExist(xcodeProjectWorkspace)){
@@ -292,12 +281,12 @@ void xcodeProject::saveWorkspaceXML(){
 }
 
 void xcodeProject::saveMakefile(){
-    std::string makefile = ofFilePath::join(projectDir,"Makefile");
+    string makefile = ofFilePath::join(projectDir,"Makefile");
     if(!ofFile(makefile).exists()){
         ofFile::copyFromTo(ofFilePath::join(templatePath, "Makefile"), makefile, true, true);
     }
 
-    std::string configmake = ofFilePath::join(projectDir,"config.make");
+    string configmake = ofFilePath::join(projectDir,"config.make");
     if(!ofFile(configmake).exists()){
         ofFile::copyFromTo(ofFilePath::join(templatePath, "config.make"), configmake, true, true);
     }
@@ -307,7 +296,7 @@ void xcodeProject::saveMakefile(){
 bool xcodeProject::createProjectFile(){
     // todo: some error checking.
 
-    std::string xcodeProject = ofFilePath::join(projectDir , projectName + ".xcodeproj");
+    string xcodeProject = ofFilePath::join(projectDir , projectName + ".xcodeproj");
     
     if (ofDirectory::doesDirectoryExist(xcodeProject)){
         ofDirectory::removeDirectory(xcodeProject, true);
@@ -351,17 +340,21 @@ bool xcodeProject::createProjectFile(){
 			if (!dataDirectory.exists()){
 				dataDirectory.create(false);
 			}
-            
-            //this is needed for 0.9.3 / 0.9.4 projects which have iOS media assets in bin/data/
-            ofDirectory srcDataDir(ofFilePath::join(templatePath, "bin/data"));
-            if( srcDataDir.exists() ){
-                baseProject::recursiveCopyContents(srcDataDir, dataDirectory);
-            }
+		}
+        if(!ofFile::doesFileExist(projectDir + "/bin/data/Default-568h@2x~iphone.png", true)) {
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Default-568h@2x~iphone.png"),projectDir + "/bin/data/Default-568h@2x~iphone.png", true, true);
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Default.png"),projectDir + "/bin/data/Default.png", true, true);
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Default@2x.png"),projectDir + "/bin/data/Default@2x.png", true, true);
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Default@2x~ipad.png"),projectDir + "/bin/data/Default@2x~ipad.png", true, true);
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Default@2x~iphone.png"),projectDir + "/bin/data/Default@2x~iphone.png", true, true);
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Default~ipad.png"),projectDir + "/bin/data/Default~ipad.png", true, true);
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Default~iphone.png"),projectDir + "/bin/data/Default~iphone.png", true, true);
         }
-        ofDirectory mediaAssetsTemplateDirectory(ofFilePath::join(templatePath, "mediaAssets"));
-        ofDirectory mediaAssetsProjectDirectory(ofFilePath::join(projectDir, "mediaAssets"));
-        if (!mediaAssetsProjectDirectory.exists()){
-            mediaAssetsTemplateDirectory.copyTo(mediaAssetsProjectDirectory.getAbsolutePath(), false, false);
+        if(!ofFile::doesFileExist(projectDir + "/bin/data/Icon-72.png", true)) {
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Icon-72.png"),projectDir + "/bin/data/Icon-72.png", true, true);
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Icon-72@2x.png"),projectDir + "/bin/data/Icon-72@2x.png", true, true);
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Icon.png"),projectDir + "/bin/data/Icon.png", true, true);
+            ofFile::copyFromTo(ofFilePath::join(templatePath,"bin/data/Icon@2x.png"),projectDir + "/bin/data/Icon@2x.png", true, true);
         }
     }
 
@@ -374,9 +367,9 @@ bool xcodeProject::createProjectFile(){
     }
 
     // make everything relative the right way.
-    std::string relRoot = getOFRelPath(ofFilePath::removeTrailingSlash(projectDir));
+    string relRoot = getOFRelPath(ofFilePath::removeTrailingSlash(projectDir));
     if (relRoot != "../../../"){
-        std::string relPath2 = relRoot;
+        string relPath2 = relRoot;
         relPath2.erase(relPath2.end()-1);
         findandreplaceInTexfile(projectDir + projectName + ".xcodeproj/project.pbxproj", "../../..", relPath2);
         //findandreplaceInTexfile(projectDir + "Project.xcconfig", "../../../", relRoot);
@@ -397,7 +390,7 @@ void xcodeProject::renameProject(){
     pugi::xpath_node_set uuidSet = doc.select_nodes("//string[contains(.,'emptyExample')]");
     for (pugi::xpath_node_set::const_iterator it = uuidSet.begin(); it != uuidSet.end(); ++it){
         pugi::xpath_node node = *it;
-        std::string val = it->node().first_child().value();
+        string val = it->node().first_child().value();
         findandreplace(val, "emptyExample",  projectName);
         it->node().first_child().set_value(val.c_str());
     }
@@ -405,7 +398,7 @@ void xcodeProject::renameProject(){
 
 
 bool xcodeProject::loadProjectFile(){
-    std::string fileName = projectDir + projectName + ".xcodeproj/project.pbxproj";
+    string fileName = projectDir + projectName + ".xcodeproj/project.pbxproj";
     renameProject();
     pugi::xml_parse_result result = doc.load_file(ofToDataPath(fileName).c_str());
 
@@ -425,7 +418,7 @@ bool xcodeProject::saveProjectFile(){
 
     // save the project out:
 
-    std::string fileName = projectDir + projectName + ".xcodeproj/project.pbxproj";
+    string fileName = projectDir + projectName + ".xcodeproj/project.pbxproj";
     bool bOk =  doc.save_file(ofToDataPath(fileName).c_str());
 
     return bOk;
@@ -434,7 +427,7 @@ bool xcodeProject::saveProjectFile(){
 
 
 
-bool xcodeProject::findArrayForUUID(std::string UUID, pugi::xml_node & nodeMe){
+bool xcodeProject::findArrayForUUID(string UUID, pugi::xml_node & nodeMe){
     char query[255];
     sprintf(query, "//string[contains(.,'%s')]", UUID.c_str());
     pugi::xpath_node_set uuidSet = doc.select_nodes(query);
@@ -452,7 +445,7 @@ bool xcodeProject::findArrayForUUID(std::string UUID, pugi::xml_node & nodeMe){
 
 
 
-pugi::xml_node xcodeProject::findOrMakeFolderSet(pugi::xml_node nodeToAddTo, std::vector < std::string > & folders, std::string pathForHash){
+pugi::xml_node xcodeProject::findOrMakeFolderSet(pugi::xml_node nodeToAddTo, vector < string > & folders, string pathForHash){
 
 
 
@@ -463,7 +456,7 @@ pugi::xml_node xcodeProject::findOrMakeFolderSet(pugi::xml_node nodeToAddTo, std
 
     bool bAnyNodeWithThisName = false;
     pugi::xml_node nodeWithThisName;
-    std::string name = folders[0];
+    string name = folders[0];
 
 
     for (pugi::xpath_node_set::const_iterator it = array.begin(); it != array.end(); ++it){
@@ -508,10 +501,10 @@ pugi::xml_node xcodeProject::findOrMakeFolderSet(pugi::xml_node nodeToAddTo, std
 
         pathForHash += "/" + folders[0];
 
-        std::string UUID = generateUUID(pathForHash);
+        string UUID = generateUUID(pathForHash);
 
         // add a new node
-        std::string PBXGroupStr = std::string(PBXGroup);
+        string PBXGroupStr = string(PBXGroup);
         findandreplace( PBXGroupStr, "GROUPUUID", UUID);
         findandreplace( PBXGroupStr, "GROUPNAME", folders[0]);
 
@@ -549,7 +542,7 @@ pugi::xml_node xcodeProject::findOrMakeFolderSet(pugi::xml_node nodeToAddTo, std
 
 // todo: frameworks
 //
-void xcodeProject::addFramework(std::string name, std::string path, std::string folder){
+void xcodeProject::addFramework(string name, string path, string folder){
     
     // name = name of the framework
     // path = the full path (w name) of this framework
@@ -565,11 +558,11 @@ void xcodeProject::addFramework(std::string name, std::string path, std::string 
     
     // encoding may be messing up for frameworks... so I switched to a pbx file ref without encoding fields
     
-    std::string pbxfileref = std::string(PBXFileReferenceWithoutEncoding);
+    string pbxfileref = string(PBXFileReferenceWithoutEncoding);
     
     // make a uuid for the framework file.
     
-    std::string UUID = generateUUID( name );
+    string UUID = generateUUID( name );
 
     findandreplace( pbxfileref, "FILEUUID", UUID);
     findandreplace( pbxfileref, "FILENAME", name);
@@ -587,8 +580,8 @@ void xcodeProject::addFramework(std::string name, std::string path, std::string 
     
     // files need build refs, here we make 2....
 
-    std::string buildUUID = generateUUID(name + "-build");
-    std::string pbxbuildfile = std::string(PBXBuildFile);
+    string buildUUID = generateUUID(name + "-build");
+    string pbxbuildfile = string(PBXBuildFile);
     findandreplace( pbxbuildfile, "FILEUUID", UUID);
     findandreplace( pbxbuildfile, "BUILDUUID", buildUUID);
     fileRefDoc.load_buffer(pbxbuildfile.c_str(), strlen(pbxbuildfile.c_str()));
@@ -614,31 +607,31 @@ void xcodeProject::addFramework(std::string name, std::string path, std::string 
     if (folder.size() != 0 && !ofIsStringInString(path, "/System/Library/Frameworks")
         && target != "ios"){
         
-        std::string buildUUID2 = generateUUID(name + "-build2");
-        pbxbuildfile = std::string(PBXBuildFile);
+        string buildUUID2 = generateUUID(name + "-build2");
+        pbxbuildfile = string(PBXBuildFile);
         findandreplace( pbxbuildfile, "FILEUUID", UUID);
         findandreplace( pbxbuildfile, "BUILDUUID", buildUUID2);
         fileRefDoc.load_buffer(pbxbuildfile.c_str(), strlen(pbxbuildfile.c_str()));
         doc.select_single_node("/plist[1]/dict[1]/dict[2]").node().prepend_copy(fileRefDoc.first_child().next_sibling());   // UUID FIRST
         doc.select_single_node("/plist[1]/dict[1]/dict[2]").node().prepend_copy(fileRefDoc.first_child());                  // DICT SECOND
         
-		pugi::xpath_node xpathResult = doc.select_single_node("//string[contains(.,'PBXCopyFilesBuildPhase')]/../array");
+        pugi::xpath_node xpathResult = doc.select_node("//string[contains(.,'PBXCopyFilesBuildPhase')]/../array");
         pugi::xml_node node = xpathResult.node();
         node.append_child("string").append_child(pugi::node_pcdata).set_value(buildUUID2.c_str());
     }
     
     // now, we get the path for this framework without the name
 
-    std::string pathWithoutName;
-    std::vector < std::string > pathSplit = ofSplitString(path, "/");
+    string pathWithoutName;
+    vector < string > pathSplit = ofSplitString(path, "/");
     for (int i = 0; i < pathSplit.size()-1; i++){
         if (i != 0) pathWithoutName += "/";
         pathWithoutName += pathSplit[i];
     }
     
     // then, we are going to add this to "FRAMEWORK_SEARCH_PATHS" -- we do this twice, once for debug once for release.
-	
-    pugi::xpath_node_set frameworkSearchPaths = doc.select_nodes("//key[contains(.,'FRAMEWORK_SEARCH_PATHS')]/following-sibling::node()[1]");
+    
+    pugi::xpath_node_set frameworkSearchPaths = doc.select_nodes("//string[contains(.,'FRAMEWORK_SEARCH_PATHS')]/..");
     
     if (frameworkSearchPaths.size() > 0){
         for (pugi::xpath_node_set::const_iterator it = frameworkSearchPaths.begin(); it != frameworkSearchPaths.end(); ++it){
@@ -652,11 +645,11 @@ void xcodeProject::addFramework(std::string name, std::string path, std::string 
     
     if (folder.size() > 0 && !ofIsStringInString(folder, "/System/Library/Frameworks")){
         
-        std::vector < std::string > folders = ofSplitString(folder, "/", true);
+        vector < string > folders = ofSplitString(folder, "/", true);
         
         if (folders.size() > 1){
             if (folders[0] == "src"){
-                std::string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
+                string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
                 
                 folders.erase(folders.begin());
                 pugi::xml_node node = doc.select_single_node(xmlStr.c_str()).node();
@@ -664,7 +657,7 @@ void xcodeProject::addFramework(std::string name, std::string path, std::string 
                 nodeToAddTo.child("array").append_child("string").append_child(pugi::node_pcdata).set_value(UUID.c_str());
                 
             } else if (folders[0] == "addons"){
-                std::string xmlStr = "//key[contains(.,'"+addonUUID+"')]/following-sibling::node()[1]";
+                string xmlStr = "//key[contains(.,'"+addonUUID+"')]/following-sibling::node()[1]";
                 
                 folders.erase(folders.begin());
                 pugi::xml_node node = doc.select_single_node(xmlStr.c_str()).node();
@@ -673,7 +666,7 @@ void xcodeProject::addFramework(std::string name, std::string path, std::string 
                 nodeToAddTo.child("array").append_child("string").append_child(pugi::node_pcdata).set_value(UUID.c_str());
                 
             } else {
-                std::string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
+                string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
                 
                 pugi::xml_node node = doc.select_single_node(xmlStr.c_str()).node();
                 
@@ -687,7 +680,7 @@ void xcodeProject::addFramework(std::string name, std::string path, std::string 
         
         
         pugi::xml_node array;
-        std::string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
+		string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
         pugi::xml_node node = doc.select_single_node(xmlStr.c_str()).node();
         node.child("array").append_child("string").append_child(pugi::node_pcdata).set_value(UUID.c_str());
         //nodeToAddTo.child("array").append_child("string").append_child(pugi::node_pcdata).set_value(UUID.c_str());
@@ -706,16 +699,16 @@ void xcodeProject::addFramework(std::string name, std::string path, std::string 
 
 
 
-void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type){
+void xcodeProject::addSrc(string srcFile, string folder, SrcType type){
 
-    std::string buildUUID;
+    string buildUUID;
 
     //-----------------------------------------------------------------
     // find the extension for the file that's passed in.
     //-----------------------------------------------------------------
 
     size_t found = srcFile.find_last_of(".");
-    std::string ext = srcFile.substr(found+1);
+    string ext = srcFile.substr(found+1);
 
     //-----------------------------------------------------------------
     // based on the extension make some choices about what to do:
@@ -724,7 +717,7 @@ void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type)
     bool addToResources = true;
     bool addToBuild = true;
     bool addToBuildResource = false; 
-    std::string fileKind = "file";
+    string fileKind = "file";
     bool bAddFolder = true;
 
     if(type==DEFAULT){
@@ -788,15 +781,15 @@ void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type)
     // (A) make a FILE REF
     //-----------------------------------------------------------------
 
-    std::string pbxfileref = std::string(PBXFileReference);
+    string pbxfileref = string(PBXFileReference);
     if(ext == "xib"){
-        pbxfileref = std::string(PBXFileReferenceXib);
+        pbxfileref = string(PBXFileReferenceXib);
     }
     
     
-    std::string UUID = generateUUID(srcFile);   // replace with theo's smarter system.
+    string UUID = generateUUID(srcFile);   // replace with theo's smarter system.
 
-    std::string name, path;
+    string name, path;
     splitFromLast(srcFile, "/", path, name);
 
     findandreplace( pbxfileref, "FILENAME", name);
@@ -818,7 +811,7 @@ void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type)
     if (addToBuild || addToBuildResource ){
 
         buildUUID = generateUUID(srcFile + "-build");
-	std::string pbxbuildfile = std::string(PBXBuildFile);
+        string pbxbuildfile = string(PBXBuildFile);
         findandreplace( pbxbuildfile, "FILEUUID", UUID);
         findandreplace( pbxbuildfile, "BUILDUUID", buildUUID);
         
@@ -847,8 +840,8 @@ void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type)
 
     if (addToResources == true && resourcesUUID != ""){
 		
-	std::string resUUID = generateUUID(srcFile + "-build");
-	std::string pbxbuildfile = std::string(PBXBuildFile);
+        string resUUID = generateUUID(srcFile + "-build");
+        string pbxbuildfile = string(PBXBuildFile);
         findandreplace( pbxbuildfile, "FILEUUID", UUID);
         findandreplace( pbxbuildfile, "BUILDUUID", resUUID);
         fileRefDoc.load_buffer(pbxbuildfile.c_str(), strlen(pbxbuildfile.c_str()));
@@ -870,11 +863,11 @@ void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type)
 
     if (bAddFolder == true){
 
-        std::vector < std::string > folders = ofSplitString(folder, "/", true);
+        vector < string > folders = ofSplitString(folder, "/", true);
 
         if (folders.size() > 1){
             if (folders[0] == "src"){
-                std::string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
+                string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
 
                 folders.erase(folders.begin());
                 pugi::xml_node node = doc.select_single_node(xmlStr.c_str()).node();
@@ -882,7 +875,7 @@ void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type)
                 nodeToAddTo.child("array").append_child("string").append_child(pugi::node_pcdata).set_value(UUID.c_str());
 
             } else if (folders[0] == "addons"){
-                std::string xmlStr = "//key[contains(.,'"+addonUUID+"')]/following-sibling::node()[1]";
+                string xmlStr = "//key[contains(.,'"+addonUUID+"')]/following-sibling::node()[1]";
 
                 folders.erase(folders.begin());
                 pugi::xml_node node = doc.select_single_node(xmlStr.c_str()).node();
@@ -891,7 +884,7 @@ void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type)
                 nodeToAddTo.child("array").append_child("string").append_child(pugi::node_pcdata).set_value(UUID.c_str());
 
             } else if (folders[0] == "local_addons"){
-                std::string xmlStr = "//key[contains(.,'"+localAddonUUID+"')]/following-sibling::node()[1]";
+                string xmlStr = "//key[contains(.,'"+localAddonUUID+"')]/following-sibling::node()[1]";
 
                 folders.erase(folders.begin());
                 pugi::xml_node node = doc.select_single_node(xmlStr.c_str()).node();
@@ -900,7 +893,7 @@ void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type)
                 nodeToAddTo.child("array").append_child("string").append_child(pugi::node_pcdata).set_value(UUID.c_str());
 
             } else {
-                std::string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
+                string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
 
                 pugi::xml_node node = doc.select_single_node(xmlStr.c_str()).node();
 
@@ -914,7 +907,7 @@ void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type)
 
 
         pugi::xml_node array;
-        std::string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
+		string xmlStr = "//key[contains(.,'"+srcUUID+"')]/following-sibling::node()[1]";
         pugi::xml_node node = doc.select_single_node(xmlStr.c_str()).node();
         node.child("array").append_child("string").append_child(pugi::node_pcdata).set_value(UUID.c_str());
         //nodeToAddTo.child("array").append_child("string").append_child(pugi::node_pcdata).set_value(UUID.c_str());
@@ -927,7 +920,7 @@ void xcodeProject::addSrc(std::string srcFile, std::string folder, SrcType type)
 
 // todo: these three have very duplicate code... please fix up a bit.
 
-void xcodeProject::addInclude(std::string includeName){
+void xcodeProject::addInclude(string includeName){
 
 
 
@@ -955,7 +948,7 @@ void xcodeProject::addInclude(std::string includeName){
             pugi::xpath_node node = *it;
 
             //node.node().print(std::cout);
-            std::string headerXML = std::string(HeaderSearchPath);
+            string headerXML = string(HeaderSearchPath);
             pugi::xml_document headerDoc;
             pugi::xml_parse_result result = headerDoc.load_buffer(headerXML.c_str(), strlen(headerXML.c_str()));
 
@@ -998,7 +991,7 @@ void xcodeProject::addLibrary(const LibraryBinary & lib){
             pugi::xpath_node node = *it;
 
             //node.node().print(std::cout);
-            std::string ldXML = std::string(LDFlags);
+            string ldXML = string(LDFlags);
             pugi::xml_document ldDoc;
             pugi::xml_parse_result result = ldDoc.load_buffer(ldXML.c_str(), strlen(ldXML.c_str()));
 
@@ -1016,7 +1009,7 @@ void xcodeProject::addLibrary(const LibraryBinary & lib){
     //saveFile(projectDir + "/" + projectName + ".xcodeproj" + "/project.pbxproj");
 }
 
-void xcodeProject::addLDFLAG(std::string ldflag, LibType libType){
+void xcodeProject::addLDFLAG(string ldflag, LibType libType){
 
     char query[255];
     sprintf(query, "//key[contains(.,'baseConfigurationReference')]/parent::node()//key[contains(.,'OTHER_LDFLAGS')]/following-sibling::node()[1]");
@@ -1040,7 +1033,7 @@ void xcodeProject::addLDFLAG(std::string ldflag, LibType libType){
             pugi::xpath_node node = *it;
 
             //node.node().print(std::cout);
-            std::string ldXML = std::string(LDFlags);
+            string ldXML = string(LDFlags);
             pugi::xml_document ldDoc;
             pugi::xml_parse_result result = ldDoc.load_buffer(ldXML.c_str(), strlen(ldXML.c_str()));
 
@@ -1058,7 +1051,7 @@ void xcodeProject::addLDFLAG(std::string ldflag, LibType libType){
     //saveFile(projectDir + "/" + projectName + ".xcodeproj" + "/project.pbxproj");
 }
 
-void xcodeProject::addCFLAG(std::string cflag, LibType libType){
+void xcodeProject::addCFLAG(string cflag, LibType libType){
 
     char query[255];
     sprintf(query, "//key[contains(.,'baseConfigurationReference')]/parent::node()//key[contains(.,'OTHER_CFLAGS')]/following-sibling::node()[1]");
@@ -1082,7 +1075,7 @@ void xcodeProject::addCFLAG(std::string cflag, LibType libType){
             pugi::xpath_node node = *it;
 
             //node.node().print(std::cout);
-            std::string ldXML = std::string(CFlags);
+            string ldXML = string(CFlags);
             pugi::xml_document ldDoc;
             pugi::xml_parse_result result = ldDoc.load_buffer(ldXML.c_str(), strlen(ldXML.c_str()));
 
@@ -1100,53 +1093,8 @@ void xcodeProject::addCFLAG(std::string cflag, LibType libType){
     //saveFile(projectDir + "/" + projectName + ".xcodeproj" + "/project.pbxproj");
 }
 
-void xcodeProject::addDefine(std::string define, LibType libType){
-
-	char query[255];
-	sprintf(query, "//key[contains(.,'baseConfigurationReference')]/parent::node()//key[text()='GCC_PREPROCESSOR_DEFINITIONS']/following-sibling::node()[1]");
-	pugi::xpath_node_set headerArray = doc.select_nodes(query);
-
-
-	if (headerArray.size() > 0){
-		for (pugi::xpath_node_set::const_iterator it = headerArray.begin(); it != headerArray.end(); ++it){
-			pugi::xpath_node node = *it;
-			node.node().append_child("string").append_child(pugi::node_pcdata).set_value(define.c_str());
-			//node.node().print(std::cout);
-		}
-
-	} else {
-
-		//printf("we don't have GCC_PREPROCESSOR_DEFINITIONS, so we're adding them... and calling this function again \n");
-		sprintf(query, "//key[contains(.,'baseConfigurationReference')]/parent::node()//key[contains(.,'buildSettings')]/following-sibling::node()[1]");
-
-		pugi::xpath_node_set dictArray = doc.select_nodes(query);
-
-		for (pugi::xpath_node_set::const_iterator it = dictArray.begin(); it != dictArray.end(); ++it){
-			pugi::xpath_node node = *it;
-
-			//node.node().print(std::cout);
-			std::string definesXML = std::string(Defines);
-			pugi::xml_document definesDoc;
-			pugi::xml_parse_result result = definesDoc.load_buffer(definesXML.c_str(), strlen(definesXML.c_str()));
-
-			// insert it at <plist><dict><dict>
-			node.node().prepend_copy(definesDoc.first_child().next_sibling());   // KEY FIRST
-			node.node().prepend_copy(definesDoc.first_child());                  // ARRAY SECOND
-
-			//node.node().print(std::cout);
-			//ofLogNotice() << "_____________________________________________________________________________________________________________";
-		}
-
-		// now that we have it, try again...
-		addDefine(define);
-	}
-
-	//saveFile(projectDir + "/" + projectName + ".xcodeproj" + "/project.pbxproj");
-}
-
-void xcodeProject::addAfterRule(std::string rule){
-
-	char query[255];
+void xcodeProject::addAfterRule(string rule){
+    char query[255];
     sprintf(query, "//key[contains(.,'objects')]/following-sibling::node()[1]");
     pugi::xpath_node_set objects = doc.select_nodes(query);
 
@@ -1154,7 +1102,7 @@ void xcodeProject::addAfterRule(std::string rule){
     if (objects.size() > 0){
         for (auto node: objects){
             //node.node().print(std::cout);
-            std::string ldXML = std::string(afterRule);
+            string ldXML = string(afterRule);
             ofStringReplace(ldXML,"SHELL_SCRIPT",rule);
             pugi::xml_document ldDoc;
             pugi::xml_parse_result result = ldDoc.load_buffer(ldXML.c_str(), strlen(ldXML.c_str()));
@@ -1173,7 +1121,7 @@ void xcodeProject::addAfterRule(std::string rule){
     }
 }
 
-void xcodeProject::addCPPFLAG(std::string cppflag, LibType libType){
+void xcodeProject::addCPPFLAG(string cppflag, LibType libType){
 
     char query[255];
     sprintf(query, "//key[contains(.,'baseConfigurationReference')]/parent::node()//key[contains(.,'OTHER_CPLUSPLUSFLAGS')]/following-sibling::node()[1]");
@@ -1197,7 +1145,7 @@ void xcodeProject::addCPPFLAG(std::string cppflag, LibType libType){
             pugi::xpath_node node = *it;
 
             //node.node().print(std::cout);
-            std::string ldXML = std::string(CPPFlags);
+            string ldXML = string(CPPFlags);
             pugi::xml_document ldDoc;
             pugi::xml_parse_result result = ldDoc.load_buffer(ldXML.c_str(), strlen(ldXML.c_str()));
 
@@ -1247,11 +1195,7 @@ void xcodeProject::addAddon(ofAddon & addon){
         ofLogVerbose() << "adding addon srcFiles: " << addon.srcFiles[i];
         addSrc(addon.srcFiles[i],addon.filesToFolders[addon.srcFiles[i]]);
     }
-	for(int i=0;i<(int)addon.defines.size(); i++){
-		ofLogVerbose() << "adding addon defines: " << addon.srcFiles[i];
-		addDefine(addon.defines[i]);
-	}
-
+    
     for(int i=0;i<(int)addon.frameworks.size(); i++){
         ofLogVerbose() << "adding addon frameworks: " << addon.frameworks[i];
         
@@ -1266,7 +1210,7 @@ void xcodeProject::addAddon(ofAddon & addon){
             
             if (ofIsStringInString(addon.frameworks[i], "/System/Library")){
                 
-                std::vector < std::string > pathSplit = ofSplitString(addon.frameworks[i], "/");
+                vector < string > pathSplit = ofSplitString(addon.frameworks[i], "/");
                 
                 addFramework(pathSplit[pathSplit.size()-1],
                              addon.frameworks[i],
@@ -1274,7 +1218,7 @@ void xcodeProject::addAddon(ofAddon & addon){
                 
             } else {
             
-                std::vector < std::string > pathSplit = ofSplitString(addon.frameworks[i], "/");
+                vector < string > pathSplit = ofSplitString(addon.frameworks[i], "/");
                 
                 addFramework(pathSplit[pathSplit.size()-1],
                              addon.frameworks[i],

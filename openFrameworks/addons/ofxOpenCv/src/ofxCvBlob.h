@@ -21,11 +21,11 @@ class ofxCvBlob {
         float               area;
         float               length;
         ofRectangle         boundingRect;
-        ofDefaultVec3       centroid;
+        ofPoint             centroid;
         bool                hole;
 
-        std::vector<ofDefaultVec3> pts;    // the contour of the blob
-        int                        nPts;   // number of pts;
+        vector <ofPoint>    pts;    // the contour of the blob
+        int                 nPts;   // number of pts;
 
         //----------------------------------------
         ofxCvBlob() {
@@ -37,7 +37,6 @@ class ofxCvBlob {
 
         //----------------------------------------
         void draw(float x = 0, float y = 0){
-            ofPushStyle();
             ofNoFill();
             ofSetHexColor(0x00FFFF);
             ofBeginShape();
@@ -47,6 +46,5 @@ class ofxCvBlob {
             ofEndShape(true);
             ofSetHexColor(0xff0099);
             ofDrawRectangle(x + boundingRect.x, y + boundingRect.y, boundingRect.width, boundingRect.height);
-            ofPopStyle();
         }
 };

@@ -4,6 +4,7 @@
 #include <mutex>
 #include <queue>
 #include <condition_variable>
+#include "ofUtils.h"
 
 
 /// \brief Safely send data between threads without additional synchronization.
@@ -14,7 +15,7 @@
 /// signalling system that allows receiving threads to sleep until new data
 /// arrives or the ofThreadChannel is closed.
 ///
-/// A single ofThreadChannel class is designed for one-way communication. In
+/// A single ofThreadChannel class is desgined for one-way communication. In
 /// most cases an additional ofThreadChannel can be used for two-way
 /// communication.
 ///
@@ -70,7 +71,7 @@ public:
 		if(closed){
 			return false;
 		}
-        while(queue.empty() && !closed){
+		if(queue.empty()){
 			condition.wait(lock);
 		}
 		if(!closed){
@@ -117,7 +118,7 @@ public:
 		if(closed){
 			return false;
 		}
-        if(!queue.empty()){
+		if(!queue.empty()){
 			std::swap(sentValue,queue.front());
 			queue.pop();
 			return true;
@@ -164,8 +165,7 @@ public:
 			return false;
 		}
 		if(queue.empty()){
-			condition.wait_for(lock, std::chrono::milliseconds(timeoutMs));
-			if(queue.empty()) {
+			if(condition.wait_for(lock,std::chrono::milliseconds(timeoutMs))==std::cv_status::timeout){
 				return false;
 			}
 		}
@@ -211,7 +211,7 @@ public:
 			return false;
 		}
 		queue.push(value);
-        condition.notify_one();
+		condition.notify_all();
 		return true;
 	}
 
@@ -251,8 +251,8 @@ public:
 		if(closed){
 			return false;
 		}
-		queue.push(std::move(value));
-        condition.notify_one();
+		queue.push(value);
+		condition.notify_all();
 		return true;
 	}
 

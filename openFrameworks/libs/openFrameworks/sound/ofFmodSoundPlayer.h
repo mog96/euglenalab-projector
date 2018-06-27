@@ -3,7 +3,7 @@
 #include "ofConstants.h"
 
 
-#include "ofSoundBaseTypes.h"
+#include "ofBaseSoundPlayer.h"
 
 
 extern "C" {
@@ -40,7 +40,7 @@ class ofFmodSoundPlayer : public ofBaseSoundPlayer {
 		ofFmodSoundPlayer();
 		virtual ~ofFmodSoundPlayer();
 
-        bool load(const std::filesystem::path& fileName, bool stream = false);
+		bool load(string fileName, bool stream = false);
 		void unload();
 		void play();
 		void stop();

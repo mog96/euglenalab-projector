@@ -25,7 +25,7 @@ void ofApp::draw(){
     
     shader.begin();
     
-    ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
+    ofRect(0, 0, ofGetWidth(), ofGetHeight());
     
     shader.end();
 }

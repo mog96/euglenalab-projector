@@ -1,78 +1,29 @@
 #pragma once
 #include "ofConstants.h"
-#include "glm/vec2.hpp"
-
-
-/// \brief Used to represent the available windowing modes for the application.
-enum ofWindowMode{
-	/// \brief A floating application window.
-	OF_WINDOW 		= 0,
-	/// \brief A fullscreen application window.
-	OF_FULLSCREEN 	= 1,
-	/// \brief A fullscreen application window with a custom width and height.
-	OF_GAME_MODE	= 2
-};
-
-
-/// \brief Used to represent the available screen orientations.
-///
-/// These don't use "landscape" or "portrait", because phones typically default
-/// to portrait while desktop screens are typically landscape by default.
-///
-/// \sa ::ofSetOrientation
-/// \sa ::ofGetOrientation
-enum ofOrientation: short{
-	/// \brief Represents the default screen orientation.
-	OF_ORIENTATION_DEFAULT = 1,
-	/// \brief Represents a screen rotated 180 degrees, also known as upside-down.
-	OF_ORIENTATION_180 = 2,
-	/// \brief Represents a screen rotated 90 degrees clockwise.
-	OF_ORIENTATION_90_LEFT = 3,
-	/// \brief Represents a screen rotated 90 degrees counter-clockwise.
-	OF_ORIENTATION_90_RIGHT = 4,
-	/// \brief Represents an unknown orientation.
-	OF_ORIENTATION_UNKNOWN = 5
-};
+#include "ofVec2f.h"
 
 class ofWindowSettings{
 public:
 	ofWindowSettings()
-	:windowMode(OF_WINDOW)
-	,width(1024)
+	:width(1024)
 	,height(768)
-	,sizeSet(false)
+	,windowMode(OF_WINDOW)
 	,position(0,0)
 	,positionSet(false){}
 
 	virtual ~ofWindowSettings(){};
 
+	int width;
+	int height;
 	std::string title;
 	ofWindowMode windowMode;
 
-	void setPosition(const glm::vec2 & position) {
+	void setPosition(const ofVec2f & position) {
 		this->position = position;
 		this->positionSet = true;
 	}
 
-	void setSize(int width, int height) {
-		this->width = width;
-		this->height = height;
-		this->sizeSet = true;
-	}
-
-	bool isSizeSet() const {
-		return sizeSet;
-	}
-
-	int getWidth() const {
-		return width;
-	}
-
-	int getHeight() const {
-		return height;
-	}
-
-	const glm::vec2 & getPosition() const {
+	const ofVec2f & getPosition() const {
 		return position;
 	}
 
@@ -81,10 +32,7 @@ public:
 	}
 
 protected:
-	int width;
-	int height;
-	bool sizeSet;
-	glm::vec2 position;
+	ofVec2f position;
 	bool positionSet;
 };
 

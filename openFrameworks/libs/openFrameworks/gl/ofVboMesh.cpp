@@ -1,5 +1,5 @@
 #include "ofVboMesh.h"
-#include "ofGLBaseTypes.h"
+#include "ofBaseTypes.h"
 
 #ifdef TARGET_ANDROID
 #include "ofxAndroidUtils.h"

@@ -1,72 +1,69 @@
 #include "ofThread.h"
 #include "ofLog.h"
+#include "ofUtils.h"
 
 #ifdef TARGET_ANDROID
 #include <jni.h>
 #include "ofxAndroidUtils.h"
 #endif
 
+
 //-------------------------------------------------
 ofThread::ofThread()
-:threadRunning(false)
-,threadDone(true)
-,mutexBlocks(true)
-,name(""){
+:_threadRunning(false)
+,_mutexBlocks(true)
+,threadBeingWaitedFor(false){
+   thread.setName("Thread " + ofToString(thread.id()));
 }
+
+
+//-------------------------------------------------
+ofThread::~ofThread(){
+}
+
 
 //-------------------------------------------------
 bool ofThread::isThreadRunning() const{
-    return threadRunning;
+    return _threadRunning;
 }
 
+
 //-------------------------------------------------
-std::thread::id ofThread::getThreadId() const{
-	return thread.get_id();
+int ofThread::getThreadId() const{
+	return thread.id();
 }
+
 
 //-------------------------------------------------
 std::string ofThread::getThreadName() const{
-	return name;
+	return thread.name();
 }
 
-//-------------------------------------------------
-void ofThread::setThreadName(const std::string & name){
-	this->name = name;
-}
-
-//-------------------------------------------------
-void ofThread::startThread(){
-	std::unique_lock<std::mutex> lck(mutex);
-	if(threadRunning || !threadDone){
-		ofLogWarning("ofThread") << "- name: " << getThreadName() << " - Cannot start, thread already running.";
-		return;
-	}
-
-	threadDone = false;
-	threadRunning = true;
-	this->mutexBlocks = true;
-
-	thread = std::thread(std::bind(&ofThread::run,this));
-}
 
 //-------------------------------------------------
 void ofThread::startThread(bool mutexBlocks){
-    std::unique_lock<std::mutex> lck(mutex);
-	if(threadRunning || !threadDone){
+	if(thread.isRunning()){
 		ofLogWarning("ofThread") << "- name: " << getThreadName() << " - Cannot start, thread already running.";
 		return;
 	}
 
-    threadDone = false;
-    threadRunning = true;
-    this->mutexBlocks = mutexBlocks;
+    _threadRunning = true;
+    _mutexBlocks = mutexBlocks;
 
-	thread = std::thread(std::bind(&ofThread::run,this));
+	thread.start(*this);
 }
+
+
+//-------------------------------------------------
+void ofThread::startThread(bool mutexBlocks, bool verbose){
+    ofLogWarning("ofThread") << "- name: " << getThreadName() << " - Calling startThread with verbose is deprecated.";
+    startThread(mutexBlocks);
+}
+
 
 //-------------------------------------------------
 bool ofThread::lock(){
-	if(mutexBlocks){
+	if(_mutexBlocks){
 		mutex.lock();
 	}else{
 		if(!mutex.try_lock()){
@@ -76,27 +73,27 @@ bool ofThread::lock(){
 	return true;
 }
 
-//-------------------------------------------------
-bool ofThread::tryLock(){
-	return mutex.try_lock();
-}
 
 //-------------------------------------------------
 void ofThread::unlock(){
 	mutex.unlock();
 }
 
+
 //-------------------------------------------------
 void ofThread::stopThread(){
-    threadRunning = false;
+    _threadRunning = false;
 }
+
 
 //-------------------------------------------------
 void ofThread::waitForThread(bool callStopThread, long milliseconds){
-	if(!threadDone){
+	if(thread.isRunning()){
+		threadBeingWaitedFor = true;
+
 		// tell thread to stop
-        if(callStopThread){
-            stopThread();
+		if(callStopThread){
+            stopThread(); // signalled to stop
 		}
 
 		// wait for the thread to finish
@@ -104,50 +101,77 @@ void ofThread::waitForThread(bool callStopThread, long milliseconds){
 			return; // waitForThread should only be called outside thread
 		}
 
-        if (INFINITE_JOIN_TIMEOUT == milliseconds){
-            std::unique_lock<std::mutex> lck(mutex);
-            if(!threadDone){
-                condition.wait(lck);
+        try{
+            if (INFINITE_JOIN_TIMEOUT == milliseconds){
+                thread.join();
+            }else{
+                // Wait for "joinWaitMillis" milliseconds for thread to finish
+                if(!thread.tryJoin(milliseconds)){
+                    // unable to completely wait for thread
+                }
             }
-        }else{
-            // Wait for "joinWaitMillis" milliseconds for thread to finish
-            std::unique_lock<std::mutex> lck(mutex);
-            if(!threadDone && condition.wait_for(lck,std::chrono::milliseconds(milliseconds))==std::cv_status::timeout){
-				// unable to completely wait for thread
-            }
+        }catch(...){
+            
         }
     }
 }
 
+
 //-------------------------------------------------
 void ofThread::sleep(long milliseconds){
-	std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+	Poco::Thread::sleep(milliseconds);
 }
+
 
 //-------------------------------------------------
 void ofThread::yield(){
-	std::this_thread::yield();
+	Poco::Thread::yield();
 }
+
 
 //-------------------------------------------------
 bool ofThread::isCurrentThread() const{
-    return std::this_thread::get_id() == thread.get_id();
+    return ofThread::getCurrentPocoThread() == &getPocoThread();
 }
 
+
 //-------------------------------------------------
-std::thread & ofThread::getNativeThread(){
+Poco::Thread& ofThread::getPocoThread(){
 	return thread;
 }
 
+
 //-------------------------------------------------
-const std::thread & ofThread::getNativeThread() const{
+const Poco::Thread& ofThread::getPocoThread() const{
 	return thread;
 }
+
+
+//-------------------------------------------------
+bool ofThread::isMainThread(){
+    return !Poco::Thread::current();
+}
+
+
+//-------------------------------------------------
+ofThread* ofThread::getCurrentThread(){
+	// assumes all created threads are ofThreads ...
+	// might be dangerous if people are using Poco::Threads directly
+	return (ofThread*) Poco::Thread::current();
+}
+
+
+//-------------------------------------------------
+Poco::Thread* ofThread::getCurrentPocoThread(){
+	return Poco::Thread::current();
+}
+
 
 //-------------------------------------------------
 void ofThread::threadedFunction(){
 	ofLogWarning("ofThread") << "- name: " << getThreadName() << " - Override ofThread::threadedFunction() in your ofThread subclass.";
 }
+
 
 //-------------------------------------------------
 void ofThread::run(){
@@ -158,25 +182,27 @@ void ofThread::run(){
 		ofLogWarning() << "couldn't attach new thread to java vm";
 	}
 #endif
-
 	// user function
     // should loop endlessly.
 	try{
 		threadedFunction();
+	}catch(const Poco::Exception& exc){
+		ofLogFatalError("ofThreadErrorLogger::exception") << exc.displayText();
 	}catch(const std::exception& exc){
 		ofLogFatalError("ofThreadErrorLogger::exception") << exc.what();
 	}catch(...){
 		ofLogFatalError("ofThreadErrorLogger::exception") << "Unknown exception.";
 	}
-	try{
-		thread.detach();
-	}catch(...){}
+
+    _threadRunning = false;
+
+#if !defined(TARGET_WIN32)
+	// FIXME: this won't be needed once we update POCO https://github.com/pocoproject/poco/issues/79
+	if(!threadBeingWaitedFor){ //if threadedFunction() ended and the thread is not being waited for, detach it before exiting.
+		pthread_detach(pthread_self());
+	}
+#endif
 #ifdef TARGET_ANDROID
 	attachResult = ofGetJavaVMPtr()->DetachCurrentThread();
 #endif
-
-    std::unique_lock<std::mutex> lck(mutex);
-	threadRunning = false;
-	threadDone = true;
-    condition.notify_all();
 }

@@ -105,9 +105,9 @@ ofPixelFormat ofDirectShowGrabber::getPixelFormat() const {
 }
 
 //--------------------------------------------------------------------
-std::vector<ofVideoDevice> ofDirectShowGrabber::listDevices() const {
+vector<ofVideoDevice> ofDirectShowGrabber::listDevices() const {
     
-    std::vector <ofVideoDevice> devices; 
+    vector <ofVideoDevice> devices; 
 	
     //---------------------------------
 	#ifdef OF_VIDEO_CAPTURE_DIRECTSHOW
@@ -116,7 +116,7 @@ std::vector<ofVideoDevice> ofDirectShowGrabber::listDevices() const {
         VI.listDevices();
         ofLogNotice() << "---";
         
-		std::vector <std::string> devList = VI.getDeviceList(); 
+		vector <string> devList = VI.getDeviceList(); 
         
         for(int i = 0; i < devList.size(); i++){
             ofVideoDevice vd; 

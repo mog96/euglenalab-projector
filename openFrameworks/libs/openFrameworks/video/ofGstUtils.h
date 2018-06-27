@@ -2,14 +2,17 @@
 
 #include "ofConstants.h"
 #ifndef TARGET_ANDROID
+#include "ofConstants.h"
+#include "ofBaseTypes.h"
 #include "ofPixels.h"
+#include "ofTypes.h"
 #include "ofEvents.h"
 #include "ofThread.h"
-#include "ofVideoBaseTypes.h"
 #define GST_DISABLE_DEPRECATED
 #include <gst/gst.h>
 #include <gst/gstpad.h>
 #include <gst/video/video.h>
+#include "ofTexture.h"
 #include <queue>
 #include <condition_variable>
 #include <mutex>
@@ -21,7 +24,6 @@
 #endif
 
 class ofGstAppSink;
-class ofTexture;
 typedef struct _GstElement GstElement;
 typedef struct _GstBuffer GstBuffer;
 typedef struct _GstMessage GstMessage;
@@ -35,7 +37,7 @@ public:
 	ofGstUtils();
 	virtual ~ofGstUtils();
 
-	bool 	setPipelineWithSink(std::string pipeline, std::string sinkname="sink", bool isStream=false);
+	bool 	setPipelineWithSink(string pipeline, string sinkname="sink", bool isStream=false);
 	bool 	setPipelineWithSink(GstElement * pipeline, GstElement * sink, bool isStream=false);
 	bool	startPipeline();
 
@@ -63,7 +65,7 @@ public:
 
 	GstElement 	* getPipeline() const;
 	GstElement 	* getSink() const;
-	GstElement 	* getGstElementByName(const std::string & name) const;
+	GstElement 	* getGstElementByName(const string & name) const;
 	uint64_t getMinLatencyNanos() const;
 	uint64_t getMaxLatencyNanos() const;
 
@@ -73,11 +75,11 @@ public:
 
 	// callbacks to get called from gstreamer
 #if GST_VERSION_MAJOR==0
-	virtual GstFlowReturn preroll_cb(std::shared_ptr<GstBuffer> buffer);
-	virtual GstFlowReturn buffer_cb(std::shared_ptr<GstBuffer> buffer);
+	virtual GstFlowReturn preroll_cb(shared_ptr<GstBuffer> buffer);
+	virtual GstFlowReturn buffer_cb(shared_ptr<GstBuffer> buffer);
 #else
-	virtual GstFlowReturn preroll_cb(std::shared_ptr<GstSample> buffer);
-	virtual GstFlowReturn buffer_cb(std::shared_ptr<GstSample> buffer);
+	virtual GstFlowReturn preroll_cb(shared_ptr<GstSample> buffer);
+	virtual GstFlowReturn buffer_cb(shared_ptr<GstSample> buffer);
 #endif
 	virtual void 		  eos_cb();
 
@@ -113,11 +115,9 @@ private:
 	class ofGstMainLoopThread: public ofThread{
 	public:
 		ofGstMainLoopThread()
-		:main_loop(nullptr)
+		:main_loop(NULL)
 		{
 		}
-
-		virtual ~ofGstMainLoopThread(){};
 
 		void start(){
 			main_loop = g_main_loop_new (NULL, FALSE);
@@ -132,13 +132,10 @@ private:
 		}
 
 		void quit(){
-			if(main_loop){
-				g_main_loop_quit(main_loop);
-				waitForThread();
-			}
+			g_main_loop_quit(main_loop);
 		}
 	private:
-		GMainLoop *main_loop = nullptr;
+		GMainLoop *main_loop;
 	};
 
 	static ofGstMainLoopThread * mainLoop;
@@ -158,7 +155,7 @@ public:
 	ofGstVideoUtils();
 	virtual ~ofGstVideoUtils();
 
-	bool 			setPipeline(std::string pipeline, ofPixelFormat pixelFormat=OF_PIXELS_RGB, bool isStream=false, int w=-1, int h=-1);
+	bool 			setPipeline(string pipeline, ofPixelFormat pixelFormat=OF_PIXELS_RGB, bool isStream=false, int w=-1, int h=-1);
 
 	bool 			setPixelFormat(ofPixelFormat pixelFormat);
 	ofPixelFormat 	getPixelFormat() const;
@@ -177,7 +174,7 @@ public:
 	void 			close();
 
 #if GST_VERSION_MAJOR>0
-	static std::string			getGstFormatName(ofPixelFormat format);
+	static string			getGstFormatName(ofPixelFormat format);
 	static GstVideoFormat	getGstFormat(ofPixelFormat format);
 	static ofPixelFormat	getOFFormat(GstVideoFormat format);
 #endif
@@ -196,13 +193,13 @@ public:
 
 protected:
 #if GST_VERSION_MAJOR==0
-	GstFlowReturn process_buffer(std::shared_ptr<GstBuffer> buffer);
-	GstFlowReturn preroll_cb(std::shared_ptr<GstBuffer> buffer);
-	GstFlowReturn buffer_cb(std::shared_ptr<GstBuffer> buffer);
+	GstFlowReturn process_buffer(shared_ptr<GstBuffer> buffer);
+	GstFlowReturn preroll_cb(shared_ptr<GstBuffer> buffer);
+	GstFlowReturn buffer_cb(shared_ptr<GstBuffer> buffer);
 #else
-	GstFlowReturn process_sample(std::shared_ptr<GstSample> sample);
-	GstFlowReturn preroll_cb(std::shared_ptr<GstSample> buffer);
-	GstFlowReturn buffer_cb(std::shared_ptr<GstSample> buffer);
+	GstFlowReturn process_sample(shared_ptr<GstSample> sample);
+	GstFlowReturn preroll_cb(shared_ptr<GstSample> buffer);
+	GstFlowReturn buffer_cb(shared_ptr<GstSample> buffer);
 #endif
 	void			eos_cb();
 
@@ -217,10 +214,10 @@ private:
 	bool			bBackPixelsChanged;
 	std::mutex		mutex;
 #if GST_VERSION_MAJOR==0
-	std::shared_ptr<GstBuffer> 	frontBuffer, backBuffer;
+	shared_ptr<GstBuffer> 	frontBuffer, backBuffer;
 #else
-	std::shared_ptr<GstSample> 	frontBuffer, backBuffer;
-	std::queue<std::shared_ptr<GstSample> > bufferQueue;
+	shared_ptr<GstSample> 	frontBuffer, backBuffer;
+	queue<shared_ptr<GstSample> > bufferQueue;
 	GstMapInfo mapinfo;
 	#ifdef OF_USE_GST_GL
 		ofTexture		frontTexture, backTexture;
@@ -244,17 +241,17 @@ class ofGstAppSink{
 public:
 	virtual ~ofGstAppSink(){}
 #if GST_VERSION_MAJOR==0
-	virtual GstFlowReturn on_preroll(std::shared_ptr<GstBuffer> buffer){
+	virtual GstFlowReturn on_preroll(shared_ptr<GstBuffer> buffer){
 		return GST_FLOW_OK;
 	}
-	virtual GstFlowReturn on_buffer(std::shared_ptr<GstBuffer> buffer){
+	virtual GstFlowReturn on_buffer(shared_ptr<GstBuffer> buffer){
 		return GST_FLOW_OK;
 	}
 #else
-	virtual GstFlowReturn on_preroll(std::shared_ptr<GstSample> buffer){
+	virtual GstFlowReturn on_preroll(shared_ptr<GstSample> buffer){
 		return GST_FLOW_OK;
 	}
-	virtual GstFlowReturn on_buffer(std::shared_ptr<GstSample> buffer){
+	virtual GstFlowReturn on_buffer(shared_ptr<GstSample> buffer){
 		return GST_FLOW_OK;
 	}
 #endif

@@ -1,7 +1,4 @@
 #include "ofMatrix3x3.h"
-#include <iomanip>
-
-using namespace std;
 
 ofMatrix3x3::ofMatrix3x3( float _a, float _b, float _c,
 			  float _d, float _e, float _f,
@@ -326,14 +323,10 @@ istream& operator>>(istream& is, ofMatrix3x3& M) {
 	is >> M.a; is.ignore(2);
 	is >> M.b; is.ignore(2);
 	is >> M.c; is.ignore(1);
-
 	is >> M.d; is.ignore(2);
 	is >> M.e; is.ignore(2);
 	is >> M.f; is.ignore(1);
-
-	is >> M.g; is.ignore(2);
-	is >> M.h; is.ignore(2);
-	is >> M.i;
+	is >> M.h;
 	return is;
 }
 

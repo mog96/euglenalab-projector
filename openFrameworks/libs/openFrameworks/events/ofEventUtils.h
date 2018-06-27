@@ -6,15 +6,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+
+enum ofEventOrder{
+	OF_EVENT_ORDER_BEFORE_APP=0,
+	OF_EVENT_ORDER_APP=100,
+	OF_EVENT_ORDER_AFTER_APP=200
+};
+
 //----------------------------------------------------
-/// register any method of any class to an event.
-///
-/// the method must provide one of the following
-/// signatures:
-///     void method(ArgumentsType & args)
-///     void method(const void * sender, ArgumentsType &args)
-/// ie:
-///     ofAddListener(addon.newIntEvent, this, &Class::method)
+// register any method of any class to an event.
+// the method must provide one of the following
+// signatures:
+//     void method(ArgumentsType & args)
+//     void method(const void * sender, ArgumentsType &args)
+// ie:
+//     ofAddListener(addon.newIntEvent, this, &Class::method)
 
 template <class EventType,typename ArgumentsType, class ListenerClass>
 void ofAddListener(EventType & event, ListenerClass  * listener, void (ListenerClass::*listenerMethod)(const void*, ArgumentsType&), int prio=OF_EVENT_ORDER_AFTER_APP){
@@ -108,14 +115,13 @@ inline void ofAddListener(ofEvent<void> & event, bool (*listenerFunction)(), int
     event.add(listenerFunction, prio);
 }
 //----------------------------------------------------
-/// unregister any method of any class to an event.
-///
-/// the method must provide one the following
-/// signatures:
-///     void method(ArgumentsType & args)
-///     void method(const void * sender, ArgumentsType &args)
-/// ie:
-///     ofAddListener(addon.newIntEvent, this, &Class::method)
+// unregister any method of any class to an event.
+// the method must provide one the following
+// signatures:
+//     void method(ArgumentsType & args)
+//     void method(const void * sender, ArgumentsType &args)
+// ie:
+//     ofAddListener(addon.newIntEvent, this, &Class::method)
 
 template <class EventType,typename ArgumentsType, class ListenerClass>
 void ofRemoveListener(EventType & event, ListenerClass  * listener, void (ListenerClass::*listenerMethod)(const void*, ArgumentsType&), int prio=OF_EVENT_ORDER_AFTER_APP){
@@ -193,43 +199,64 @@ inline void ofRemoveListener(ofEvent<void> & event, bool (*listenerFunction)(), 
     event.remove(listenerFunction, prio);
 }
 //----------------------------------------------------
-/// notifies an event so all the registered listeners
-/// get called
-///
-/// ie:
-///	ofNotifyEvent(addon.newIntEvent, intArgument, this)
-///
-/// or in case there's no sender:
-///	ofNotifyEvent(addon.newIntEvent, intArgument)
-///
-/// @returns: true in case any listener attended the event
+// notifies an event so all the registered listeners
+// get called
+// ie:
+//	ofNotifyEvent(addon.newIntEvent, intArgument, this)
+//
+// or in case there's no sender:
+//	ofNotifyEvent(addon.newIntEvent, intArgument)
 
 template <class EventType,typename ArgumentsType, typename SenderType>
-inline bool ofNotifyEvent(EventType & event, ArgumentsType & args, SenderType * sender){
-	return event.notify(sender,args);
+inline void ofNotifyEvent(EventType & event, ArgumentsType & args, SenderType * sender){
+	try{
+		event.notify(sender,args);
+	}catch(ofEventAttendedException &){
+
+	}
 }
 
 template <class EventType,typename ArgumentsType>
-inline bool ofNotifyEvent(EventType & event, ArgumentsType & args){
-	return event.notify(args);
+inline void ofNotifyEvent(EventType & event, ArgumentsType & args){
+	try{
+		event.notify(nullptr,args);
+	}catch(ofEventAttendedException &){
+
+	}
 }
 
 template <class EventType, typename ArgumentsType, typename SenderType>
-inline bool ofNotifyEvent(EventType & event, const ArgumentsType & args, SenderType * sender){
-	return event.notify(sender,args);
+inline void ofNotifyEvent(EventType & event, const ArgumentsType & args, SenderType * sender){
+	try{
+		event.notify(sender,args);
+	}catch(ofEventAttendedException &){
+
+	}
 }
 
 template <class EventType,typename ArgumentsType>
-inline bool ofNotifyEvent(EventType & event, const ArgumentsType & args){
-	return event.notify(args);
+inline void ofNotifyEvent(EventType & event, const ArgumentsType & args){
+	try{
+		event.notify(nullptr,args);
+	}catch(ofEventAttendedException &){
+
+	}
 }
 
 template <typename SenderType>
-inline bool ofNotifyEvent(ofEvent<void> & event, SenderType * sender){
-	return event.notify(sender);
+inline void ofNotifyEvent(ofEvent<void> & event, SenderType * sender){
+	try{
+		event.notify(sender);
+	}catch(ofEventAttendedException &){
+
+	}
 }
 
-inline bool ofNotifyEvent(ofEvent<void> & event){
-	return event.notify();
+inline void ofNotifyEvent(ofEvent<void> & event){
+	try{
+		event.notify(nullptr);
+	}catch(ofEventAttendedException &){
+
+	}
 }
 

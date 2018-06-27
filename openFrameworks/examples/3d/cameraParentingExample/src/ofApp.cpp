@@ -112,7 +112,7 @@ void ofApp::draw(){
 	for(int i=0; i<kNumCameras; i++) {
 		
 		// lookat node if it has one
-		if(lookatIndex[i] >= 0) cam[i].lookAt(testNodes[lookatIndex[i]], {0.f,1.f,0.f});
+		if(lookatIndex[i] >= 0) cam[i].lookAt(testNodes[lookatIndex[i]]);
 		
 		// mouse orbit camera
 		if(doMouseOrbit[i] && ofGetMousePressed(0)) {
@@ -123,9 +123,9 @@ void ofApp::draw(){
 			lat = ofClamp(lat + mouseY - ofGetPreviousMouseY(), -90, 90);
 			
 			if(lookatIndex[i] < 0) {
-				cam[i].orbitDeg(lon, lat, orbitRadius);
+				cam[i].orbit(lon, lat, orbitRadius);
 			} else {
-				cam[i].orbitDeg(lon, lat, orbitRadius, testNodes[lookatIndex[1]]);
+				cam[i].orbit(lon, lat, orbitRadius, testNodes[lookatIndex[1]]);
 			}
 		}
 		
@@ -186,14 +186,14 @@ void ofApp::keyPressed(int key){
 			break;
 			
 			
-		case OF_KEY_LEFT: n->panDeg(kRotInc); break;
-		case OF_KEY_RIGHT: n->panDeg(-kRotInc); break;
+		case OF_KEY_LEFT: n->pan(kRotInc); break;
+		case OF_KEY_RIGHT: n->pan(-kRotInc); break;
 			
-		case OF_KEY_UP: n->tiltDeg(-kRotInc); break;
-		case OF_KEY_DOWN: n->tiltDeg(kRotInc); break;
+		case OF_KEY_UP: n->tilt(-kRotInc); break;
+		case OF_KEY_DOWN: n->tilt(kRotInc); break;
 			
-		case ',': n->rollDeg(kRotInc); break;
-		case '.': n->rollDeg(-kRotInc); break;
+		case ',': n->roll(kRotInc); break;
+		case '.': n->roll(-kRotInc); break;
 			
 		case 'a': n->truck(-kMoveInc); break;
 		case 'd': n->truck(kMoveInc); break;

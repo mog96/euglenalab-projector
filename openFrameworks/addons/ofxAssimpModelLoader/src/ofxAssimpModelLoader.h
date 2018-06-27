@@ -14,11 +14,10 @@
 // 2) convert to ofMesh (?) in OF 007 ?
 // 3) Ability to ease *between* two animations. Maybe later folks.
 
+#include "ofMain.h"
 #include "ofxAssimpMeshHelper.h"
 #include "ofxAssimpAnimation.h"
 #include "ofxAssimpTexture.h"
-#include "ofMesh.h"
-#include "ofPoint.h"
 
 struct aiScene;
 struct aiNode;
@@ -29,7 +28,7 @@ class ofxAssimpModelLoader{
         ~ofxAssimpModelLoader();
         ofxAssimpModelLoader();
 
-		bool loadModel(std::string modelName, bool optimize=false);
+        bool loadModel(string modelName, bool optimize=false);
         bool loadModel(ofBuffer & buffer, bool optimize=false, const char * extension="");
         void createEmptyModel();
         void createLightsFromAiModel();
@@ -65,20 +64,20 @@ class ofxAssimpModelLoader{
         void setScaleNormalization(bool normalize);
         void setNormalizationFactor(float factor);
 
-		std::vector<std::string> getMeshNames();
-        unsigned int getNumMeshes();
+        vector<string> getMeshNames();
+        int getNumMeshes();
 
-		ofMesh getMesh(std::string name);
-        ofMesh getMesh(unsigned int num);
+        ofMesh getMesh(string name);
+        ofMesh getMesh(int num);
 
-		ofMesh getCurrentAnimatedMesh(std::string name);
-        ofMesh getCurrentAnimatedMesh(unsigned int num);
+        ofMesh getCurrentAnimatedMesh(string name);
+        ofMesh getCurrentAnimatedMesh(int num);
 
-		ofMaterial getMaterialForMesh(std::string name);
-        ofMaterial getMaterialForMesh(unsigned int num);
+        ofMaterial getMaterialForMesh(string name);
+        ofMaterial getMaterialForMesh(int num);
 
-		ofTexture getTextureForMesh(std::string name);
-        ofTexture getTextureForMesh(unsigned int num);
+        ofTexture getTextureForMesh(string name);
+        ofTexture getTextureForMesh(int num);
 
 
     	void drawWireframe();
@@ -139,16 +138,16 @@ class ofxAssimpModelLoader{
         bool normalizeScale;
         double normalizedScale;
 
-		std::vector<float> rotAngle;
-		std::vector<ofPoint> rotAxis;
+        vector<float> rotAngle;
+        vector<ofPoint> rotAxis;
         ofPoint scale;
         ofPoint pos;
         ofMatrix4x4 modelMatrix;
 
-		std::vector<ofLight> lights;
-		std::vector<ofxAssimpTexture> textures;
-		std::vector<ofxAssimpMeshHelper> modelMeshes;
-		std::vector<ofxAssimpAnimation> animations;
+        vector<ofLight> lights;
+        vector<ofxAssimpTexture> textures;
+        vector<ofxAssimpMeshHelper> modelMeshes;
+        vector<ofxAssimpAnimation> animations;
         int currentAnimation; // DEPRECATED - to be removed with deprecated animation functions.
 
         bool bUsingTextures;
@@ -158,6 +157,6 @@ class ofxAssimpModelLoader{
         float normalizeFactor;
 
         // the main Asset Import scene that does the magic.
-		std::shared_ptr<const aiScene> scene;
-		std::shared_ptr<aiPropertyStore> store;
+        shared_ptr<const aiScene> scene;
+        shared_ptr<aiPropertyStore> store; 
 };

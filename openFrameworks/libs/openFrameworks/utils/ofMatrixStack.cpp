@@ -5,44 +5,30 @@
  *      Author: arturo
  */
 
-#include "ofConstants.h"
 #include "ofMatrixStack.h"
 #include "ofAppBaseWindow.h"
-#include "glm/mat4x4.hpp"
-#include "glm/gtx/transform.hpp"
-#include "ofGraphicsBaseTypes.h"
-#include "ofLog.h"
-
-using namespace std;
+#include "ofFbo.h"
 
 ofMatrixStack::ofMatrixStack(const ofAppBaseWindow * window)
 :vFlipped(true)
 ,orientation(OF_ORIENTATION_DEFAULT)
 ,handedness(OF_LEFT_HANDED)
-,currentRenderSurface(nullptr)
+,currentFbo(nullptr)
 ,currentWindow(const_cast<ofAppBaseWindow*>(window))
 ,currentMatrixMode(OF_MATRIX_MODELVIEW)
 ,currentMatrix(&modelViewMatrix)
-,flipRenderSurfaceMatrix(true)
 {
 
 }
 
-void ofMatrixStack::setRenderSurface(const ofBaseDraws & renderSurface_){
-	currentRenderSurface = const_cast<ofBaseDraws*>(&renderSurface_);
-	flipRenderSurfaceMatrix = true;
+void ofMatrixStack::setRenderSurface(const ofFbo & fbo){
+	currentFbo = const_cast<ofFbo*>(&fbo);
 	setOrientation(orientation,vFlipped);
-}
-
-void ofMatrixStack::setRenderSurfaceNoMatrixFlip(const ofBaseDraws & renderSurface_) {
-	currentRenderSurface = const_cast<ofBaseDraws*>(&renderSurface_);
-	flipRenderSurfaceMatrix = false;
-	setOrientation(orientation, vFlipped);
 }
 
 void ofMatrixStack::setRenderSurface(const ofAppBaseWindow & window){
 	currentWindow = const_cast<ofAppBaseWindow*>(&window);
-	currentRenderSurface = nullptr;
+	currentFbo = nullptr;
 	setOrientation(orientation,vFlipped);
 }
 
@@ -56,25 +42,25 @@ void ofMatrixStack::setOrientation(ofOrientation _orientation, bool vFlip){
 		handedness = OF_RIGHT_HANDED;
 	}
 
-	orientationMatrix = glm::mat4(1.0);
+	orientationMatrix.makeIdentityMatrix();
 
 	bool vFlipMatrix = customMatrixNeedsFlip();
 
 	if(vFlipMatrix)
-		orientationMatrix = glm::scale(orientationMatrix, glm::vec3(1.f,-1.f,1.f));
+		orientationMatrix.scale(1,-1,1);
 
 	if(!doesHWOrientation()){
 		switch(orientation) {
 			case OF_ORIENTATION_180:
-				orientationMatrix = glm::rotate(orientationMatrix, glm::pi<float>(), glm::vec3{0.f, 0.f, 1.f});
+				orientationMatrix.rotate(180,0,0,1);
 				break;
 
 			case OF_ORIENTATION_90_RIGHT:
-				orientationMatrix = glm::rotate(orientationMatrix, glm::half_pi<float>(), glm::vec3{0.f, 0.f, 1.f});
+				orientationMatrix.rotate(90,0,0,1);
 				break;
 
 			case OF_ORIENTATION_90_LEFT:
-				orientationMatrix = glm::rotate(orientationMatrix, -glm::half_pi<float>(), glm::vec3{0.f, 0.f, 1.f});
+				orientationMatrix.rotate(-90,0,0,1);
 				break;
 
 			case OF_ORIENTATION_DEFAULT:
@@ -83,9 +69,9 @@ void ofMatrixStack::setOrientation(ofOrientation _orientation, bool vFlip){
 		}
 	}
 
-	orientationMatrixInverse = glm::inverse(orientationMatrix);
-	orientedProjectionMatrix = orientationMatrix * projectionMatrix;
-	modelViewProjectionMatrix = orientedProjectionMatrix * modelViewMatrix;
+	orientationMatrixInverse = orientationMatrix.getInverse();
+	orientedProjectionMatrix = projectionMatrix * orientationMatrix;
+	modelViewProjectionMatrix = modelViewMatrix * orientedProjectionMatrix;
 }
 
 ofOrientation ofMatrixStack::getOrientation() const{
@@ -97,12 +83,12 @@ bool ofMatrixStack::isVFlipped() const{
 }
 
 bool ofMatrixStack::customMatrixNeedsFlip() const{
-	return vFlipped != (bool(currentRenderSurface) && flipRenderSurfaceMatrix);
+	return vFlipped != bool(currentFbo);
 }
 
 int ofMatrixStack::getRenderSurfaceWidth() const{
-	if(currentRenderSurface){
-		return currentRenderSurface->getWidth();
+	if(currentFbo){
+		return currentFbo->getWidth();
 	}else if(currentWindow){
 		return currentWindow->getWindowSize().x;
 	}else{
@@ -111,8 +97,8 @@ int ofMatrixStack::getRenderSurfaceWidth() const{
 }
 
 int ofMatrixStack::getRenderSurfaceHeight() const{
-	if(currentRenderSurface){
-		return currentRenderSurface->getHeight();
+	if(currentFbo){
+		return currentFbo->getHeight();
 	}else if(currentWindow){
 		return currentWindow->getWindowSize().y;
 	}else{
@@ -130,7 +116,7 @@ ofHandednessType ofMatrixStack::getHandedness() const{
 
 
 bool ofMatrixStack::doesHWOrientation() const{
-	return currentRenderSurface || (currentWindow && currentWindow->doesHWOrientation());
+	return currentFbo || (currentWindow && currentWindow->doesHWOrientation());
 }
 
 void ofMatrixStack::viewport(float x, float y, float width, float height, bool vflip){
@@ -170,8 +156,8 @@ ofRectangle ofMatrixStack::getNativeViewport() const{
 }
 
 ofRectangle ofMatrixStack::getFullSurfaceViewport() const{
-	if(currentRenderSurface){
-		return ofRectangle(0,0,currentRenderSurface->getWidth(),currentRenderSurface->getHeight());
+	if(currentFbo){
+		return ofRectangle(0,0,currentFbo->getWidth(),currentFbo->getHeight());
 	}else if(currentWindow){
 		return ofRectangle(0,0,currentWindow->getWidth(),currentWindow->getHeight());
 	}else{
@@ -183,47 +169,39 @@ void ofMatrixStack::nativeViewport(ofRectangle viewport){
 	currentViewport=viewport;
 }
 
-const glm::mat4 & ofMatrixStack::getModelMatrix() const{
-	return modelMatrix;
-}
-
-const glm::mat4 & ofMatrixStack::getViewMatrix() const{
+const ofMatrix4x4 & ofMatrixStack::getViewMatrix() const{
 	return viewMatrix;
 }
 
-const glm::mat4 & ofMatrixStack::getViewInverse() const{
-	return viewInverse;
-}
-
-const glm::mat4 & ofMatrixStack::getProjectionMatrix() const{
+const ofMatrix4x4 & ofMatrixStack::getProjectionMatrix() const{
 	return orientedProjectionMatrix;
 }
 
-const glm::mat4 & ofMatrixStack::getModelViewMatrix() const{
+const ofMatrix4x4 & ofMatrixStack::getModelViewMatrix() const{
 	return modelViewMatrix;
 }
 
-const glm::mat4 & ofMatrixStack::getModelViewProjectionMatrix() const{
+const ofMatrix4x4 & ofMatrixStack::getModelViewProjectionMatrix() const{
 	return modelViewProjectionMatrix;
 }
 
-const glm::mat4 & ofMatrixStack::getTextureMatrix() const{
+const ofMatrix4x4 & ofMatrixStack::getTextureMatrix() const{
 	return textureMatrix;
 }
 
-const glm::mat4 & ofMatrixStack::getCurrentMatrix() const{
+const ofMatrix4x4 & ofMatrixStack::getCurrentMatrix() const{
 	return *currentMatrix;
 }
 
-const glm::mat4 & ofMatrixStack::getProjectionMatrixNoOrientation() const{
+const ofMatrix4x4 & ofMatrixStack::getProjectionMatrixNoOrientation() const{
 	return projectionMatrix;
 }
 
-const glm::mat4 & ofMatrixStack::getOrientationMatrix() const{
+const ofMatrix4x4 & ofMatrixStack::getOrientationMatrix() const{
 	return orientationMatrix;
 }
 
-const glm::mat4 & ofMatrixStack::getOrientationMatrixInverse() const{
+const ofMatrix4x4 & ofMatrixStack::getOrientationMatrixInverse() const{
 	return orientationMatrixInverse;
 }
 
@@ -248,7 +226,6 @@ void ofMatrixStack::pushView(){
 void ofMatrixStack::popView(){
 	if(!viewMatrixStack.empty()){
 		viewMatrix = viewMatrixStack.top();
-		viewInverse = glm::inverse(viewMatrix);
 		viewMatrixStack.pop();
 	}
 
@@ -292,7 +269,6 @@ void ofMatrixStack::popMatrix(){
 	if (currentMatrixMode == OF_MATRIX_MODELVIEW && !modelViewMatrixStack.empty()){
 		modelViewMatrix = modelViewMatrixStack.top();
 		modelViewMatrixStack.pop();
-		modelMatrix = viewInverse * modelViewMatrix;
 	} else if (currentMatrixMode == OF_MATRIX_PROJECTION && !projectionMatrixStack.empty()){
 		projectionMatrix = projectionMatrixStack.top();
 		projectionMatrixStack.pop();
@@ -362,17 +338,17 @@ void ofMatrixStack::clearStacks(){
 }
 
 void ofMatrixStack::translate(float x, float y, float z){
-	*currentMatrix = glm::translate(*currentMatrix, glm::vec3(x, y, z));
+	currentMatrix->glTranslate(x, y, z);
 	updatedRelatedMatrices();
 }
 
 void ofMatrixStack::scale(float xAmnt, float yAmnt, float zAmnt){
-	*currentMatrix = glm::scale(*currentMatrix, glm::vec3(xAmnt, yAmnt, zAmnt));
+	currentMatrix->glScale(xAmnt, yAmnt, zAmnt);
 	updatedRelatedMatrices();
 }
 
-void ofMatrixStack::rotateRad(float radians, float vecX, float vecY, float vecZ){
-	*currentMatrix = glm::rotate(*currentMatrix, radians, glm::vec3(vecX, vecY, vecZ));
+void ofMatrixStack::rotate(float degrees, float vecX, float vecY, float vecZ){
+	currentMatrix->glRotate(degrees, vecX, vecY, vecZ);
 	updatedRelatedMatrices();
 }
 
@@ -392,35 +368,33 @@ void ofMatrixStack::matrixMode(ofMatrixMode mode){
 }
 
 void ofMatrixStack::loadIdentityMatrix (void){
-	*currentMatrix = glm::mat4(1.0);
+	currentMatrix->makeIdentityMatrix();
 	updatedRelatedMatrices();
 }
 
-void ofMatrixStack::loadMatrix (const glm::mat4 & m){
-	*currentMatrix = glm::mat4(m);
+void ofMatrixStack::loadMatrix (const float * m){
+	currentMatrix->set(m);
 	updatedRelatedMatrices();
 }
 
-void ofMatrixStack::multMatrix (const glm::mat4 & m){
-	*currentMatrix = *currentMatrix * m;
+void ofMatrixStack::multMatrix (const float * m){
+	currentMatrix->preMult(m);
 	updatedRelatedMatrices();
 }
 
-void ofMatrixStack::loadViewMatrix(const glm::mat4 & matrix){
-	auto lastMatrixMode = currentMatrixMode;
+void ofMatrixStack::loadViewMatrix(const ofMatrix4x4 & matrix){
+	ofMatrixMode lastMatrixMode = currentMatrixMode;
 	currentMatrixMode = OF_MATRIX_MODELVIEW;
 	viewMatrix = matrix;
-	viewInverse = glm::inverse(viewMatrix);
-	loadMatrix(matrix);
+	loadMatrix(matrix.getPtr());
 	currentMatrixMode = lastMatrixMode;
 }
 
-void ofMatrixStack::multViewMatrix(const glm::mat4 & matrix){
+void ofMatrixStack::multViewMatrix(const ofMatrix4x4 & matrix){
 	ofMatrixMode lastMatrixMode = currentMatrixMode;
 	currentMatrixMode = OF_MATRIX_MODELVIEW;
-	viewMatrix = viewMatrix * matrix;
-	viewInverse = glm::inverse(viewMatrix);
-	multMatrix(matrix);
+	viewMatrix.preMult(matrix);
+	multMatrix(matrix.getPtr());
 	currentMatrixMode = lastMatrixMode;
 }
 
@@ -428,12 +402,11 @@ void ofMatrixStack::multViewMatrix(const glm::mat4 & matrix){
 void ofMatrixStack::updatedRelatedMatrices(){
 	switch(currentMatrixMode){
 	case OF_MATRIX_MODELVIEW:
-		modelViewProjectionMatrix = orientedProjectionMatrix * modelViewMatrix;
-		modelMatrix = viewInverse * modelViewMatrix;
+		modelViewProjectionMatrix = modelViewMatrix * orientedProjectionMatrix;
 		break;
 	case OF_MATRIX_PROJECTION:
-		orientedProjectionMatrix = orientationMatrix * projectionMatrix;
-		modelViewProjectionMatrix = orientedProjectionMatrix * modelViewMatrix;
+		orientedProjectionMatrix = projectionMatrix * orientationMatrix;
+		modelViewProjectionMatrix = modelViewMatrix * orientedProjectionMatrix;
 		break;
 	default:
 		break;
@@ -441,7 +414,7 @@ void ofMatrixStack::updatedRelatedMatrices(){
 }
 
 bool ofMatrixStack::doesHardwareOrientation() const{
-	if(currentRenderSurface){
+	if(currentFbo){
 		return true;
 	}else{
 		return currentWindow->doesHWOrientation();

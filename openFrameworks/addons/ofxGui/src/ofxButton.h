@@ -8,9 +8,7 @@ class ofxButton : public ofxToggle{
 	
 public:
 	ofxButton();
-	ofxButton(ofParameter<void> _bVal, float width = defaultWidth, float height = defaultHeight);
 	~ofxButton();
-	ofxButton* setup(ofParameter<void> _bVal, float width = defaultWidth, float height = defaultHeight);
     ofxButton* setup(const std::string& toggleName, float width = defaultWidth, float height = defaultHeight);
 
 	virtual bool mouseReleased(ofMouseEventArgs & args);
@@ -20,17 +18,16 @@ public:
 
 	template<class ListenerClass, typename ListenerMethod>
 	void addListener(ListenerClass * listener, ListenerMethod method){
-		parameter.addListener(listener,method);
+		ofAddListener(triggerEvent,listener,method);
 	}
 
 	template<class ListenerClass, typename ListenerMethod>
 	void removeListener(ListenerClass * listener, ListenerMethod method){
-		parameter.removeListener(listener,method);
+		ofRemoveListener(triggerEvent,listener,method);
 	}
-	virtual ofAbstractParameter & getParameter();
 
 private:
-	ofParameter<void> parameter;
+	ofEvent<void> triggerEvent;
 	void valueChanged(bool & v);
 
 };

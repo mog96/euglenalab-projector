@@ -10,6 +10,11 @@ if [ $(id -u) != 0 ]; then
 fi
 
 GSTREAMER_VERSION=0.10
-apt-cache show libgstreamer1.0-dev && GSTREAMER_VERSION=1.0
+
+RET=$(apt-cache show -n libgstreamer1.0-dev &> /dev/null; echo $?)
+
+if [ "$RET" -eq "0" ]; then
+    GSTREAMER_VERSION=1.0
+fi
 
 apt-get install libmpg123-dev gstreamer${GSTREAMER_VERSION}-plugins-ugly

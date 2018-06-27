@@ -10,13 +10,9 @@
 
 #include "ofLight.h"
 #include "ofConstants.h"
-#include "of3dUtils.h"
-#include "ofGLBaseTypes.h"
-#include "ofGLUtils.h"
+#include "ofLog.h"
+#include "ofUtils.h"
 #include <map>
-#include <glm/gtc/quaternion.hpp>
-
-using namespace std;
 
 static ofFloatColor globalAmbient(0.2, 0.2, 0.2, 1.0);
 
@@ -81,13 +77,11 @@ ofLight::Data::Data(){
 
 ofLight::Data::~Data(){
 	if(glIndex==-1) return;
-	if ( auto r = rendererP.lock() ){
-		r->setLightAmbientColor( glIndex, ofColor( 0, 0, 0, 255 ) );
-		r->setLightDiffuseColor( glIndex, ofColor( 0, 0, 0, 255 ) );
-		r->setLightSpecularColor( glIndex, ofColor( 0, 0, 0, 255 ) );
-		r->setLightPosition( glIndex, glm::vec4( 0, 0, 1, 0 ) );
-		r->disableLight( glIndex );
-	}
+	ofGetGLRenderer()->setLightAmbientColor(glIndex,ofColor(0,0,0,255));
+	ofGetGLRenderer()->setLightDiffuseColor(glIndex,ofColor(0,0,0,255));
+	ofGetGLRenderer()->setLightSpecularColor(glIndex,ofColor(0,0,0,255));
+	ofGetGLRenderer()->setLightPosition(glIndex,ofVec4f(0,0,1,0));
+	ofGetGLRenderer()->disableLight(glIndex);
 }
 
 //----------------------------------------
@@ -124,7 +118,6 @@ void ofLight::setup() {
 		}
 		if( bLightFound ){
             // run this the first time, since it was not found before //
-			data->rendererP = ofGetGLRenderer();
             onPositionChanged();
             setAmbientColor( getAmbientColor() );
             setDiffuseColor( getDiffuseColor() );
@@ -149,17 +142,13 @@ void ofLight::enable() {
 	data->isEnabled = true;
     onPositionChanged(); // update the position //
 	onOrientationChanged();
-	if ( auto r = data->rendererP.lock() ){
-		r->enableLight( data->glIndex );
-	}
+	ofGetGLRenderer()->enableLight(data->glIndex);
 }
 
 //----------------------------------------
 void ofLight::disable() {
 	data->isEnabled = false;
-	if ( auto r = data->rendererP.lock() ){
-		r->disableLight( data->glIndex );
-	}
+	ofGetGLRenderer()->disableLight(data->glIndex);
 }
 
 //----------------------------------------
@@ -197,9 +186,7 @@ bool ofLight::getIsSpotlight() const{
 //----------------------------------------
 void ofLight::setSpotlightCutOff( float spotCutOff ) {
     data->spotCutOff = CLAMP(spotCutOff, 0, 90);
-	if ( auto r = data->rendererP.lock() ){
-		r->setLightSpotlightCutOff( data->glIndex, spotCutOff );
-	}
+    ofGetGLRenderer()->setLightSpotlightCutOff(data->glIndex, spotCutOff);
 }
 
 //----------------------------------------
@@ -213,9 +200,7 @@ float ofLight::getSpotlightCutOff() const{
 //----------------------------------------
 void ofLight::setSpotConcentration( float exponent ) {
     data->exponent = CLAMP(exponent, 0, 128);
-	if ( auto r = data->rendererP.lock() ){
-		r->setLightSpotConcentration( data->glIndex, exponent );
-	}
+	ofGetGLRenderer()->setLightSpotConcentration(data->glIndex, exponent);
 }
 
 //----------------------------------------
@@ -242,9 +227,8 @@ void ofLight::setAttenuation( float constant, float linear, float quadratic ) {
 	data->attenuation_constant    = constant;
 	data->attenuation_linear      = linear;
 	data->attenuation_quadratic   = quadratic;
-	if ( auto r = data->rendererP.lock() ){
-		r->setLightAttenuation( data->glIndex, constant, linear, quadratic );
-	}
+
+    ofGetGLRenderer()->setLightAttenuation(data->glIndex, constant, linear, quadratic);
 }
 
 //----------------------------------------
@@ -280,26 +264,19 @@ int ofLight::getType() const{
 //----------------------------------------
 void ofLight::setAmbientColor(const ofFloatColor& c) {
 	data->ambientColor = c;
-	if ( auto r = data->rendererP.lock() ){
-		r->setLightAmbientColor( data->glIndex, c );
-	}
+	ofGetGLRenderer()->setLightAmbientColor(data->glIndex, c);
 }
 
 //----------------------------------------
 void ofLight::setDiffuseColor(const ofFloatColor& c) {
 	data->diffuseColor = c;
-
-	if ( auto r = data->rendererP.lock() ){
-		r->setLightDiffuseColor( data->glIndex, c );
-	}
+	ofGetGLRenderer()->setLightDiffuseColor(data->glIndex, c);
 }
 
 //----------------------------------------
 void ofLight::setSpecularColor(const ofFloatColor& c) {
 	data->specularColor = c;
-	if ( auto r = data->rendererP.lock() ){
-		r->setLightSpecularColor( data->glIndex, c );
-	}
+	ofGetGLRenderer()->setLightSpecularColor(data->glIndex, c);
 }
 
 //----------------------------------------
@@ -324,7 +301,7 @@ void ofLight::customDraw(const ofBaseRenderer * renderer) const{;
     } else if (getIsSpotlight()) {
         float coneHeight = (sin(data->spotCutOff*DEG_TO_RAD) * 30.f) + 1;
         float coneRadius = (cos(data->spotCutOff*DEG_TO_RAD) * 30.f) + 8;
-		const_cast<ofBaseRenderer*>(renderer)->rotateDeg(-90,1,0,0);
+		const_cast<ofBaseRenderer*>(renderer)->rotate(-90,1,0,0);
 		renderer->drawCone(0, -(coneHeight*.5), 0, coneHeight, coneRadius);
     } else  if (getIsAreaLight()) {
     	const_cast<ofBaseRenderer*>(renderer)->pushMatrix();
@@ -342,10 +319,8 @@ void ofLight::onPositionChanged() {
 	if(data->glIndex==-1) return;
 	// if we are a positional light and not directional, update light position
 	if(getIsSpotlight() || getIsPointLight() || getIsAreaLight()) {
-		data->position = {getGlobalPosition().x, getGlobalPosition().y, getGlobalPosition().z, 1.f};
-		if ( auto r = data->rendererP.lock() ){
-			r->setLightPosition( data->glIndex, data->position );
-		}
+		data->position = ofVec4f(getGlobalPosition().x,getGlobalPosition().y,getGlobalPosition().z,1);
+		ofGetGLRenderer()->setLightPosition(data->glIndex,data->position);
 	}
 }
 
@@ -354,18 +329,14 @@ void ofLight::onOrientationChanged() {
 	if(data->glIndex==-1) return;
 	if(getIsDirectional()) {
 		// if we are a directional light and not positional, update light position (direction)
-		glm::vec3 lookAtDir(glm::normalize(getGlobalOrientation() * glm::vec4(0,0,-1, 1)));
-		data->position = {lookAtDir.x,lookAtDir.y,lookAtDir.z,0.f};
-		if ( auto r = data->rendererP.lock() ){
-			r->setLightPosition( data->glIndex, data->position );
-		}
+		ofVec3f lookAtDir = ( ofVec4f(0,0,-1, 1) * getGlobalOrientation() ).getNormalized();
+		data->position = ofVec4f(lookAtDir.x,lookAtDir.y,lookAtDir.z,0);
+		ofGetGLRenderer()->setLightPosition(data->glIndex,data->position);
 	}else if(getIsSpotlight() || getIsAreaLight()) {
 		// determines the axis of the cone light
-		glm::vec3 lookAtDir(glm::normalize(getGlobalOrientation() * glm::vec4(0,0,-1, 1)));
+		ofVec3f lookAtDir = ( ofVec4f(0,0,-1, 1) * getGlobalOrientation() ).getNormalized();
 		data->direction = lookAtDir;
-		if ( auto r = data->rendererP.lock() ){
-			r->setLightSpotDirection( data->glIndex, glm::vec4( data->direction, 0.0f ) );
-		}
+		ofGetGLRenderer()->setLightSpotDirection(data->glIndex,data->direction);
 	}
 	if(getIsAreaLight()){
 		data->up = getUpDir();

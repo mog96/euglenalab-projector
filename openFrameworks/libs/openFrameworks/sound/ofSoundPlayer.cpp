@@ -1,8 +1,5 @@
 #include "ofSoundPlayer.h"
-#include "ofLog.h"
-#include "glm/common.hpp"
-
-using namespace std;
+#include "ofUtils.h"
 
 // these are global functions, that affect every sound / channel:
 // ------------------------------------------------------------
@@ -30,6 +27,8 @@ void ofSoundSetVolume(float vol){
 void ofSoundUpdate(){
 	#ifdef OF_SOUND_PLAYER_FMOD
 		ofFmodSoundUpdate();
+	#else
+		ofLogWarning("ofSoundPlayer") << "ofSoundUpdate() not implemented on this platform";
 	#endif
 }
 
@@ -58,11 +57,10 @@ float * ofSoundGetSpectrum(int nBands){
 	#endif
 }
 
+#include "ofSoundPlayer.h"
 //---------------------------------------------------------------------------
 ofSoundPlayer::ofSoundPlayer (){
-#ifdef OF_SOUND_PLAYER_TYPE
-	player	= std::make_shared<OF_SOUND_PLAYER_TYPE>();
-#endif
+	player	= shared_ptr<OF_SOUND_PLAYER_TYPE>(new OF_SOUND_PLAYER_TYPE);
 }
 
 //---------------------------------------------------------------------------
@@ -76,7 +74,7 @@ shared_ptr<ofBaseSoundPlayer> ofSoundPlayer::getPlayer(){
 }
 
 //--------------------------------------------------------------------
-bool ofSoundPlayer::load(const std::filesystem::path& fileName, bool stream){
+bool ofSoundPlayer::load(string fileName, bool stream){
 	if( player ){
 		return player->load(fileName, stream);
 	}
@@ -124,7 +122,7 @@ void ofSoundPlayer::setVolume(float vol){
 //--------------------------------------------------------------------
 void ofSoundPlayer::setPan(float pan){
 	if( player ){
-		player->setPan(glm::clamp(pan,-1.0f,1.0f));
+		player->setPan(CLAMP(pan,-1.0f,1.0f));
 	}
 }
 

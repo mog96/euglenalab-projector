@@ -1,4 +1,8 @@
-#include "ofMain.h"
+
+
+#include <iostream>
+#include <string>
+#include <vector>
 #include "optionparser.h"
 enum  optionIndex { UNKNOWN, HELP, PLUS, RECURSIVE, LISTTEMPLATES, PLATFORMS, ADDONS, OFPATH, VERBOSE, TEMPLATE, DRYRUN };
 constexpr option::Descriptor usage[] =
@@ -16,6 +20,7 @@ constexpr option::Descriptor usage[] =
     {0,0,0,0,0,0}
 };
 
+#include "ofMain.h"
 
 #include "Poco/Util/Application.h"
 #include "Poco/Util/Option.h"
@@ -28,7 +33,6 @@ constexpr option::Descriptor usage[] =
 #include "qtcreatorproject.h"
 #include "visualStudioProject.h"
 #include "xcodeProject.h"
-#include "androidStudioProject.h"
 #include "Utils.h"
 
 
@@ -52,14 +56,14 @@ float               startTime;
 int                 nProjectsUpdated;
 int                 nProjectsCreated;
 
-std::string              directoryForRecursion;
-std::string              projectPath;
-std::string              ofPath;
-std::vector <std::string>     addons;
-std::vector <ofTargetPlatform>        targets;
-std::string              ofPathEnv;
-std::string              currentWorkingDirectory;
-std::string              templateName;
+string              directoryForRecursion;
+string              projectPath;
+string              ofPath;
+vector <string>     addons;
+vector <ofTargetPlatform>        targets;
+string              ofPathEnv;
+string              currentWorkingDirectory;
+string              templateName;
 
 bool busingEnvVar;
 bool bVerbose;
@@ -76,21 +80,21 @@ bool bDryRun;                           // do dry run (useful for debugging recu
 
 //-------------------------------------------
 void consoleSpace() {
-    std::cout << std::endl;
+    cout << endl;
 }
 
 
 bool printTemplates() {
     
-    std::cout << "getOFRoot() " << getOFRoot() << std::endl;
+    cout << "getOFRoot() " << getOFRoot() << endl;
     
     if(targets.size()>1){
-	std::vector<std::vector<baseProject::Template>> allPlatformsTemplates;
+        vector<vector<baseProject::Template>> allPlatformsTemplates;
         for(auto & target: targets){
             auto templates = getTargetProject(target)->listAvailableTemplates(getTargetString(target));
             allPlatformsTemplates.push_back(templates);
         }
-	std::set<baseProject::Template> commonTemplates;
+        set<baseProject::Template> commonTemplates;
         for(auto & templates: allPlatformsTemplates){
             for(auto & t: templates){
                 bool foundInAll = true;
@@ -134,10 +138,10 @@ bool printTemplates() {
     }
 }
 
-void addPlatforms(std::string value) {
+void addPlatforms(string value) {
 
     targets.clear();
-    std::vector < std::string > platforms = ofSplitString(value, ",", true, true);
+    vector < string > platforms = ofSplitString(value, ",", true, true);
 
     for (size_t i = 0; i < platforms.size(); i++) {
         if (platforms[i] == "linux") {
@@ -165,7 +169,8 @@ void addPlatforms(std::string value) {
             targets.push_back(OF_TARGET_IPHONE);
         }
         else if (platforms[i] == "android") {
-            targets.push_back(OF_TARGET_ANDROID);
+            ofLogError() << "android platform not supported yet" << endl;
+            std::exit(1);
         }
         else if (platforms[i] == "allplatforms") {
             targets.push_back(OF_TARGET_LINUX);
@@ -176,7 +181,6 @@ void addPlatforms(std::string value) {
             targets.push_back(OF_TARGET_WINVS);
             targets.push_back(OF_TARGET_OSX);
             targets.push_back(OF_TARGET_IOS);
-            targets.push_back(OF_TARGET_ANDROID);
         }else{
             ofLogError() << "platform " << platforms[i] << " not valid";
         }
@@ -184,7 +188,7 @@ void addPlatforms(std::string value) {
 }
 
 
-bool isGoodProjectPath(std::string path) {
+bool isGoodProjectPath(string path) {
 
     ofDirectory dir(path);
     if (!dir.isDirectory()) {
@@ -209,7 +213,7 @@ bool isGoodProjectPath(std::string path) {
 
 }
 
-bool isGoodOFPath(std::string path) {
+bool isGoodOFPath(string path) {
 
     ofDirectory dir(path);
     if (!dir.isDirectory()) {
@@ -237,7 +241,7 @@ bool isGoodOFPath(std::string path) {
 
 
 
-void updateProject(std::string path, ofTargetPlatform target, bool bConsiderParameterAddons = true) {
+void updateProject(string path, ofTargetPlatform target, bool bConsiderParameterAddons = true) {
 
     // bConsiderParameterAddons = do we consider that the user could call update with a new set of addons
     // either we read the addons.make file, or we look at the parameter list.
@@ -262,7 +266,7 @@ void updateProject(std::string path, ofTargetPlatform target, bool bConsiderPara
 }
 
 
-void recursiveUpdate(std::string path, ofTargetPlatform target) {
+void recursiveUpdate(string path, ofTargetPlatform target) {
     
     ofDirectory dir(path);
     
@@ -292,12 +296,12 @@ void printHelp(){
     
     consoleSpace();
     
-    std::string header = "";
+    string header = "";
     header += "\tprojectGenerator [options] pathName\n\n";
     header += "if pathName exists, project is updated\n";
     header += "if pathName doesn't exist, project is created\n";
     header += "(pathName must follow options, which can come in any order)";
-    std::cout << header << std::endl;
+    cout << header << endl;
     
     consoleSpace();
     
@@ -305,7 +309,7 @@ void printHelp(){
     
     consoleSpace();
     
-    std::string footer = "";
+    string footer = "";
     footer += "examples:\n\n";
     footer +=
     STRINGIFY(
@@ -327,7 +331,7 @@ void printHelp(){
               );
     footer += "\n";
     footer += "(create / update an example with addons)";
-    std::cout << footer << std::endl;
+    cout << footer << endl;
     
     consoleSpace();
 }
@@ -351,7 +355,7 @@ int main(int argc, char* argv[]){
     startTime = 0;
     nProjectsUpdated = 0;
     nProjectsCreated = 0;
-    std::string projectName = "";
+    string projectName = "";
     projectPath = "";
     templateName = "";
     
@@ -392,7 +396,7 @@ int main(int argc, char* argv[]){
     
     if (options[PLATFORMS].count() > 0){
         if (options[PLATFORMS].arg != NULL){
-	    std::string platformString(options[PLATFORMS].arg);
+            string platformString(options[PLATFORMS].arg);
             addPlatforms(platformString);
         }
     }
@@ -400,7 +404,7 @@ int main(int argc, char* argv[]){
     if (options[ADDONS].count() > 0){
         bAddonsPassedIn = true; // could be empty
         if (options[ADDONS].arg != NULL){
-	    std::string addonsString(options[ADDONS].arg);
+            string addonsString(options[ADDONS].arg);
             addons = ofSplitString(addonsString, ",", true, true);
         }
     }
@@ -409,14 +413,14 @@ int main(int argc, char* argv[]){
     
     if (options[OFPATH].count() > 0){
         if (options[OFPATH].arg != NULL){
-	    std::string ofPathString(options[OFPATH].arg);
+            string ofPathString(options[OFPATH].arg);
             ofPath = ofPathString;
         }
     }
     
     if (options[TEMPLATE].count() > 0){
         if (options[TEMPLATE].arg != NULL){
-	    std::string templateString(options[TEMPLATE].arg);
+            string templateString(options[TEMPLATE].arg);
             templateName = templateString;
         }
     }
@@ -439,7 +443,7 @@ int main(int argc, char* argv[]){
     char* pPath;
     pPath = getenv("PG_OF_PATH");
     if (pPath != NULL) {
-        ofPathEnv = std::string(pPath);
+        ofPathEnv = string(pPath);
     }
     
     if (ofPath == "" && ofPathEnv != "") {
@@ -624,10 +628,10 @@ int main(int argc, char* argv[]){
 
     consoleSpace();
     float elapsedTime = ofGetElapsedTimef() - startTime;
-    if (nProjectsCreated > 0) std::cout << nProjectsCreated << " project created ";
-    if (nProjectsUpdated == 1) std::cout << nProjectsUpdated << " project updated ";
-    if (nProjectsUpdated > 1) std::cout << nProjectsUpdated << " projects updated ";
-    ofLogNotice() << "in " << elapsedTime << " seconds" << std::endl;
+    if (nProjectsCreated > 0) cout << nProjectsCreated << " project created ";
+    if (nProjectsUpdated == 1)cout << nProjectsUpdated << " project updated ";
+    if (nProjectsUpdated > 1) cout << nProjectsUpdated << " projects updated ";
+    ofLogNotice() << "in " << elapsedTime << " seconds" << endl;
     consoleSpace();
 
 	

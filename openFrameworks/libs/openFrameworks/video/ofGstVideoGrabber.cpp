@@ -58,7 +58,6 @@ extern "C" {
 
 #endif
 
-using namespace std;
 
 static void get_video_devices (ofGstCamData & cam_data)
 {

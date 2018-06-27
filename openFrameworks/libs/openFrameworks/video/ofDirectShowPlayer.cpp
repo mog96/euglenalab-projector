@@ -1,6 +1,5 @@
 #include "ofDirectShowPlayer.h"
-#include "ofPixels.h"
-#include "ofMath.h"
+
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -427,7 +426,7 @@ class DirectShowVideo : public ISampleGrabberCB{
         return E_NOTIMPL;
     }
 
-    bool loadMovie(std::string path, ofPixelFormat format){
+    bool loadMovie(string path, ofPixelFormat format){
         tearDown();
 		this->pixelFormat = format;
 
@@ -1099,8 +1098,7 @@ class DirectShowVideo : public ISampleGrabberCB{
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-ofDirectShowPlayer::ofDirectShowPlayer()
-:pixelFormat(OF_PIXELS_RGB){
+ofDirectShowPlayer::ofDirectShowPlayer() {
 
 }
 
@@ -1120,14 +1118,14 @@ ofDirectShowPlayer & ofDirectShowPlayer::operator=(ofDirectShowPlayer&& other) {
 	return *this;
 }
 
-bool ofDirectShowPlayer::load(std::string path){
+bool ofDirectShowPlayer::load(string path){
     path = ofToDataPath(path); 
 
     close();
     player.reset(new DirectShowVideo());
     bool loadOk = player->loadMovie(path, pixelFormat);
     if( !loadOk ){
-        ofLogError("ofDirectShowPlayer") << " Cannot load video of this file type.  Make sure you have codecs installed on your system.  OF recommends the free K-Lite Codec pack. ";
+        ofLogError("ofDirectShowPlayer") << " Cannot load video of this file type.  Make sure you have codecs installed on your system.  OF recommends the free K-Lite Codec pack. " << endl;
     }
     return loadOk;
 }
@@ -1262,7 +1260,7 @@ void ofDirectShowPlayer::setLoopState(ofLoopType state){
         else if( state == OF_LOOP_NORMAL ){
             player->setLoop(true);
         }else{
-            ofLogError("ofDirectShowPlayer") << " cannot set loop of type palindrome ";
+            ofLogError("ofDirectShowPlayer") << " cannot set loop of type palindrome " << endl;
         }
     }
 }

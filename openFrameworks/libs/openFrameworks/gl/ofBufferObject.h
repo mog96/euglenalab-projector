@@ -1,9 +1,8 @@
 #pragma once
 
 #include "ofConstants.h"
-
-template<typename T>
-class ofPixels_;
+#include "ofTypes.h"
+#include "ofPixels.h"
 
 class ofBufferObject {
 public:
@@ -21,7 +20,7 @@ public:
 	void allocate(GLsizeiptr bytes, const void * data, GLenum usage);
 
 	template<typename T>
-	void allocate(const std::vector<T> & data, GLenum usage){
+	void allocate(const vector<T> & data, GLenum usage){
 		allocate(data.size()*sizeof(T),&data[0],usage);
 	}
 
@@ -71,7 +70,7 @@ public:
 	/// typed version of setData, same functionality but guesses the size from the size
 	/// of the passed vector and size of the type
 	template<typename T>
-	void setData(const std::vector<T> & data, GLenum usage){
+	void setData(const vector<T> & data, GLenum usage){
 		setData(data.size()*sizeof(T),&data[0],usage);
 	}
 
@@ -83,14 +82,14 @@ public:
 	/// typed version of updateData, same functionality but guesses the size from the size
 	/// of the passed vector and size of the type
 	template<typename T>
-	void updateData(GLintptr offset, const std::vector<T> & data){
+	void updateData(GLintptr offset, const vector<T> & data){
 		updateData(offset,data.size()*sizeof(T),&data[0]);
 	}
 
     /// typed version of updateData, same functionality but guesses the size from the size
     /// of the passed vector and size of the type
     template<typename T>
-    void updateData(const std::vector<T> & data){
+    void updateData(const vector<T> & data){
         updateData(0,data.size()*sizeof(T),&data[0]);
     }
 
@@ -127,10 +126,7 @@ public:
 		return static_cast<T*>(mapRange(offset,length,access));
 	}
 
-	void copyTo(ofBufferObject & dstBuffer) const;
-	void copyTo(ofBufferObject & dstBuffer, int readOffset, int writeOffset, size_t size) const;
-
-    void invalidate();
+	void copyTo(ofBufferObject & dstBuffer);
 #endif
 
 	GLsizeiptr size() const;
@@ -142,8 +138,8 @@ private:
 		GLuint id;
 		GLsizeiptr size;
 		GLenum lastTarget;
+		bool useDSA;
 		bool isBound;
-		bool isDSA;
 	};
-	std::shared_ptr<Data> data;
+	shared_ptr<Data> data;
 };

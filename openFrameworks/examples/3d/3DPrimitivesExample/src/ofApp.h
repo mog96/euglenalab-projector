@@ -26,7 +26,7 @@ public:
     bool bDrawNormals;
     bool bDrawAxes;
     bool bDrawLights;
-    bool bHelpText;
+    bool bInfoText;
     bool bMousePressed;
     bool bSplitFaces;
     
@@ -52,5 +52,5 @@ public:
     ofVboMesh topCap, bottomCap, body;
     vector<ofMeshFace> triangles;
     
-	ofCamera cam;
+
 };

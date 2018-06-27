@@ -7,10 +7,20 @@ void ofApp::setup(){
 	ofSetCircleResolution(80);
 	ofBackground(54, 54, 54);	
 	
+	// 0 output channels, 
+	// 2 input channels
+	// 44100 samples per second
+	// 256 samples per buffer
+	// 4 num buffers (latency)
+	
 	soundStream.printDeviceList();
 	
+	//if you want to set a different device id 
+	//soundStream.setDeviceID(0); //bear in mind the device id corresponds to all audio devices, including  input-only and output-only devices.
+	
 	int bufferSize = 256;
-
+	
+	
 	left.assign(bufferSize, 0.0);
 	right.assign(bufferSize, 0.0);
 	volHistory.assign(400, 0.0);
@@ -20,32 +30,7 @@ void ofApp::setup(){
 	smoothedVol     = 0.0;
 	scaledVol		= 0.0;
 
-
-	ofSoundStreamSettings settings;
-
-	// if you want to set the device id to be different than the default
-	// auto devices = soundStream.getDeviceList();
-	// settings.device = devices[4];
-
-	// you can also get devices for an specific api
-	// auto devices = soundStream.getDevicesByApi(ofSoundDevice::Api::PULSE);
-	// settings.device = devices[0];
-
-	// or get the default device for an specific api:
-	// settings.api = ofSoundDevice::Api::PULSE;
-
-	// or by name
-	auto devices = soundStream.getMatchingDevices("default");
-	if(!devices.empty()){
-		settings.setInDevice(devices[0]);
-	}
-
-	settings.setInListener(this);
-	settings.sampleRate = 44100;
-	settings.numOutputChannels = 0;
-	settings.numInputChannels = 2;
-	settings.bufferSize = bufferSize;
-	soundStream.setup(settings);
+	soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
 
 }
 
@@ -154,7 +139,7 @@ void ofApp::draw(){
 }
 
 //--------------------------------------------------------------
-void ofApp::audioIn(ofSoundBuffer & input){
+void ofApp::audioIn(float * input, int bufferSize, int nChannels){	
 	
 	float curVol = 0.0;
 	
@@ -162,7 +147,7 @@ void ofApp::audioIn(ofSoundBuffer & input){
 	int numCounted = 0;	
 
 	//lets go through each sample and calculate the root mean square which is a rough way to calculate volume	
-	for (size_t i = 0; i < input.getNumFrames(); i++){
+	for (int i = 0; i < bufferSize; i++){
 		left[i]		= input[i*2]*0.5;
 		right[i]	= input[i*2+1]*0.5;
 

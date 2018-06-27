@@ -37,11 +37,14 @@
 
 #include "ofxKinectExtras.h"
 
+#ifndef BUILD_AUDIO
+	#undef OFX_KINECT_EXTRA_FW //Audio / Motor via Audio support is not currently working with libfreenect on win32
+#endif 
+
 #define OFX_KINECT_GRAVITY 9.80665
 
 // context static
 ofxKinectContext ofxKinect::kinectContext;
-float ofxKinect::reconnectWaitTime = 3.0;
 
 //--------------------------------------------------------------------
 ofxKinect::ofxKinect() {
@@ -74,12 +77,10 @@ ofxKinect::ofxKinect() {
     bLedNeedsApplying = false;
 	bHasMotorControl = false;
 	
-	lastDeviceIndex = -1;
+	lastDeviceId = -1;
 	tryCount = 0;
 	timeSinceOpen = 0;
-	bGotDataVideo = false;
-	bGotDataDepth = false;
-    bFirstUpdate = true;
+	bGotData = false;
 
 	bUseRegistration = false;
 	bNearWhite = true;
@@ -217,12 +218,10 @@ bool ofxKinect::open(int deviceIndex) {
 		bHasMotorControl = true;
 	}
 
-	lastDeviceIndex = deviceIndex;
+	lastDeviceId = deviceId;
 	timeSinceOpen = ofGetElapsedTimef();
-	bGotDataVideo = false;
-    bGotDataDepth = false;
-    bFirstUpdate = true;
-    
+	bGotData = false;
+
 	freenect_set_user(kinectDevice, this);
 	freenect_set_depth_buffer(kinectDevice, depthPixelsRawBack.getData());
 	freenect_set_video_buffer(kinectDevice, videoPixelsBack.getData());
@@ -259,12 +258,10 @@ bool ofxKinect::open(string serial) {
 		bHasMotorControl = true;
 	}
     
-	lastDeviceIndex = kinectContext.getDeviceIndex(serial);
+	lastDeviceId = deviceId;
 	timeSinceOpen = ofGetElapsedTimef();
-	bGotDataVideo = false;
-    bGotDataDepth = false;
-	bFirstUpdate = true;
-    
+	bGotData = false;
+	
 	freenect_set_user(kinectDevice, this);
 	freenect_set_depth_callback(kinectDevice, &grabDepthFrame);
 	freenect_set_video_callback(kinectDevice, &grabVideoFrame);
@@ -279,9 +276,9 @@ void ofxKinect::close() {
 	if(isThreadRunning()) {
 		stopThread();
 		ofSleepMillis(10);
-		waitForThread(false,5000);
+		waitForThread(false);
 	}
-    
+
 	deviceId = -1;
 	serial = "";
 	bIsFrameNewVideo = false;
@@ -340,45 +337,20 @@ void ofxKinect::update() {
 	if(!bGrabberInited) {
 		return;
 	}
-    
-    // - Start handle reconnection
-    
-    //we need to do timing for reconnection based on the first update call
-    //as a project with a long setup call could exceed the reconnectWaitTime and create a false positive
-    //we also need to not try reconnection if the camera is tilting as this can shutoff the data coming in and cause a false positive. 
-    if( bFirstUpdate || fabs(targetTiltAngleDeg-currentTiltAngleDeg) > 1.0 ){
-        timeSinceOpen = ofGetElapsedTimef();
-        bFirstUpdate = false;
-    }
-    
-    //if we aren't grabbing the video stream we don't need to check for video
-    bool bVideoOkay = true;
-    if( bGrabVideo ){
-        bVideoOkay = bGotDataVideo;
-        if( bNeedsUpdateVideo ){
-            bVideoOkay = true;
-            bGotDataVideo = true;
-        }
-    }
 
-    if( bNeedsUpdateDepth ){
-        bGotDataDepth = true;
-    }
-    
-    //try reconnect if we don't have color coming in or if we don't have depth coming in
-	if( (!bVideoOkay || !bGotDataDepth ) && tryCount < 5 && ofGetElapsedTimef() - timeSinceOpen > reconnectWaitTime ){
+	if(!bNeedsUpdateVideo && !bNeedsUpdateDepth && !bGotData && tryCount < 5 && ofGetElapsedTimef() - timeSinceOpen > 2.0 ){
 		close();
-		ofLogWarning("ofxKinect") << "update(): device " << lastDeviceIndex << " isn't delivering data. depth: " << bGotDataDepth << " color: " << bGotDataVideo <<"  , reconnecting tries: " << tryCount+1;
+		ofLogWarning("ofxKinect") << "update(): device " << lastDeviceId << " isn't delivering data, reconnecting tries: " << tryCount+1;
 		kinectContext.buildDeviceList();
-		open(lastDeviceIndex);
+		open(lastDeviceId);
 		tryCount++;
 		timeSinceOpen = ofGetElapsedTimef();
+		return;
 	}
-
-    // - End handle reconnection
 
 	if(bNeedsUpdateVideo){
 		bIsFrameNewVideo = true;
+		bGotData = true;
 		tryCount = 0;
 		if(this->lock()) {
             if( videoPixels.getHeight() == videoPixelsIntra.getHeight() ){
@@ -400,6 +372,7 @@ void ofxKinect::update() {
 
 	if(bNeedsUpdateDepth){
 		bIsFrameNewDepth = true;
+		bGotData = true;
 		tryCount = 0;
 		if(this->lock()) {
 			swap(depthPixelsRaw, depthPixelsRawIntra);
@@ -769,12 +742,6 @@ string ofxKinect::nextAvailableSerial() {
 	return kinectContext.nextAvailableSerial();
 }
 
-//---------------------------------------------------------------------------
-void ofxKinect::setReconnectWaitTime(float waitTime) {
-	reconnectWaitTime = waitTime;
-}
-
-
 /* ***** PRIVATE ***** */
 
 //---------------------------------------------------------------------------
@@ -941,6 +908,7 @@ void ofxKinectContext::clear() {
 		freenect_shutdown(kinectContext);
 		kinectContext = NULL;
 		bInited = false;
+		ofLogVerbose("ofxKinect") << "context cleared";
 	}
 }
 
@@ -1089,7 +1057,7 @@ void ofxKinectContext::listDevices(bool verbose) {
 	}
 	stream.str("");
 	
-	for(size_t i = 0; i < deviceList.size(); ++i) {
+	for(unsigned int i = 0; i < deviceList.size(); ++i) {
 		stream << "    id: " << deviceList[i].id << " serial: " << deviceList[i].serial;
 		if(verbose) {
 			ofLogVerbose("ofxKinect") << stream.str();
@@ -1127,7 +1095,7 @@ ofxKinect* ofxKinectContext::getKinect(freenect_device* dev) {
 }
 
 int ofxKinectContext::getDeviceIndex(int id) {
-	for(size_t i = 0; i < deviceList.size(); ++i) {
+	for(unsigned int i = 0; i < deviceList.size(); ++i) {
 		if(deviceList[i].id == id)
 			return i;
 	}
@@ -1135,7 +1103,7 @@ int ofxKinectContext::getDeviceIndex(int id) {
 }
 
 int ofxKinectContext::getDeviceIndex(string serial) {
-	for(size_t i = 0; i < deviceList.size(); ++i) {
+	for(unsigned int i = 0; i < deviceList.size(); ++i) {
 		if(deviceList[i].serial == serial)
 			return i;
 	}
@@ -1143,7 +1111,7 @@ int ofxKinectContext::getDeviceIndex(string serial) {
 }
 
 
-int ofxKinectContext::getDeviceId(unsigned int index) {
+int ofxKinectContext::getDeviceId(int index) {
     if( index >= 0 && index < deviceList.size() ){
         return deviceList[index].id;
     }
@@ -1151,7 +1119,7 @@ int ofxKinectContext::getDeviceId(unsigned int index) {
 }
 
 int ofxKinectContext::getDeviceId(string serial){
-	for(size_t i = 0; i < deviceList.size(); ++i) {
+	for(unsigned int i = 0; i < deviceList.size(); ++i) {
 		if(deviceList[i].serial == serial){
 			return deviceList[i].id;
         }
@@ -1179,7 +1147,7 @@ int ofxKinectContext::nextAvailableId() {
 	
 	// a brute force free index finder :D
 	std::map<int,ofxKinect*>::iterator iter;
-	for(size_t i = 0; i < deviceList.size(); ++i) {
+	for(unsigned int i = 0; i < deviceList.size(); ++i) {
 		iter = kinects.find(deviceList[i].id);
 		if(iter == kinects.end())
 			return deviceList[i].id;

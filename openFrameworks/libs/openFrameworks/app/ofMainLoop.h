@@ -1,21 +1,18 @@
 #pragma once
 
 #include "ofConstants.h"
+#include "ofAppBaseWindow.h"
+#include "ofBaseApp.h"
 #include "ofEvents.h"
-#include <map>
-
-class ofBaseApp;
-class ofAppBaseWindow;
-class ofWindowSettings;
 
 class ofMainLoop {
 public:
 	ofMainLoop();
 	virtual ~ofMainLoop();
 
-	std::shared_ptr<ofAppBaseWindow> createWindow(const ofWindowSettings & settings);
+	shared_ptr<ofAppBaseWindow> createWindow(const ofWindowSettings & settings);
 	template<typename Window>
-	void addWindow(std::shared_ptr<Window> window){
+	void addWindow(shared_ptr<Window> window){
 		allowMultiWindow = Window::allowsMultiWindow();
 		if(Window::doesLoop()){
 		    windowLoop = Window::loop;
@@ -26,31 +23,31 @@ public:
 		if(!allowMultiWindow){
 		    windowsApps.clear();
 		}
-		windowsApps[window] = std::shared_ptr<ofBaseApp>();
+		windowsApps[window] = shared_ptr<ofBaseApp>();
 		currentWindow = window;
 		ofAddListener(window->events().keyPressed,this,&ofMainLoop::keyPressed);
 	}
 
-	void run(std::shared_ptr<ofAppBaseWindow> window, std::shared_ptr<ofBaseApp> && app);
-	void run(std::shared_ptr<ofBaseApp> && app);
+	void run(shared_ptr<ofAppBaseWindow> window, shared_ptr<ofBaseApp> app);
+	void run(shared_ptr<ofBaseApp> app);
 	int loop();
 	void loopOnce();
 	void pollEvents();
 	void exit();
+	ofCoreEvents & events();
 	void shouldClose(int status);
-	std::shared_ptr<ofAppBaseWindow> getCurrentWindow();
-	void setCurrentWindow(std::shared_ptr<ofAppBaseWindow> window);
+	shared_ptr<ofAppBaseWindow> getCurrentWindow();
+	void setCurrentWindow(shared_ptr<ofAppBaseWindow> window);
 	void setCurrentWindow(ofAppBaseWindow * window);
-	std::shared_ptr<ofBaseApp> getCurrentApp();
+	shared_ptr<ofBaseApp> getCurrentApp();
 	void setEscapeQuitsLoop(bool quits);
 
 	ofEvent<void> exitEvent;
-	ofEvent<void> loopEvent;
 private:
 	void keyPressed(ofKeyEventArgs & key);
-	std::map<std::shared_ptr<ofAppBaseWindow>,std::shared_ptr<ofBaseApp> > windowsApps;
+	map<shared_ptr<ofAppBaseWindow>,shared_ptr<ofBaseApp> > windowsApps;
 	bool bShouldClose;
-	std::weak_ptr<ofAppBaseWindow> currentWindow;
+	shared_ptr<ofAppBaseWindow> currentWindow;
 	int status;
 	bool allowMultiWindow;
 	std::function<void()> windowLoop;

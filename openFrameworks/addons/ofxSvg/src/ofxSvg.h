@@ -1,6 +1,7 @@
 #pragma once
 
 //#include "ofMain.h"
+#include "svgtiny.h"
 #include "ofPath.h"
 #include "ofTypes.h"
 
@@ -14,7 +15,7 @@ class ofxSVG {
 		float getHeight() const {
 			return height;
 		}
-		void load(std::string path);
+		void load(string path);
 		void draw();
 
 		int getNumPath(){
@@ -24,13 +25,13 @@ class ofxSVG {
 			return paths[n];
 		}
 
-		const std::vector <ofPath> & getPaths() const;
+		const vector <ofPath> & getPaths() const;
 
 	private:
 
 		float width, height;
 
-		std::vector <ofPath> paths;
+		vector <ofPath> paths;
 
 		void setupDiagram(struct svgtiny_diagram * diagram);
 		void setupShape(struct svgtiny_shape * shape, ofPath & path);

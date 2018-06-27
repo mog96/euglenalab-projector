@@ -1,20 +1,16 @@
 #pragma once
 
 #include "ofConstants.h"
+
+#define GLFW_INCLUDE_NONE
+#include "GLFW/glfw3.h"
+
 #include "ofAppBaseWindow.h"
+#include "ofEvents.h"
+#include "ofPixels.h"
 #include "ofRectangle.h"
 
-#ifdef TARGET_LINUX
-typedef struct _XIM * XIM;
-typedef struct _XIC * XIC;
-#endif
-
 class ofBaseApp;
-struct GLFWwindow;
-class ofCoreEvents;
-template<typename T>
-class ofPixels_;
-typedef ofPixels_<unsigned char> ofPixels;
 
 #ifdef TARGET_OPENGLES
 class ofGLFWWindowSettings: public ofGLESWindowSettings{
@@ -47,7 +43,7 @@ public:
 	bool resizable = true;
 	int monitor = 0;
 	bool multiMonitorFullScreen = false;
-	std::shared_ptr<ofAppBaseWindow> shareContextWith;
+	shared_ptr<ofAppBaseWindow> shareContextWith;
 };
 
 #ifdef TARGET_OPENGLES
@@ -69,7 +65,7 @@ public:
 	static bool doesLoop(){ return false; }
 	static bool allowsMultiWindow(){ return true; }
 	static bool needsPolling(){ return true; }
-	static void pollEvents();
+	static void pollEvents(){ glfwPollEvents(); }
 
 
     // this functions are only meant to be called from inside OF don't call them from your code
@@ -94,17 +90,17 @@ public:
 	int getWidth();
 
 	ofCoreEvents & events();
-	std::shared_ptr<ofBaseRenderer> & renderer();
+	shared_ptr<ofBaseRenderer> & renderer();
     
     GLFWwindow* getGLFWWindow();
     void * getWindowContext(){return getGLFWWindow();}
 	ofGLFWWindowSettings getSettings(){ return settings; }
 
-	glm::vec2	getWindowSize();
-	glm::vec2	getScreenSize();
-	glm::vec2 	getWindowPosition();
+	ofVec3f		getWindowSize();
+	ofVec3f		getScreenSize();
+	ofVec3f 	getWindowPosition();
 
-	void setWindowTitle(std::string title);
+	void setWindowTitle(string title);
 	void setWindowPosition(int x, int y);
 	void setWindowShape(int w, int h);
 
@@ -121,15 +117,12 @@ public:
 
 	void		setVerticalSync(bool bSync);
 
-    void        setClipboardString(const std::string& text);
-    std::string      getClipboardString();
+    void        setClipboardString(const string& text);
+    string      getClipboardString();
 
     int         getPixelScreenCoordScale();
 
     void 		makeCurrent();
-	void swapBuffers();
-	void startRender();
-	void finishRender();
 
 	static void listVideoModes();
 	static void listMonitors();
@@ -151,7 +144,6 @@ public:
 #if defined(TARGET_LINUX) && !defined(TARGET_RASPBERRY_PI)
 	Display* 	getX11Display();
 	Window  	getX11Window();
-	XIC			getX11XIC();
 #endif
 
 #if defined(TARGET_LINUX) && !defined(TARGET_OPENGLES)
@@ -179,32 +171,26 @@ private:
 	static void 	mouse_cb(GLFWwindow* windowP_, int button, int state, int mods);
 	static void 	motion_cb(GLFWwindow* windowP_, double x, double y);
 	static void 	entry_cb(GLFWwindow* windowP_, int entered);
-	static void 	keyboard_cb(GLFWwindow* windowP_, int key, int scancode, int action, int mods);
-	static void 	char_cb(GLFWwindow* windowP_, uint32_t key);
+	static void 	keyboard_cb(GLFWwindow* windowP_, int key, int scancode, unsigned int codepoint, int action, int mods);
 	static void 	resize_cb(GLFWwindow* windowP_, int w, int h);
-	static void 	framebuffer_size_cb(GLFWwindow* windowP_, int w, int h);
 	static void 	exit_cb(GLFWwindow* windowP_);
 	static void		scroll_cb(GLFWwindow* windowP_, double x, double y);
 	static void 	drop_cb(GLFWwindow* windowP_, int numFiles, const char** dropString);
 	static void		error_cb(int errorCode, const char* errorDescription);
 
 #ifdef TARGET_LINUX
-	void setWindowIcon(const std::string & path);
+	void setWindowIcon(const string & path);
 	void setWindowIcon(const ofPixels & iconPixels);
-	XIM xim;
-	XIC xic;
 #endif
 
-	std::unique_ptr<ofCoreEvents> coreEvents;
-	std::shared_ptr<ofBaseRenderer> currentRenderer;
+	ofCoreEvents coreEvents;
+	shared_ptr<ofBaseRenderer> currentRenderer;
 	ofGLFWWindowSettings settings;
 
-	ofWindowMode	targetWindowMode;
+	ofWindowMode	windowMode;
 
 	bool			bEnableSetupScreen;
-	int				windowW, windowH;		/// Physical framebuffer pixels extents
-	int				currentW, currentH;		/// Extents of the window client area, which may be scaled by pixelsScreenCoordScale to map to physical framebuffer pixels.
-	float           pixelScreenCoordScale;  /// Scale factor from virtual operating-system defined client area extents (as seen in currentW, currentH) to physical framebuffer pixel coordinates (as seen in windowW, windowH).
+	int				windowW, windowH;
 
 	ofRectangle windowRect;
 
@@ -215,11 +201,12 @@ private:
 	bool			bWindowNeedsShowing;
 
 	GLFWwindow* 	windowP;
-
+    
 	int				getCurrentMonitor();
 
 	ofBaseApp *	ofAppPtr;
 
+    int pixelScreenCoordScale; 
 
 	ofOrientation orientation;
 

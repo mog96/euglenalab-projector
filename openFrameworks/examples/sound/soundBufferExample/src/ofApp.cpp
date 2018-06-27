@@ -3,19 +3,15 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 	ofSetVerticalSync(true);
-
+	ofSetFrameRate(60);
+	
+	sampleRate = 44100;
 	wavePhase = 0;
 	pulsePhase = 0;
 	
 	// start the sound stream with a sample rate of 44100 Hz, and a buffer
 	// size of 512 samples per audioOut() call
-	ofSoundStreamSettings settings;
-	settings.numOutputChannels = 2;
-	settings.sampleRate = 44100;
-	settings.bufferSize = 512;
-	settings.numBuffers = 4;
-	settings.setOutListener(this);
-	soundStream.setup(settings);
+	ofSoundStreamSetup(2, 0, sampleRate, 512, 3);
 }
 
 //--------------------------------------------------------------
@@ -59,8 +55,8 @@ void ofApp::audioOut(ofSoundBuffer &outBuffer) {
 	float frequency = 172.5;
 	
 	// mapping frequencies from Hz into full oscillations of sin() (two pi)
-	float wavePhaseStep = (frequency / outBuffer.getSampleRate()) * TWO_PI;
-	float pulsePhaseStep = (0.5 / outBuffer.getSampleRate()) * TWO_PI;
+	float wavePhaseStep = (frequency / sampleRate) * TWO_PI;
+	float pulsePhaseStep = (0.5 / sampleRate) * TWO_PI;
 	
 	// this loop builds a buffer of audio containing 3 sine waves at different
 	// frequencies, and pulses the volume of each sine wave individually. In

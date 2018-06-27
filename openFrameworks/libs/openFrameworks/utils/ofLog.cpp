@@ -2,20 +2,11 @@
 #include "ofConstants.h"
 #include <ofUtils.h>
 #include <map>
-#include <cstdarg>
-#ifdef TARGET_ANDROID
-	#include "ofxAndroidLogChannel.h"
-#endif
-
-using namespace std;
 
 static ofLogLevel currentLogLevel =  OF_LOG_NOTICE;
 
 bool ofLog::bAutoSpace = false;
-string & ofLog::getPadding() {
-	static string * padding = new string;
-	return *padding;
-}
+string ofLog::padding = "";
 
 static map<string,ofLogLevel> & getModules(){
 	static map<string,ofLogLevel> * modules = new map<string,ofLogLevel>;
@@ -23,18 +14,12 @@ static map<string,ofLogLevel> & getModules(){
 }
 
 static void noopDeleter(ofBaseLoggerChannel*){}
-
-shared_ptr<ofBaseLoggerChannel> & ofLog::channel(){
 #ifdef TARGET_ANDROID
-	static shared_ptr<ofBaseLoggerChannel> channel = shared_ptr<ofxAndroidLogChannel>(new ofxAndroidLogChannel, std::ptr_fun(noopDeleter));
-#elif defined(TARGET_WIN32)
-	static shared_ptr<ofBaseLoggerChannel> channel = IsDebuggerPresent() ? shared_ptr<ofBaseLoggerChannel>(new ofDebugViewLoggerChannel, std::ptr_fun(noopDeleter)) : shared_ptr<ofBaseLoggerChannel>(new ofConsoleLoggerChannel, std::ptr_fun(noopDeleter));
+	#include "ofxAndroidLogChannel.h"
+	shared_ptr<ofBaseLoggerChannel> ofLog::channel = shared_ptr<ofxAndroidLogChannel>(new ofxAndroidLogChannel,std::ptr_fun(noopDeleter));
 #else
-	static shared_ptr<ofBaseLoggerChannel> channel = shared_ptr<ofConsoleLoggerChannel>(new ofConsoleLoggerChannel,std::ptr_fun(noopDeleter));
+	shared_ptr<ofBaseLoggerChannel> ofLog::channel = shared_ptr<ofConsoleLoggerChannel>(new ofConsoleLoggerChannel,std::ptr_fun(noopDeleter));
 #endif
-
-	return channel;
-}
 
 //--------------------------------------------------
 void ofSetLogLevel(ofLogLevel level){
@@ -52,29 +37,14 @@ ofLogLevel ofGetLogLevel(){
 }
 
 //--------------------------------------------------
-ofLogLevel ofGetLogLevel(string module){
-	if (getModules().find(module) == getModules().end()) {
-		return currentLogLevel;
-	} else {
-		return getModules()[module];
-	}
-}
-
-//--------------------------------------------------
-void ofLogToFile(const std::filesystem::path & path, bool append){
-	ofLog::setChannel(std::make_shared<ofFileLoggerChannel>(path,append));
+void ofLogToFile(const string & path, bool append){
+	ofLog::setChannel(shared_ptr<ofFileLoggerChannel>(new ofFileLoggerChannel(path,append)));
 }
 
 //--------------------------------------------------
 void ofLogToConsole(){
 	ofLog::setChannel(shared_ptr<ofConsoleLoggerChannel>(new ofConsoleLoggerChannel,std::ptr_fun(noopDeleter)));
 }
-
-#ifdef TARGET_WIN32
-void ofLogToDebugView() {
-	ofLog::setChannel(shared_ptr<ofDebugViewLoggerChannel>(new ofDebugViewLoggerChannel, std::ptr_fun(noopDeleter)));
-}
-#endif
 
 //--------------------------------------------------
 ofLog::ofLog(){
@@ -101,7 +71,7 @@ ofLog::ofLog(ofLogLevel level, const char* format, ...){
 	if(checkLog(level,"")){
 		va_list args;
 		va_start( args, format );
-		channel()->log(level,"",format,args);
+		channel->log(level,"",format,args);
 		va_end( args );
 	}
 	bPrinted = true;
@@ -111,10 +81,10 @@ ofLog::ofLog(ofLogLevel level, const char* format, ...){
 void ofLog::setAutoSpace(bool autoSpace){
 	bAutoSpace = autoSpace;
 	if(bAutoSpace){
-		ofLog::getPadding() = " ";
+		padding = " ";
 	}
 	else{
-		ofLog::getPadding() = "";
+		padding = "";
 	}
 }
 
@@ -138,7 +108,7 @@ bool ofLog::checkLog(ofLogLevel level, const string & module){
 //-------------------------------------------------------
 void ofLog::_log(ofLogLevel level, const string & module, const string & message){
 	if(checkLog(level,module)){
-		channel()->log(level,module, message);
+		channel->log(level,module, message);
 	}
 }
 
@@ -158,7 +128,7 @@ ofLogVerbose::ofLogVerbose(const string & module, const char* format, ...){
 	if(checkLog(OF_LOG_VERBOSE, module)){
 		va_list args;
 		va_start(args, format);
-		channel()->log(OF_LOG_VERBOSE, module, format, args);
+		channel->log(OF_LOG_VERBOSE, module, format, args);
 		va_end(args);
 	}
 	bPrinted = true;
@@ -180,7 +150,7 @@ ofLogNotice::ofLogNotice(const string & module, const char* format, ...){
 	if(checkLog(OF_LOG_NOTICE, module)){
 		va_list args;
 		va_start(args, format);
-		channel()->log(OF_LOG_NOTICE, module, format, args);
+		channel->log(OF_LOG_NOTICE, module, format, args);
 		va_end(args);
 	}
 	bPrinted = true;
@@ -202,7 +172,7 @@ ofLogWarning::ofLogWarning(const string & module, const char* format, ...){
 	if(checkLog(OF_LOG_WARNING, module)){
 		va_list args;
 		va_start(args, format);
-		channel()->log(OF_LOG_WARNING, module, format, args);
+		channel->log(OF_LOG_WARNING, module, format, args);
 		va_end(args);
 	}
 	bPrinted = true;
@@ -224,7 +194,7 @@ ofLogError::ofLogError(const string & module, const char* format, ...){
 	if(checkLog(OF_LOG_ERROR, module)){
 		va_list args;
 		va_start(args, format);
-		channel()->log(OF_LOG_ERROR, module, format, args);
+		channel->log(OF_LOG_ERROR, module, format, args);
 		va_end(args);
 	}
 	bPrinted = true;
@@ -246,7 +216,7 @@ ofLogFatalError::ofLogFatalError(const string & module, const char* format, ...)
 	if(checkLog(OF_LOG_FATAL_ERROR, module)){
 		va_list args;
 		va_start(args, format);
-		channel()->log(OF_LOG_FATAL_ERROR, module, format, args);
+		channel->log(OF_LOG_FATAL_ERROR, module, format, args);
 		va_end(args);
 	}
 	bPrinted = true;
@@ -254,19 +224,11 @@ ofLogFatalError::ofLogFatalError(const string & module, const char* format, ...)
 
 //--------------------------------------------------
 void ofLog::setChannel(shared_ptr<ofBaseLoggerChannel> _channel){
-	channel() = _channel;
+	channel = _channel;
 }
 
 void ofSetLoggerChannel(shared_ptr<ofBaseLoggerChannel> loggerChannel){
 	ofLog::setChannel(loggerChannel);
-}
-
-shared_ptr<ofBaseLoggerChannel> ofLog::getChannel(){
-	return channel();
-}
-
-shared_ptr<ofBaseLoggerChannel> ofGetLoggerChannel(){
-	return ofLog::getChannel();
 }
 
 string ofGetLogLevelName(ofLogLevel level, bool pad){
@@ -319,46 +281,11 @@ void ofConsoleLoggerChannel::log(ofLogLevel level, const string & module, const 
 	fprintf(out, "\n");
 }
 
-
-#ifdef TARGET_WIN32
-#include <array>
-void ofDebugViewLoggerChannel::log(ofLogLevel level, const string & module, const string & message) {
-	// print to cerr for OF_LOG_ERROR and OF_LOG_FATAL_ERROR, everything else to cout 
-	stringstream out;
-	out << "[" << ofGetLogLevelName(level, true) << "] ";
-	// only print the module name if it's not ""
-	if (module != "") {
-		out << module << ": ";
-	}
-	out << message << endl;
-	OutputDebugStringA(out.str().c_str());
-}
-
-void ofDebugViewLoggerChannel::log(ofLogLevel level, const string & module, const char* format, ...) {
-	va_list args;
-	va_start(args, format);
-	log(level, module, format, args);
-	va_end(args);
-
-}
-
-void ofDebugViewLoggerChannel::log(ofLogLevel level, const string & module, const char* format, va_list args) {
-	std::string buffer;;
-	buffer =  "[" + ofGetLogLevelName(level, true) + "] ";
-	if (module != "") {
-		buffer += module + ": ";
-	}
-	buffer += ofVAArgsToString(format, args);
-	buffer += "\n";
-	OutputDebugStringA(buffer.c_str());
-}
-#endif
-
 //--------------------------------------------------
 ofFileLoggerChannel::ofFileLoggerChannel(){
 }
 
-ofFileLoggerChannel::ofFileLoggerChannel(const std::filesystem::path & path, bool append){
+ofFileLoggerChannel::ofFileLoggerChannel(const string & path, bool append){
 	setFile(path,append);
 }
 
@@ -370,7 +297,7 @@ void ofFileLoggerChannel::close(){
 	file.close();
 }
 
-void ofFileLoggerChannel::setFile(const std::filesystem::path & path,bool append){
+void ofFileLoggerChannel::setFile(const string & path,bool append){
 	file.open(path,append?ofFile::Append:ofFile::WriteOnly);
 	file << endl;
 	file << endl;

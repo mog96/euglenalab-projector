@@ -4,10 +4,6 @@
 //
 
 #include "ofxAssimpAnimation.h"
-#include "ofAppRunner.h"
-#include "ofMath.h"
-
-using namespace std;
 
 ofxAssimpAnimation::ofxAssimpAnimation(shared_ptr<const aiScene> scene, aiAnimation * animation) {
     this->scene = scene;

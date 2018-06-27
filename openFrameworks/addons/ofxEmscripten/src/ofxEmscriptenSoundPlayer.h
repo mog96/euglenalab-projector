@@ -1,7 +1,6 @@
 #pragma once
 
-#include "ofSoundBaseTypes.h"
-#include "ofConstants.h"
+#include "ofBaseSoundPlayer.h"
 
 class ofxEmscriptenSoundPlayer: public ofBaseSoundPlayer {
 public:
@@ -9,7 +8,7 @@ public:
 	~ofxEmscriptenSoundPlayer();
 
 
-	bool load(const std::filesystem::path& fileName, bool stream = false);
+	bool load(string fileName, bool stream = false);
 	void unload();
 	void play();
 	void stop();
@@ -37,7 +36,7 @@ public:
 
 private:
 	void setPositionSecs(double s);
-	static std::vector<float> systemSpectrum;
+	static vector<float> systemSpectrum;
 	int context;
 	int sound;
 	bool multiplay;

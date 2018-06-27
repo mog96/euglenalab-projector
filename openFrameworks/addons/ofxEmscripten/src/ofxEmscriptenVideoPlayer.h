@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include "ofVideoBaseTypes.h"
+#include "ofBaseTypes.h"
 #include "ofTexture.h"
 #include "ofPixels.h"
 
@@ -16,7 +16,7 @@ public:
 	~ofxEmscriptenVideoPlayer();
 
 	//needs implementing
-	bool				load(std::string name);
+	bool				load(string name);
 	void				close();
 	void				update();
 

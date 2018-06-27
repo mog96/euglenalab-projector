@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include "ofVideoBaseTypes.h"
+#include "ofBaseTypes.h"
 #include "ofTexture.h"
 #include "ofPixels.h"
 
@@ -15,7 +15,7 @@ public:
 	ofxEmscriptenVideoGrabber();
 	~ofxEmscriptenVideoGrabber();
 
-	std::vector<ofVideoDevice>	listDevices() const;
+	vector<ofVideoDevice>	listDevices() const;
 	bool	setup(int w, int h);
 	bool	isInitialized() const;
 	void	update();

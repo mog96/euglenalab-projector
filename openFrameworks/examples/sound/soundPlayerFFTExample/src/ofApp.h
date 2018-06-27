@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 
-
 class ofApp : public ofBaseApp{
 
 	public:
@@ -28,15 +27,11 @@ class ofApp : public ofBaseApp{
 		ofSoundPlayer		dog;
 		ofSoundPlayer		rooster;
 
+		float 				* fftSmoothed;
+		// we will draw a rectangle, bouncing off the wall:
+		float 				px, py, vx, vy;
 
-		// we will bounce a circle using these variables:
-		float px = 300;
-		float py = 300;
-		float vx = 0;
-		float vy = 0;
+		int nBandsToGet;
 		float prevx, prevy;
-
-		static constexpr size_t nBandsToGet = 128;
-		std::array<float, nBandsToGet> fftSmoothed{{0}};
 };
 

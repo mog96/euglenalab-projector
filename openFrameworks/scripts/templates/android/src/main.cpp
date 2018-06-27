@@ -13,14 +13,12 @@ int main(){
 
 
 #ifdef TARGET_ANDROID
-void ofAndroidApplicationInit()
-{
-    //application scope init
-}
+#include <jni.h>
 
-void ofAndroidActivityInit()
-{
-    //activity scope init
-    main();
+//========================================================================
+extern "C"{
+	void Java_cc_openframeworks_OFAndroid_init( JNIEnv*  env, jobject  thiz ){
+		main();
+	}
 }
 #endif

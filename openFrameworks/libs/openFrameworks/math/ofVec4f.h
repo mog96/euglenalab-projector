@@ -2,11 +2,7 @@
 
 class ofVec2f;
 class ofVec3f;
-
 #include "ofConstants.h"
-#include <cmath>
-#include "glm/vec4.hpp"
-#include "glm/fwd.hpp"
 
 class ofVec4f {
 public:
@@ -28,10 +24,6 @@ public:
 	ofVec4f( float _x, float _y, float _z, float _w );
 	ofVec4f( const ofVec2f& vec);
 	ofVec4f( const ofVec3f& vec);
-	ofVec4f( const glm::vec2& vec);
-	ofVec4f( const glm::vec3& vec);
-	ofVec4f( const glm::vec4& vec);
-	operator glm::vec4() const;
 
     /// \}
 
@@ -98,8 +90,8 @@ public:
     ofVec4f& operator/=( const float f );
 	    
 	/// \cond INTERNAL
-	friend std::ostream& operator<<(std::ostream& os, const ofVec4f& vec);
-	friend std::istream& operator>>(std::istream& is, const ofVec4f& vec);
+	friend ostream& operator<<(ostream& os, const ofVec4f& vec);
+	friend istream& operator>>(istream& is, const ofVec4f& vec);
 	/// \endcond
 
     /// \}
@@ -303,10 +295,6 @@ inline ofVec4f::ofVec4f( float _x,
 						float _z,
 						float _w ):x(_x), y(_y), z(_z), w(_w) {}
 
-
-inline ofVec4f::operator glm::vec4() const{
-	return glm::vec4(x,y,z,w);
-}
 // Getters and Setters.
 //
 //
@@ -465,12 +453,12 @@ inline ofVec4f& ofVec4f::operator/=( const float f ) {
 }
 
 
-inline std::ostream& operator<<(std::ostream& os, const ofVec4f& vec) {
+inline ostream& operator<<(ostream& os, const ofVec4f& vec) {
 	os << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w;
 	return os;
 }
 
-inline std::istream& operator>>(std::istream& is, ofVec4f& vec) {
+inline istream& operator>>(istream& is, ofVec4f& vec) {
 	is >> vec.x;
 	is.ignore(2);
 	is >> vec.y;

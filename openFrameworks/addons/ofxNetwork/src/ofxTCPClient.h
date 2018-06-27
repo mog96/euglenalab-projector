@@ -2,7 +2,6 @@
 
 #include "ofConstants.h"
 #include "ofxTCPManager.h"
-#include "ofxTCPSettings.h"
 #include "ofFileUtils.h"
 #include "ofTypes.h"
 
@@ -22,9 +21,8 @@ class ofxTCPClient{
 		void threadedFunction();
 
 		void setVerbose(bool _verbose);
-		bool setup(std::string ip, int _port, bool blocking = false);
-		bool setup(const ofxTCPSettings & settings);
-		void setMessageDelimiter(std::string delim);
+		bool setup(string ip, int _port, bool blocking = false);
+		void setMessageDelimiter(string delim);
 		bool close();
 
 	
@@ -32,10 +30,10 @@ class ofxTCPClient{
 		//is added to the end of the string which is
 		//used to indicate the end of the message to
 		//the receiver see: STR_END_MSG (ofxTCPClient.h)
-		bool send(std::string message);
+		bool send(string message);
 
 		//send data as a string without the end message
-		bool sendRaw(std::string message);
+		bool sendRaw(string message);
 
 		//same as send for binary messages
 		bool sendRawMsg(const char * msg, int size);
@@ -58,11 +56,11 @@ class ofxTCPClient{
 		//eg: if you want to send "Hello World" from other
 		//software and want to receive it as a string
 		//sender should send "Hello World[/TCP]"
-		std::string receive();
+		string receive();
 
 		//no terminating string you will need to be sure
 		//you are receiving all the data by using a loop
-		std::string receiveRaw();
+		string receiveRaw();
 
 		//pass in buffer to be filled - make sure the buffer
 		//is at least as big as numBytes
@@ -80,7 +78,7 @@ class ofxTCPClient{
 
 		bool isConnected();
 		int getPort();
-		std::string getIP();
+		string getIP();
 
 
 
@@ -102,9 +100,9 @@ private:
 		char			tmpBuff[TCP_MAX_MSG_SIZE+1];
 		ofBuffer 		tmpBuffReceive;
 		ofBuffer 		tmpBuffSend;
-		std::string		str, tmpStr, ipAddr;
+		string			str, tmpStr, ipAddr;
 		int				index, messageSize, port;
 		bool			connected;
-		std::string 	partialPrevMsg;
-		std::string		messageDelimiter;
+		string 			partialPrevMsg;
+		string			messageDelimiter;
 };

@@ -38,7 +38,7 @@ void Circle::draw(){
 
 void Circle::clear() {
     if(bRegisteredEvents) {
-        ofUnregisterMouseEvents(this); // disable listening to mouse events.
+        ofUnregisterMouseEvents(this); // disable litening to mous events.
         bRegisteredEvents = false;
     }
 }

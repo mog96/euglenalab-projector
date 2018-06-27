@@ -1,7 +1,7 @@
 #include "ofQuickTimePlayer.h"
 #include "ofUtils.h"
 
-#if !defined(TARGET_LINUX) && (!defined(MAC_OS_X_VERSION_10_12) || MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_12)
+#ifndef TARGET_LINUX
 #ifdef  OF_VIDEO_PLAYER_QUICKTIME
 
 bool  	createMovieFromPath(char * path, Movie &movie);

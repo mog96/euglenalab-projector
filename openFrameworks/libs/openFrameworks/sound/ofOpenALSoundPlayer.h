@@ -3,32 +3,24 @@
 #include "ofConstants.h"
 
 #ifdef OF_SOUND_PLAYER_OPENAL
-#include "ofSoundBaseTypes.h"
+#include "ofBaseSoundPlayer.h"
+#include "ofEvents.h"
 #include "ofThread.h"
 
-
-
-typedef unsigned int ALuint;
-/** Opaque device handle */
-typedef struct ALCdevice_struct ALCdevice;
-/** Opaque context handle */
-typedef struct ALCcontext_struct ALCcontext;
-
-
+#if defined (TARGET_OF_IOS) || defined (TARGET_OSX)
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
+#else
+#include <AL/al.h>
+#include <AL/alc.h>
+#endif
 
 #include "kiss_fft.h"
 #include "kiss_fftr.h"
-
-
-
-typedef	struct SNDFILE_tag	SNDFILE ;
-
-
+#include <sndfile.h>
 #ifdef OF_USING_MPG123
-	typedef struct mpg123_handle_struct mpg123_handle;
+	#include <mpg123.h>
 #endif
-
-class ofEventArgs;
 
 //		TO DO :
 //		---------------------------
@@ -58,7 +50,7 @@ class ofOpenALSoundPlayer : public ofBaseSoundPlayer, public ofThread {
 		ofOpenALSoundPlayer();
 		virtual ~ofOpenALSoundPlayer();
 
-        bool load(const std::filesystem::path& fileName, bool stream = false);
+		bool load(string fileName, bool stream = false);
 		void unload();
 		void play();
 		void stop();
@@ -99,18 +91,18 @@ class ofOpenALSoundPlayer : public ofBaseSoundPlayer, public ofThread {
 		float * getCurrentBufferSum(int size);
 
 		static void createWindow(int size);
-		static void runWindow(std::vector<float> & signal);
+		static void runWindow(vector<float> & signal);
 		static void initSystemFFT(int bands);
 
-        bool sfReadFile(const std::filesystem::path& path,std::vector<short> & buffer,std::vector<float> & fftAuxBuffer);
-        bool sfStream(const std::filesystem::path& path,std::vector<short> & buffer,std::vector<float> & fftAuxBuffer);
+		bool sfReadFile(string path,vector<short> & buffer,vector<float> & fftAuxBuffer);
+		bool sfStream(string path,vector<short> & buffer,vector<float> & fftAuxBuffer);
 #ifdef OF_USING_MPG123
-        bool mpg123ReadFile(const std::filesystem::path& path,std::vector<short> & buffer,std::vector<float> & fftAuxBuffer);
-        bool mpg123Stream(const std::filesystem::path& path,std::vector<short> & buffer,std::vector<float> & fftAuxBuffer);
+		bool mpg123ReadFile(string path,vector<short> & buffer,vector<float> & fftAuxBuffer);
+		bool mpg123Stream(string path,vector<short> & buffer,vector<float> & fftAuxBuffer);
 #endif
 
-        bool readFile(const std::filesystem::path& fileName,std::vector<short> & buffer);
-        bool stream(const std::filesystem::path& fileName, std::vector<short> & buffer);
+		bool readFile(string fileName,vector<short> & buffer);
+		bool stream(string fileName, vector<short> & buffer);
 
 		bool isStreaming;
 		bool bMultiPlay;
@@ -125,27 +117,27 @@ class ofOpenALSoundPlayer : public ofBaseSoundPlayer, public ofThread {
 
 		static ALCdevice * alDevice;
 		static ALCcontext * alContext;
-		static std::vector<float> window;
+		static vector<float> window;
 		static float windowSum;
 
 		int channels;
 		float duration; //in secs
 		int samplerate;
-		std::vector<ALuint> buffers;
-		std::vector<ALuint> sources;
+		vector<ALuint> buffers;
+		vector<ALuint> sources;
 
 		// fft structures
-		std::vector<std::vector<float> > fftBuffers;
+		vector<vector<float> > fftBuffers;
 		kiss_fftr_cfg fftCfg;
-		std::vector<float> windowedSignal;
-		std::vector<float> bins;
-		std::vector<kiss_fft_cpx> cx_out;
+		vector<float> windowedSignal;
+		vector<float> bins;
+		vector<kiss_fft_cpx> cx_out;
 
 
 		static kiss_fftr_cfg systemFftCfg;
-		static std::vector<float> systemWindowedSignal;
-		static std::vector<float> systemBins;
-		static std::vector<kiss_fft_cpx> systemCx_out;
+		static vector<float> systemWindowedSignal;
+		static vector<float> systemBins;
+		static vector<kiss_fft_cpx> systemCx_out;
 
 		SNDFILE* streamf;
 		size_t stream_samples_read;
@@ -156,8 +148,8 @@ class ofOpenALSoundPlayer : public ofBaseSoundPlayer, public ofThread {
 		int mp3_buffer_size;
 		int stream_subformat;
 		double stream_scale;
-		std::vector<short> buffer;
-		std::vector<float> fftAuxBuffer;
+		vector<short> buffer;
+		vector<float> fftAuxBuffer;
 
 		bool stream_end;
 };

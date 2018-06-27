@@ -1,9 +1,8 @@
-#if !defined(MAC_OS_X_VERSION_10_12) || MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_12
 #ifdef OF_VIDEO_PLAYER_QTKIT
 
 #include "ofQTKitPlayer.h"
 
-using namespace std;
+#include "Poco/String.h"
 
 //--------------------------------------------------------------------
 ofQTKitPlayer::ofQTKitPlayer() {
@@ -14,14 +13,14 @@ ofQTKitPlayer::ofQTKitPlayer() {
     speed = 1.0f;
 	// default this to true so the player update behavior matches ofQuicktimePlayer
 	bSynchronousSeek = true;
-
+    
     pixelFormat = OF_PIXELS_RGB;
     currentLoopState = OF_LOOP_NORMAL;
 }
 
 //--------------------------------------------------------------------
 ofQTKitPlayer::~ofQTKitPlayer() {
-	close();
+	close();	
 }
 
 //--------------------------------------------------------------------
@@ -35,9 +34,9 @@ bool ofQTKitPlayer::load(string movieFilePath, ofQTKitDecodeMode mode) {
 		ofLogError("ofQTKitPlayer") << "loadMovie(): unknown ofQTKitDecodeMode mode";
 		return false;
 	}
-
+	
 	if(isLoaded()){
-		close(); //auto released
+		close(); //auto released 
 	}
 
 	BOOL success = NO;
@@ -49,9 +48,9 @@ bool ofQTKitPlayer::load(string movieFilePath, ofQTKitDecodeMode mode) {
 
 		bool isURL = false;
 
-		if (movieFilePath.substr(0,7) == "http://" ||
-			movieFilePath.substr(0,8) == "https://" ||
-			movieFilePath.substr(0,7) == "rtsp://") {
+		if (Poco::icompare(movieFilePath.substr(0,7), "http://")  == 0 ||
+			Poco::icompare(movieFilePath.substr(0,8), "https://") == 0 ||
+			Poco::icompare(movieFilePath.substr(0,7), "rtsp://")  == 0) {
 			isURL = true;
 		}
 		else {
@@ -97,14 +96,14 @@ bool ofQTKitPlayer::isLoaded() const {
 
 //--------------------------------------------------------------------
 void ofQTKitPlayer::close() {
-
+	
 	if(isLoaded()){
 		@autoreleasepool {
 			[moviePlayer release];
 			moviePlayer = NULL;
 		}
 	}
-
+	
 	pixels.clear();
 	duration = 0;
 }
@@ -138,7 +137,7 @@ void ofQTKitPlayer::stop() {
 bool ofQTKitPlayer::isPlaying() const {
     if(!isLoaded()) return false;
 
-	return !moviePlayer.isFinished && !isPaused();
+	return !moviePlayer.isFinished && !isPaused(); 
 }
 
 //--------------------------------------------------------------------
@@ -225,7 +224,7 @@ void ofQTKitPlayer::draw(float x, float y) {
 //--------------------------------------------------------------------
 void ofQTKitPlayer::draw(float x, float y, float w, float h) {
 	updateTexture();
-	tex.draw(x,y,w,h);
+	tex.draw(x,y,w,h);	
 }
 
 //--------------------------------------------------------------------
@@ -283,7 +282,7 @@ void ofQTKitPlayer::setVolume(float volume) {
 //--------------------------------------------------------------------
 void ofQTKitPlayer::setBalance(float balance) {
 	if(!isLoaded()) return;
-
+	
 	@autoreleasepool {
 		[moviePlayer setBalance:balance];
 	}
@@ -339,9 +338,9 @@ void ofQTKitPlayer::setLoopState(ofLoopType state) {
 //--------------------------------------------------------------------
 ofLoopType ofQTKitPlayer::getLoopState() const {
 	if(!isLoaded()) return OF_LOOP_NONE;
-
+	
 	ofLoopType state = OF_LOOP_NONE;
-
+	
     if(![moviePlayer loops] && ![moviePlayer palindrome]){
 		state = OF_LOOP_NONE;
 	}
@@ -354,7 +353,7 @@ ofLoopType ofQTKitPlayer::getLoopState() const {
 	else{
 		ofLogError("ofQTKitPlayer") << "unknown loop state";
 	}
-
+	
 	return state;
 }
 
@@ -398,8 +397,7 @@ float ofQTKitPlayer::getHeight() const {
 //--------------------------------------------------------------------
 bool ofQTKitPlayer::setPixelFormat(ofPixelFormat newPixelFormat){
     if(newPixelFormat != OF_PIXELS_RGB && newPixelFormat != OF_PIXELS_RGBA) {
-        ofLogWarning("ofQTKitPlayer") << "setPixelFormat(): pixel format "
-			<< ofToString(newPixelFormat) << " is not supported";
+        ofLogWarning("ofQTKitPlayer") << "setPixelFormat(): pixel format " << newPixelFormat << " is not supported";
         return false;
     }
 
@@ -410,7 +408,7 @@ bool ofQTKitPlayer::setPixelFormat(ofPixelFormat newPixelFormat){
         if(isLoaded()){
             load(moviePath, decodeMode);
         }
-    }
+    }	
 	return true;
 }
 
@@ -449,9 +447,9 @@ void ofQTKitPlayer::reallocatePixels(){
 //--------------------------------------------------------------------
 void ofQTKitPlayer::updateTexture(){
 	if(moviePlayer.textureAllocated){
-
-		tex.setUseExternalTextureID(moviePlayer.textureID);
-
+	   		
+		tex.setUseExternalTextureID(moviePlayer.textureID); 
+		
 		ofTextureData& data = tex.getTextureData();
 		data.textureTarget = moviePlayer.textureTarget;
 		data.width = getWidth();
@@ -463,5 +461,4 @@ void ofQTKitPlayer::updateTexture(){
 	}
 }
 
-#endif
 #endif

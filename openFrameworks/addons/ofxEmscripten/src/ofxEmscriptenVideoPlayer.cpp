@@ -8,8 +8,6 @@
 #include "ofxEmscriptenVideoPlayer.h"
 #include "html5video.h"
 
-using namespace std;
-
 enum ReadyState{
 	HAVE_NOTHING = 0,
 	HAVE_METADATA,

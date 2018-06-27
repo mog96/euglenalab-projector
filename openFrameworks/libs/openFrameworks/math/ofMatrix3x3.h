@@ -6,7 +6,6 @@
 #pragma once
 
 #include "ofConstants.h"
-#include <glm/mat3x3.hpp>
 
 
 /// \brief A 3x3 Matrix
@@ -41,15 +40,7 @@ public:
 	ofMatrix3x3( float _a=0.0, float _b=0.0, float _c=0.0,
 				float _d=0.0, float _e=0.0, float _f=0.0,
 				float _g=0.0, float _h=0.0, float _i=0.0 );
-
-
-	ofMatrix3x3( const glm::mat3 & mat) {
-		*this = reinterpret_cast<const ofMatrix3x3&>(mat);
-	}
-
-	operator glm::mat3() const{
-		return *reinterpret_cast<const glm::mat3*>(this);
-	}
+	
 	
 	/// \}
 	
@@ -153,8 +144,8 @@ public:
 	
 	void operator/=(float scalar);
 	
-	friend std::ostream& operator<<(std::ostream& os, const ofMatrix3x3& M);
-	friend std::istream& operator>>(std::istream& is, ofMatrix3x3& M);
+	friend ostream& operator<<(ostream& os, const ofMatrix3x3& M);
+	friend istream& operator>>(istream& is, ofMatrix3x3& M);
 	
 	/// \}
 };

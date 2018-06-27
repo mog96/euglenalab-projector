@@ -19,8 +19,8 @@ class ofxCvContourFinder : public ofBaseDraws {
 
   public:
   
-    std::vector<ofxCvBlob>  blobs;
-    int nBlobs;    // DEPRECATED: use blobs.size() instead
+    vector<ofxCvBlob>  blobs;
+    int                nBlobs;    // DEPRECATED: use blobs.size() instead
       
 
     ofxCvContourFinder();
@@ -57,7 +57,7 @@ class ofxCvContourFinder : public ofBaseDraws {
     CvMemStorage*           contour_storage;
     CvMemStorage*           storage;
     CvMoments*              myMoments;
-    std::vector<CvSeq*>     cvSeqBlobs;  //these will become blobs
+    vector<CvSeq*>          cvSeqBlobs;  //these will become blobs
     
     ofPoint  anchor;
     bool  bAnchorIsPct;      

@@ -5,15 +5,13 @@ void ofApp::setup(){
     camWidth = 320;  // try to grab at this size.
     camHeight = 240;
 
-    //get back a list of devices.
+    //we can now get back a list of devices.
     vector<ofVideoDevice> devices = vidGrabber.listDevices();
 
-    for(size_t i = 0; i < devices.size(); i++){
+    for(int i = 0; i < devices.size(); i++){
         if(devices[i].bAvailable){
-            //log the device
             ofLogNotice() << devices[i].id << ": " << devices[i].deviceName;
         }else{
-            //log the device and note it as unavailable
             ofLogNotice() << devices[i].id << ": " << devices[i].deviceName << " - unavailable ";
         }
     }
@@ -35,11 +33,9 @@ void ofApp::update(){
 
     if(vidGrabber.isFrameNew()){
         ofPixels & pixels = vidGrabber.getPixels();
-        for(size_t i = 0; i < pixels.size(); i++){
-            //invert the color of the pixel
+        for(int i = 0; i < pixels.size(); i++){
             videoInverted[i] = 255 - pixels[i];
         }
-        //load the inverted pixels
         videoTexture.loadData(videoInverted);
     }
 }

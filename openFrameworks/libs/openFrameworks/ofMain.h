@@ -1,5 +1,4 @@
-#ifndef OF_MAIN_H
-#define OF_MAIN_H
+#pragma once
 
 //--------------------------
 // utils
@@ -7,27 +6,24 @@
 #include "ofFileUtils.h"
 #include "ofLog.h"
 #include "ofSystemUtils.h"
-
 #include "ofURLFileLoader.h"
-
 #include "ofUtils.h"
-
 #if !defined(TARGET_EMSCRIPTEN)
 #include "ofThread.h"
 #include "ofThreadChannel.h"
 #endif
-
 #include "ofFpsCounter.h"
-#include "ofJson.h"
-#include "ofXml.h"
 
 //--------------------------
 // types
-#include "ofGraphicsBaseTypes.h"
+#include "ofBaseTypes.h"
 #include "ofTypes.h"
 #include "ofColor.h"
 #include "ofPoint.h"
 #include "ofRectangle.h"
+#if !defined(TARGET_EMSCRIPTEN)
+#include "ofXml.h"
+#endif
 #include "ofParameter.h"
 #include "ofParameterGroup.h"
 
@@ -54,10 +50,10 @@
 #include "ofTexture.h"
 #include "ofVbo.h"
 #include "ofVboMesh.h"
-// #include "ofGLProgrammableRenderer.h"
-// #ifndef TARGET_PROGRAMMABLE_GL
-// 	#include "ofGLRenderer.h"
-// #endif
+#include "ofGLProgrammableRenderer.h"
+#ifndef TARGET_PROGRAMMABLE_GL
+	#include "ofGLRenderer.h"
+#endif
 
 //--------------------------
 // graphics
@@ -80,7 +76,7 @@
 #include "ofAppBaseWindow.h"
 #include "ofWindowSettings.h"
 #include "ofMainLoop.h"
-#if !defined( TARGET_OF_IOS ) & !defined(TARGET_ANDROID) & !defined(TARGET_EMSCRIPTEN) & !defined(TARGET_RASPBERRY_PI)
+#if !defined( TARGET_OF_IOS ) & !defined(TARGET_ANDROID) & !defined(TARGET_EMSCRIPTEN)
 	#include "ofAppGLFWWindow.h"
 	#if !defined( TARGET_LINUX_ARM )
 		#include "ofAppGlutWindow.h"
@@ -112,7 +108,3 @@
 #include "ofMesh.h"
 #include "ofNode.h"
 
-//--------------------------
-using namespace std;
-
-#endif

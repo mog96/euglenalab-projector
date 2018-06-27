@@ -7,23 +7,22 @@
 
 #pragma once
 
-#include "ofConstants.h"
-#include "ofTexture.h"
+#include "ofMain.h"
 
 class ofxAssimpTexture {
 
 public:
     
     ofxAssimpTexture();
-	ofxAssimpTexture(ofTexture texture, std::string texturePath);
+    ofxAssimpTexture(ofTexture texture, string texturePath);
 
     ofTexture & getTextureRef();
-	std::string getTexturePath();
+    string getTexturePath();
     bool hasTexture();
     
 private:
     
     ofTexture texture;
-	std::string texturePath;
+    string texturePath;
     
 };

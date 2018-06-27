@@ -16,12 +16,8 @@
 #include "ofGLRenderer.h"
 #include "ofGLProgrammableRenderer.h"
 #include "ofTrueTypeFont.h"
-
 #include "ofURLFileLoader.h"
-
 #include "ofMainLoop.h"
-
-using namespace std;
 
 #if !defined( TARGET_OF_IOS ) & !defined(TARGET_ANDROID) & !defined(TARGET_EMSCRIPTEN) & !defined(TARGET_RASPBERRY_PI)
 	#include "ofAppGLFWWindow.h"
@@ -31,15 +27,12 @@ using namespace std;
 	void ofSetupOpenGL(shared_ptr<ofAppGLFWWindow> windowPtr, int w, int h, ofWindowMode screenMode){
 		ofInit();
 		auto settings = windowPtr->getSettings();
-		settings.setSize(w,h);
+		settings.width = w;
+		settings.height = h;
 		settings.windowMode = screenMode;
 		ofGetMainLoop()->addWindow(windowPtr);
 		windowPtr->setup(settings);
 	}
-#endif
-
-#ifdef TARGET_LINUX
-#include "ofGstUtils.h"
 #endif
 
 // adding this for vc2010 compile: error C3861: 'closeQuicktime': identifier not found
@@ -63,16 +56,6 @@ namespace{
         static bool * initialized = new bool(false);
         return *initialized;
     }
-
-	bool & exiting(){
-		static bool * exiting = new bool(false);
-		return *exiting;
-	}
-
-	ofCoreEvents & noopEvents(){
-		static auto * noopEvents = new ofCoreEvents();
-		return *noopEvents;
-	}
 
     #if defined(TARGET_LINUX) || defined(TARGET_OSX)
         #include <signal.h>
@@ -107,7 +90,6 @@ void ofURLFileLoaderShutdown();
 void ofInit(){
 	if(initialized()) return;
 	initialized() = true;
-	exiting() = false;
 
 #if defined(TARGET_ANDROID) || defined(TARGET_OF_IOS)
     // manage own exit
@@ -143,7 +125,7 @@ void ofInit(){
 #ifdef TARGET_LINUX
 	if(std::locale().name() == "C"){
 		try{
-            std::locale::global(std::locale("C.UTF-8"));
+			std::locale::global(std::locale("C.UTF-8"));
 		}catch(...){
 			if(ofToLower(std::locale("").name()).find("utf-8")==std::string::npos){
 				ofLogWarning("ofInit") << "Couldn't set UTF-8 locale, string manipulation functions\n"
@@ -153,11 +135,6 @@ void ofInit(){
 			}
 		}
 	}
-#endif
-
-#if defined(TARGET_WIN32) && !_MSC_VER //MSYS2 UTF-8 limited support
-    setlocale(LC_ALL,"");
-    ofLogWarning("ofInit") << "MSYS2 has limited support for UTF-8. using "<< string( setlocale(LC_ALL,NULL) );
 #endif
 }
 
@@ -173,8 +150,14 @@ void ofSetMainLoop(shared_ptr<ofMainLoop> newMainLoop) {
 
 //--------------------------------------
 int ofRunApp(ofBaseApp * OFSA){
-	mainLoop()->run(std::move(shared_ptr<ofBaseApp>(OFSA)));
+	return ofRunApp(shared_ptr<ofBaseApp>(OFSA));
+}
+
+//--------------------------------------
+int ofRunApp(shared_ptr<ofBaseApp> app){
+	mainLoop()->run(app);
 	auto ret = ofRunMainLoop();
+	app.reset();
 #if !defined(TARGET_ANDROID) && !defined(TARGET_OF_IOS)
 	ofExitCallback();
 #endif
@@ -182,18 +165,8 @@ int ofRunApp(ofBaseApp * OFSA){
 }
 
 //--------------------------------------
-int ofRunApp(shared_ptr<ofBaseApp> && app){
-	mainLoop()->run(std::move(app));
-	auto ret = ofRunMainLoop();
-#if !defined(TARGET_ANDROID) && !defined(TARGET_OF_IOS)
-	ofExitCallback();
-#endif
-	return ret;
-}
-
-//--------------------------------------
-void ofRunApp(shared_ptr<ofAppBaseWindow> window, shared_ptr<ofBaseApp> && app){
-	mainLoop()->run(window, std::move(app));
+void ofRunApp(shared_ptr<ofAppBaseWindow> window, shared_ptr<ofBaseApp> app){
+	mainLoop()->run(window,app);
 }
 
 int ofRunMainLoop(){
@@ -212,7 +185,8 @@ void ofSetupOpenGL(int w, int h, ofWindowMode screenMode){
 	settings.glVersionMinor = 1;
 #endif
 
-	settings.setSize(w, h);
+	settings.width = w;
+	settings.height = h;
 	settings.windowMode = screenMode;
 	ofCreateWindow(settings);
 }
@@ -238,7 +212,9 @@ void ofExitCallback(){
 
 
 	// finish every library and subsystem
-	ofURLFileLoaderShutdown();
+	#ifndef TARGET_EMSCRIPTEN
+		ofURLFileLoaderShutdown();
+	#endif
 
 	#ifndef TARGET_NO_SOUND
 		//------------------------
@@ -263,38 +239,22 @@ void ofExitCallback(){
 	#endif
 
 	//------------------------
-	// try to close gstreamer
-	#ifdef TARGET_LINUX
-		ofGstUtils::quitGstMainLoop();
-	#endif
-
-	//------------------------
 	// try to close font libraries
 	ofTrueTypeShutdown();
 
 	// static deinitialization happens after this finishes
 	// every object should have ended by now and won't receive any
 	// events
-	of::priv::endutils();
+
+        of::priv::endutils();
 
 	initialized() = false;
-	exiting() = true;
 }
 
 //--------------------------------------
 // core events instance & arguments
 ofCoreEvents & ofEvents(){
-	auto window = mainLoop()->getCurrentWindow();
-	if(window){
-		return window->events();
-	}else{
-		if(!exiting()){
-			ofLogError("ofEvents") << "Trying to call ofEvents() before a window has been setup";
-			ofLogError("ofEvents") << "We'll return a void events instance to avoid crashes but somethings might not work";
-			ofLogError("ofEvents") << "Set a breakpoint in " << __FILE__ << " line " << __LINE__ << " to check where is the wrong call";
-		}
-		return noopEvents();
-	}
+	return mainLoop()->events();
 }
 
 //--------------------------------------
@@ -318,8 +278,8 @@ ofAppBaseWindow * ofGetWindowPtr(){
 }
 
 //--------------------------------------
-std::shared_ptr<ofAppBaseWindow> ofGetCurrentWindow() {
-	return mainLoop()->getCurrentWindow();
+void ofSetAppPtr(shared_ptr<ofBaseApp> appPtr) {
+	//OFSAptr = appPtr;
 }
 
 //--------------------------------------
@@ -400,23 +360,13 @@ int ofGetWindowHeight(){
 }
 
 //--------------------------------------------------
-std::string ofGetClipboardString(){
-	return mainLoop()->getCurrentWindow()->getClipboardString();
-}
-
-//--------------------------------------------------
-void ofSetClipboardString(const std::string & str){
-	mainLoop()->getCurrentWindow()->setClipboardString(str);
-}
-
-//--------------------------------------------------
 bool ofDoesHWOrientation(){
 	return mainLoop()->getCurrentWindow()->doesHWOrientation();
 }
 
 //--------------------------------------------------
-glm::vec2 ofGetWindowSize() {
-	//this can't return glm::vec2(ofGetWidth(), ofGetHeight()) as width and height change based on orientation.
+ofPoint	ofGetWindowSize() {
+	//this can't be return ofPoint(ofGetWidth(), ofGetHeight()) as width and height change based on orientation.
 	return mainLoop()->getCurrentWindow()->getWindowSize();
 }
 

@@ -99,7 +99,7 @@ void ofApp::drawScene(bool isPreview){
 		ofNode().draw();
 		ofPopMatrix();
 		
-        ofMultMatrix(glm::inverse(headTrackedCamera.getProjectionMatrix()));
+		ofMultMatrix(headTrackedCamera.getProjectionMatrix().getInverse());
 		
 		ofNoFill();
 		ofDrawBox(2.0f);

@@ -13,8 +13,8 @@ void ofApp::setup(){
 	}
 #endif
 
-    image.load("img.jpg");
-    imageMask.load("img_mask.png");
+    image.loadImage("img.jpg");
+    imageMask.loadImage("img_mask.png");
 }
 
 //--------------------------------------------------------------
@@ -26,10 +26,10 @@ void ofApp::update(){
 void ofApp::draw(){
     
     // draw a white rectangle for background.
-    ofDrawRectangle(0, 0, image.getWidth(), image.getHeight());
+    ofRect(0, 0, image.getWidth(), image.getHeight());
     
     shader.begin();
-    shader.setUniformTexture("imageMask", imageMask.getTexture(), 1);
+    shader.setUniformTexture("imageMask", imageMask.getTextureReference(), 1);
 
     image.draw(0, 0);
     

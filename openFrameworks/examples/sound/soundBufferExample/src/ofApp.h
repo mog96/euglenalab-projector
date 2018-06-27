@@ -25,9 +25,9 @@ class ofApp : public ofBaseApp{
 	
 		double wavePhase;
 		double pulsePhase;
+		double sampleRate;
 	
-		std::mutex audioMutex;
-		ofSoundStream soundStream;
+		mutex audioMutex;
 		ofSoundBuffer lastBuffer;
 		ofPolyline waveform;
 		float rms;
