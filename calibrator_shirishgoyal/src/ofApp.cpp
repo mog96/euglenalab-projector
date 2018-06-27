@@ -192,7 +192,7 @@ void ofApp::setup(){
          // glLoadIdentity();
 
          // calibrationProjector.drawCandidateProjectorPattern(0,0, PROJECTOR_WIDTH, PROJECTOR_HEIGHT,
-     ofColor(255,255,255,255);
+     // ofColor(255,255,255,255);
 
      // for each connected client lets get the data being sent and lets print it to the screen
 //     ofLogNotice() << TCP.getLastID();
