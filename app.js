@@ -20,15 +20,15 @@ var lightValues = {
     projectorX: -1,
     projectorY: -1,
     projectorColor: 0,
-    projectorAlpha: 1
+    projectorShouldClear: 1
 };
 
-var projectorSet = function(projector, x, y, color, alpha) {
-    console.log('projector = {' + x + ', ' + y + ', ' + color + ', ' + alpha + '}');
+var projectorSet = function(projector, x, y, color, shouldClear) {
+    console.log('projector = {' + x + ', ' + y + ', ' + color + ', ' + shouldClear + '}');
 
-    if (projector != null && x != null && y != null && color != null && alpha != null) {
+    if (projector != null && x != null && y != null && color != null && shouldClear != null) {
         console.log('writing')
-        projector.write('{\"x\": ' + x + ', \"y\": ' + y + ', \"color\": ' + color + ', \"alpha\": ' + alpha + '}\n');
+        projector.write('{\"x\": ' + x + ', \"y\": ' + y + ', \"color\": ' + color + ', \"shouldClear\": ' + shouldClear + '}\n');
     }
 };
 
