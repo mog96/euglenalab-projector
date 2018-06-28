@@ -9,8 +9,9 @@ public:
     void draw();
     void update();
     void brake();
-    void accellerate();
+    void accelerate();
     void steer(float dir);
+	const ofNode & getNode() const;
     
 private:
     float acceleration;
