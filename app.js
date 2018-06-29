@@ -6,30 +6,30 @@ var app = {
 // MARK: - Projector Helper Functions
 
 var initializeProjector = function(callback) {
-    var net = require('net');
-    var client = new net.Socket();
-    client.connect(32001, 'localhost', function() {
-        callback(null, client);
-    });
-    client.on('error', function(err) {
-        callback(err, client);
-    });
+  var net = require('net');
+  var client = new net.Socket();
+  client.connect(32001, 'localhost', function() {
+    callback(null, client);
+  });
+  client.on('error', function(err) {
+    callback(err, client);
+  });
 };
 
 var lightValues = {
-    projectorX: -1,
-    projectorY: -1,
-    projectorColor: 0,
-    projectorShouldClear: 1
+  projectorX: -1,
+  projectorY: -1,
+  projectorColor: 0,
+  projectorShouldClear: 1
 };
 
 var projectorSet = function(projector, x, y, color, shouldClear) {
-    console.log('projector = {' + x + ', ' + y + ', ' + color + ', ' + shouldClear + '}');
+  console.log('projector = {' + x + ', ' + y + ', ' + color + ', ' + shouldClear + '}');
 
-    if (projector != null && x != null && y != null && color != null && shouldClear != null) {
-        console.log('writing')
-        projector.write('{\"x\": ' + x + ', \"y\": ' + y + ', \"color\": ' + color + ', \"shouldClear\": ' + shouldClear + '}\n');
-    }
+  if (projector != null && x != null && y != null && color != null && shouldClear != null) {
+    console.log('writing')
+    projector.write('{\"x\": ' + x + ', \"y\": ' + y + ', \"color\": ' + color + ', \"shouldClear\": ' + shouldClear + '}\n');
+  }
 };
 
 // MARK: - Run
@@ -39,20 +39,23 @@ var canvasHeight = 480;
 // Math.round(canvasHeight * 640 / width) // Set width
 // Math.round(canvasHeight * 480 / height) // Set height
 initializeProjector(function(err, projector) {
-    if (err) {
-        console.log("==== projector failed ====");
-        console.log(err);
-    } else {
-        console.log("projector initialized");
-        app.projector = projector;
-    }
+  if (err) {
+    console.log("==== projector failed ====");
+    console.log(err);
+  } else {
+    console.log("projector initialized");
+    app.projector = projector;
+    startDrawLoop();
+  }
 });
 
-while (true) {
+var startDrawLoop = function() {
+  while (true) {
     for (var i = 0; i < canvasHeight; i++) {
       projectorSet(app.projector, i, i, 1, 0);
     }
-}
+  }
+};
 
 // TODO: Figure out how to get these lines to run ^^
 
