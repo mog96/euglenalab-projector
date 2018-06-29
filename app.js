@@ -51,3 +51,4 @@ for (var i = 0; i < canvasHeight; i++) {
 }
 
 // TODO: Figure out how color should be formatted (i.e. experiment with it -- maybe hex string?)
+//       Appears that shirishgoyal set color to blue and only communicates light/no light ...
