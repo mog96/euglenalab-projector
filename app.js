@@ -52,7 +52,7 @@ initializeProjector(function(err, projector) {
 var startDrawLoop = function() {
   var i = 0;
   var runInt = setInterval(function() {
-    projectorSet(app.projector, i++, i++, 1, 1);
+    projectorSet(app.projector, i++, i++, 1, 0);
   }, 20);
 };
 
