@@ -49,7 +49,7 @@ class ofApp : public ofBaseApp{
     float rotY;
     float rotZ;
 
-    ofxTCPServer TCP;
+    ofxTCPServer tcpServer;
     ofxJSONElement response;
 
     vector <string> storeText;

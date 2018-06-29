@@ -12,7 +12,7 @@ var initializeProjector = function(callback) {
         callback(null, client);
     });
     client.on('error', function(err) {
-        // callback(err, client);
+        callback(err, client);
     });
 };
 
@@ -46,6 +46,7 @@ initializeProjector(function(err, projector) {
         app.projector = projector;
     }
 });
+
 while (true) {
     for (var i = 0; i < canvasHeight; i++) {
       projectorSet(app.projector, i, i, 0, 1);

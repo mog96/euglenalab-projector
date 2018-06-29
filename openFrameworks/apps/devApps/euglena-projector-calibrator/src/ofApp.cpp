@@ -38,8 +38,8 @@ void ofApp::update() {
 void ofApp::draw() {
   drawProjection();
 
-  for (unsigned int i = 0; i <= (unsigned int) TCP.getLastID(); i++) {
-    if (!TCP.isClientConnected(i)) {
+  for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
+    if (!tcpServer.isClientConnected(i)) {
       ofLogNotice() << "not connected";
       continue;
     }
@@ -49,9 +49,9 @@ void ofApp::draw() {
     int yPos = 80 + (12 * i * 4);
 
     // get the ip and port of the client
-    string port = ofToString( TCP.getClientPort(i) );
-    string ip   = TCP.getClientIP(i);
-    string info = "client " + ofToString(i) + " -connected from " + ip + " on port: " + port;
+    string port = ofToString(tcpServer.getClientPort(i));
+    string ip   = tcpServer.getClientIP(i);
+    string info = "client " + ofToString(i) + " - connected from " + ip + " on port: " + port;
 
 
     // if we don't have a string allocated yet, create one
@@ -65,7 +65,7 @@ void ofApp::draw() {
     string tmp;
     do {
       str = tmp;
-      tmp = TCP.receive(i);
+      tmp = tcpServer.receive(i);
     } while(tmp != "");
 
     ofLogNotice() << str;
