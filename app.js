@@ -50,14 +50,14 @@ initializeProjector(function(err, projector) {
 });
 
 var startDrawLoop = function() {
-  while (true) {
-    for (var i = 0; i < canvasHeight; i++) {
-      projectorSet(app.projector, i, i, 1, 1);
-    }
-  }
+  var i = 0;
+  var runInt = setInterval(function() {
+    projectorSet(app.projector, i++, i++, 1, 1);
+  }, 20);
 };
 
 // TODO: Figure out how to get these lines to run ^^
 
 // TODO: Figure out how color should be formatted (i.e. experiment with it -- maybe hex string?)
 //       Appears that shirishgoyal set color to blue and only communicates light/no light ...
+
