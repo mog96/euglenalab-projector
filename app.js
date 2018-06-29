@@ -50,10 +50,15 @@ initializeProjector(function(err, projector) {
 });
 
 var startDrawLoop = function() {
-  var i = 0;
+  var r = 0;
+  var c = 0
   var runInt = setInterval(function() {
-    projectorSet(app.projector, i++, i++, 1, 0);
-  }, 20);
+    projectorSet(app.projector, r++, c, 1, 0);
+    if (r == canvasHeight) {
+      c++;
+      r = 0;
+    }
+  }, 500);
 };
 
 // TODO: Figure out how to get these lines to run ^^
