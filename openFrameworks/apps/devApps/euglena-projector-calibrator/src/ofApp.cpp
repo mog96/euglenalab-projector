@@ -21,8 +21,8 @@ void ofApp::setup() {
 
   lastTime = 0;
   mode = CALIBRATION;
-  TCP.setup(PORT);
-  TCP.setMessageDelimiter("\n");
+  tcpServer.setup(PORT);
+  tcpServer.setMessageDelimiter("\n");
   lastSent = 0;
 
   mesh.setMode(OF_PRIMITIVE_POINTS);
