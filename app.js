@@ -52,7 +52,7 @@ initializeProjector(function(err, projector) {
 var startDrawLoop = function() {
   while (true) {
     for (var i = 0; i < canvasHeight; i++) {
-      projectorSet(app.projector, i, i, 1, 0);
+      projectorSet(app.projector, i, i, 1, 1);
     }
   }
 };
