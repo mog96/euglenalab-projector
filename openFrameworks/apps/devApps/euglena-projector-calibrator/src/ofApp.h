@@ -16,6 +16,10 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+
+    void drawProjection();
+    void drawPoint(int x, int y);
+    void drawLine();
 		
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -51,4 +55,6 @@ class ofApp : public ofBaseApp{
     vector <string> storeText;
 
     uint64_t lastSent;
+
+    ofMesh mesh;
 };
