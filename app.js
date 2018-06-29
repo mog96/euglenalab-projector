@@ -46,8 +46,10 @@ initializeProjector(function(err, projector) {
         app.projector = projector;
     }
 });
-for (var i = 0; i < canvasHeight; i++) {
-  projectorSet(app.projector, i, i, 0, 1);
+while (true) {
+    for (var i = 0; i < canvasHeight; i++) {
+      projectorSet(app.projector, i, i, 0, 1);
+    }
 }
 
 // TODO: Figure out how color should be formatted (i.e. experiment with it -- maybe hex string?)
