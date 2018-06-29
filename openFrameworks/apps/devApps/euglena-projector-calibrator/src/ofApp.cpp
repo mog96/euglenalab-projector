@@ -40,7 +40,7 @@ void ofApp::draw() {
 
   for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
     if (!tcpServer.isClientConnected(i)) {
-      ofLogNotice() << "not connected";
+      ofLogNotice() << i + " not connected";
       continue;
     }
 
