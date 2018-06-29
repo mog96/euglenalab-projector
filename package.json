@@ -7,5 +7,6 @@
     "net": "~1.0.2"
   },
   "author": "mateog",
-  "license": "BSD-2-Clause"
+  "license": "BSD-2-Clause",
+  "private": true
 }
