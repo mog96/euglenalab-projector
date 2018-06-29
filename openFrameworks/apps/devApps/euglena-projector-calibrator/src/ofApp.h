@@ -11,7 +11,7 @@
 
 enum Mode {CALIBRATION, TEST, PRODUCTION};
 
-class ofApp : public ofBaseApp{
+class ofApp: public ofBaseApp {
 	public:
 		void setup();
 		void update();

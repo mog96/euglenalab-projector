@@ -36,7 +36,7 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-  drawProjection();
+  // drawProjection();
 
   for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
     if (!tcpServer.isClientConnected(i)) {
@@ -98,7 +98,7 @@ void ofApp::draw() {
     }
   }
 
-  drawLine();
+  mesh.draw();
 }
 
 void ofApp::drawProjection(){
