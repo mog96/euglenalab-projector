@@ -19,7 +19,7 @@ class ofApp: public ofBaseApp {
 
     void drawProjection();
     void drawPoint(int x, int y);
-    void drawLine();
+    void drawMesh();
 		
 		void keyPressed(int key);
 		void keyReleased(int key);
