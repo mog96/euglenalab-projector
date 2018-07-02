@@ -53,10 +53,10 @@ var startDrawLoop = function() {
   var r = 0;
   var c = 0;
   var runInt = setInterval(function() {
-    projectorSet(app.projector, r, c++, 1, 0);
-    if (c >= canvasWidth) {
-      r++;
-      c = 0;
+    projectorSet(app.projector, c, r++, 1, 0);
+    if (r >= canvasHeight) {
+      r = 0;
+      c++;
     }
   }, 500);
 };
