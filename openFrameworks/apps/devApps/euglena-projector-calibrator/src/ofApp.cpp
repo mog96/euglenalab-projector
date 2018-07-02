@@ -101,7 +101,7 @@ void ofApp::draw() {
   drawMesh();
 }
 
-void ofApp::drawProjection(){
+void ofApp::drawProjection() {
   glPushMatrix();
 
   glTranslatef(posX, posY, posZ);
@@ -122,7 +122,7 @@ void ofApp::drawProjection(){
   glPopMatrix();
 }
 
-void ofApp::drawMesh(){
+void ofApp::drawMesh() {
   glPushMatrix();
 
   glTranslatef(posX, posY, posZ);
@@ -140,7 +140,7 @@ void ofApp::drawMesh(){
   glPopMatrix();
 }
 
-void ofApp::drawPoint(int x,int y){
+void ofApp::drawPoint(int x,int y) {
   glPushMatrix();
 
   glTranslatef(posX, posY, posZ);
