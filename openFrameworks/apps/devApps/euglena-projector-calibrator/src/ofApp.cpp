@@ -135,15 +135,33 @@ void ofApp::drawMesh() {
 
   // mesh.draw();
 
-  ofFill();
-  ofSetColor(0,0,255);
-  ofBeginShape();
-  ofVertex(400,135);
-  ofVertex(215,135);
-  ofVertex(365,25);
-  ofVertex(305,200);
-  ofVertex(250,25);
-  ofEndShape();
+  // ofFill();
+  // ofSetColor(0,0,255);
+  // ofBeginShape();
+  // ofVertex(400,135);
+  // ofVertex(215,135);
+  // ofVertex(365,25);
+  // ofVertex(305,200);
+  // ofVertex(250,25);
+  // ofEndShape();
+
+  ofPolyline polyline;
+  ofPoint pt1;
+  pt1.set(0, 0);
+  polyline.addVertex(pt1);
+  ofPoint pt2;
+  pt2.set(320, 0);
+  polyline.addVertex(pt2);
+  ofPoint pt3;
+  pt3.set(320, 240);
+  polyline.addVertex(pt3);
+  polyline.close();
+
+  ofBeginShape();  
+  for( int i = 0; i < polyline.getVertices().size(); i++) {
+      ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
+  }
+  ofEndShape(); 
 
   glPopMatrix();
 }
