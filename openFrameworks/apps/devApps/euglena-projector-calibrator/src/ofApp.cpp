@@ -135,16 +135,6 @@ void ofApp::drawMesh() {
 
   // mesh.draw();
 
-  // ofFill();
-  // ofSetColor(0,0,255);
-  // ofBeginShape();
-  // ofVertex(400,135);
-  // ofVertex(215,135);
-  // ofVertex(365,25);
-  // ofVertex(305,200);
-  // ofVertex(250,25);
-  // ofEndShape();
-
   ofPolyline polyline;
   ofPoint pt1;
   pt1.set(0, 0);
@@ -157,9 +147,11 @@ void ofApp::drawMesh() {
   polyline.addVertex(pt3);
   polyline.close();
 
+  ofFill();
+  ofSetColor(0, 0, 255);
   ofBeginShape();  
-  for( int i = 0; i < polyline.getVertices().size(); i++) {
-      ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
+  for (size_t i = 0; i < polyline.getVertices().size(); i++) {
+    ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
   }
   ofEndShape(); 
 
