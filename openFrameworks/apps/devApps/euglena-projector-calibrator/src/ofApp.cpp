@@ -27,11 +27,13 @@ void ofApp::setup() {
 
   mesh.setMode(OF_PRIMITIVE_POINTS);
   mesh.enableColors();
+
+  ofBackground(0, 0, 0);
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-  ofBackground(0, 0, 0);
+  
 }
 
 //--------------------------------------------------------------
