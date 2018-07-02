@@ -133,41 +133,17 @@ void ofApp::drawMesh() {
   glRotatef(rotZ, 0, 0, 1);
   glScalef(scaleX, scaleY, scaleZ);
 
-  // ofFill();
-  // ofNoFill();
-  // ofSetColor(ofColor(0,0,255), 100);
-
-  // mesh.clear();
-
-  // ofPoint pt1;
-  // pt1.set(0, 0);
-  // mesh.addVertex(pt1);
-  // mesh.addColor(ofColor(0, 0, 255)); // Blue
-  // ofPoint pt2;
-  // pt2.set(320, 0);
-  // mesh.addVertex(pt2);
-  // mesh.addColor(ofColor(0, 255, 0));
-  // ofPoint pt3;
-  // pt3.set(320, 240);
-  // mesh.addVertex(pt3);
-  // mesh.addColor(ofColor(255, 0, 0));
-
   // mesh.draw();
-  ofPolyline polyline;
-  ofPoint pt1;
-  pt1.set(0, 0);
-  polyline.addVertex(pt1);
-  ofPoint pt2;
-  pt2.set(320, 0);
-  polyline.addVertex(pt2);
-  ofPoint pt3;
-  pt3.set(320, 240);
-  polyline.addVertex(pt3);
-  polyline.close();
 
   ofFill();
   ofSetColor(0,0,255);
-  polyline.draw();
+  ofBeginShape();
+  ofVertex(400,135);
+  ofVertex(215,135);
+  ofVertex(365,25);
+  ofVertex(305,200);
+  ofVertex(250,25);
+  ofEndShape();
 
   glPopMatrix();
 }
