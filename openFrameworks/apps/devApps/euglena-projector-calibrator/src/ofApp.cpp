@@ -135,6 +135,21 @@ void ofApp::drawMesh() {
   ofNoFill();
   // ofSetColor(ofColor(0,0,255), 100);
 
+  mesh.clear();
+
+  ofPoint pt1;
+  pt.set(0, 0);
+  mesh.addVertex(pt1);
+  mesh.addColor(ofColor(0, 0, 255)); // Blue
+  ofPoint pt2;
+  pt.set(320, 0);
+  mesh.addVertex(pt2);
+  mesh.addColor(ofColor(0, 255, 0));
+  ofPoint pt3;
+  pt.set(320, 240);
+  mesh.addVertex(pt3);
+  mesh.addColor(ofColor(255, 0, 0));
+
   mesh.draw();
 
   glPopMatrix();
