@@ -33,32 +33,15 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-  
-}
-
-//--------------------------------------------------------------
-void ofApp::draw() {
-  drawProjection();
-
   for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
     if (!tcpServer.isClientConnected(i)) {
-      ofLogNotice() << i + " not connected";
+      ofLogNotice() << "client " << ofToString(i) << " not connected";
       continue;
     }
 
-    // calculate where to draw the text
-    int xPos = 15;
-    int yPos = 80 + (12 * i * 4);
-
-    // get the ip and port of the client
-    string port = ofToString(tcpServer.getClientPort(i));
-    string ip   = tcpServer.getClientIP(i);
-    string info = "client " + ofToString(i) + " - connected from " + ip + " on port: " + port;
-
-
     // if we don't have a string allocated yet, create one
     if (i >= storeText.size()) {
-      storeText.push_back( string() );
+      storeText.push_back(string());
     }
 
     // receive all the available messages, separated by '\n'
@@ -67,39 +50,51 @@ void ofApp::draw() {
     string tmp;
     do {
       str = tmp;
+
+      // TODO: FIXME: STORE AND DRAW ALL ITEMS RECEIVED (rather than ignoring like this, else what is the point of TCP)
+
       tmp = tcpServer.receive(i);
     } while(tmp != "");
+    storeText[i] = str;
+    // ofLogNotice() << storeText[i];
+  }
+}
 
-    ofLogNotice() << str;
-
+//--------------------------------------------------------------
+void ofApp::draw() {
+  drawProjection();
+  for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
     // if there was a message set it to the corresponding client
-    if(str.length() > 0){
-      // draw the info text and the received text below it
+    if (storeText[i].length() > 0) {
+      // get the ip and port of the client
+      string port = ofToString(tcpServer.getClientPort(i));
+      string ip   = tcpServer.getClientIP(i);
+      string info = "client " + ofToString(i) + " connected from " + ip + " on port: " + port;
+      ofLogNotice() << info;
+
+      // calculate client info text and received text below it
+      int xPos = 15;
+      int yPos = 80 + (12 * i * 4);
       ofDrawBitmapString(info, xPos, yPos);
-      ofDrawBitmapString(storeText[i], 25, yPos + 20);
+      ofDrawBitmapString(storeText[i], xPos + 10, yPos + 20);
 
-      bool parsingSuccessful = response.parse(str);
-
-      if (parsingSuccessful) {
-        ofLogNotice() << response.getRawString();
-        int x = (int)(response["x"].asDouble());
-        int y = (int)(response["y"].asDouble());
-        int shouldClear = (int)(response["shouldClear"].asDouble());
-
-        if (x >= 0 && y >= 0) {
-          ofPoint pt;
-          pt.set(x, y);
-          mesh.addVertex(pt);
-          mesh.addColor(ofFloatColor(0.0, 0.0, 1.0)); // Blue
-        }
-
-        if (shouldClear > 0) {
+      if (jsonElement.parse(storeText[i])) {
+        ofLogNotice() << jsonElement.getRawString();
+        bool shouldClear = jsonElement["shouldClear"].asBool();
+        int x = jsonElement["x"].asInt();
+        int y = jsonElement["y"].asInt();
+        if (shouldClear) {
           mesh.clear();
+        }
+        if (x >= 0 && y >= 0) {
+          ofPoint point;
+          point.set(x, y);
+          mesh.addVertex(point);
+          mesh.addColor(ofFloatColor(0.0, 0.0, 1.0)); // Blue
         }
       }
     }
   }
-
   drawMesh();
 }
 
@@ -133,8 +128,6 @@ void ofApp::drawMesh() {
   glRotatef(rotZ, 0, 0, 1);
   glScalef(scaleX, scaleY, scaleZ);
 
-  // mesh.draw();
-
   ofPolyline polyline;
   ofPoint pt1;
   pt1.set(0, 0);
@@ -147,12 +140,15 @@ void ofApp::drawMesh() {
   polyline.addVertex(pt3);
   polyline.close();
 
+  // mesh.draw();
+
   ofFill();
   ofSetColor(0, 0, 255);
+
   ofBeginShape();  
-  for (size_t i = 0; i < polyline.getVertices().size(); i++) {
-    ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
-  }
+    for (size_t i = 0; i < polyline.getVertices().size(); i++) {
+      ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
+    }
   ofEndShape(); 
 
   glPopMatrix();

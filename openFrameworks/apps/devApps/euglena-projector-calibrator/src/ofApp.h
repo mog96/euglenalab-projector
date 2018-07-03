@@ -50,7 +50,7 @@ class ofApp: public ofBaseApp {
     float rotZ;
 
     ofxTCPServer tcpServer;
-    ofxJSONElement response;
+    ofxJSONElement jsonElement;
 
     vector <string> storeText;
 
