@@ -18,8 +18,8 @@ class ofApp: public ofBaseApp {
 		void draw();
 
     void drawProjectionFrame();
-    void drawPoint(int x, int y);
-    void drawShape(const Json::Value& vertices, bool shouldFill);
+    void drawPoint(const int x, const int y, const Json::Value& color);
+    void drawShape(const Json::Value& vertices, const Json::Value& color, const bool shouldFill);
 		
 		void keyPressed(int key);
 		void keyReleased(int key);

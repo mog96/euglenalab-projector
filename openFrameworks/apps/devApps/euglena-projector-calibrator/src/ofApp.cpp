@@ -71,6 +71,7 @@ void ofApp::draw() {
     if (str.length() > 0 && jsonElement.parse(str)) {
       ofLogNotice() << jsonElement.getRawString();
       const string elementType = jsonElement["type"].asString();
+      const Json::Value& color = jsonElement["color"];
       const bool shouldClear = jsonElement["shouldClear"].asBool();
       if (shouldClear) {
         ofClear(ofColor(0, 0, 0));
@@ -78,14 +79,12 @@ void ofApp::draw() {
       switch (elementType) {
         case "shape":
           const Json::Value& vertices = jsonElement["vertices"];
-          const Json::Value& color = jsonElement["color"];
           const bool shouldFill = jsonElement["shouldFill"].asBool();
           drawShape(vertices, color, shouldFill);
         case "point":
         default:
           const int x = jsonElement["x"].asInt();
           const int y = jsonElement["y"].asInt();
-          const Json::Value& color = jsonElement["color"];
           drawPoint(x, y, color);
       }
     }
