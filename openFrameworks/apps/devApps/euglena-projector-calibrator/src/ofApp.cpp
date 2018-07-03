@@ -73,25 +73,23 @@ void ofApp::draw() {
       const string elementType = jsonElement["type"].asString();
       const bool shouldClear = jsonElement["shouldClear"].asBool();
       if (shouldClear) {
-        ofClear(ofColor(255,255,255));
+        ofClear(ofColor(0, 0, 0));
       }
-
       switch (elementType) {
         case "shape":
           const Json::Value& vertices = jsonElement["vertices"];
-          drawShape(vertices, shouldFill);
+          const Json::Value& color = jsonElement["color"];
+          const bool shouldFill = jsonElement["shouldFill"].asBool();
+          drawShape(vertices, color, shouldFill);
         case "point":
         default:
           const int x = jsonElement["x"].asInt();
           const int y = jsonElement["y"].asInt();
-
-          // TODO: ADD COLOR
-
+          const Json::Value& color = jsonElement["color"];
           drawPoint(x, y, color);
       }
     }
   }
-  drawMesh();
 }
 
 void ofApp::drawProjectionFrame() {
@@ -110,7 +108,7 @@ void ofApp::drawProjectionFrame() {
   glPopMatrix();
 }
 
-void ofApp::drawPoint(int x, int y) {
+void ofApp::drawPoint(const int x, const int y, const Json::Value& color) {
   glPushMatrix();
 
   glTranslatef(posX, posY, posZ);
@@ -120,13 +118,15 @@ void ofApp::drawPoint(int x, int y) {
   glScalef(scaleX, scaleY, scaleZ);
 
   ofFill();
-  ofSetColor(0, 0, 255);
-  ofDrawRectangle(x, y, 1, 1);
+  ofEnableAlphaBlending();
+    ofSetColor(color[0], color[1], color[2], color[3]);
+    ofDrawRectangle(x, y, 1, 1);
+  ofDisableAlphaBlending();
 
   glPopMatrix();
 }
 
-void ofApp::drawShape(const Json::Value& vertices, bool shouldFill) {
+void ofApp::drawShape(const Json::Value& vertices, const Json::Value& color, const bool shouldFill) {
   glPushMatrix();
 
   glTranslatef(posX, posY, posZ);
@@ -143,14 +143,15 @@ void ofApp::drawShape(const Json::Value& vertices, bool shouldFill) {
 
   if (shouldFill) {
     ofFill();
-    ofSetColor(0, 0, 255);
   }
-
-  ofBeginShape();  
-    for (size_t i = 0; i < polyline.getVertices().size(); i++) {
-      ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
-    }
-  ofEndShape(); 
+  ofEnableAlphaBlending();
+    ofSetColor(color[0], color[1], color[2], color[3]);
+    ofBeginShape();  
+      for (size_t i = 0; i < polyline.getVertices().size(); i++) {
+        ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
+      }
+    ofEndShape();
+  ofDisableAlphaBlending();
 
   glPopMatrix();
 }
