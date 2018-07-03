@@ -52,8 +52,6 @@ class ofApp: public ofBaseApp {
     ofxTCPServer tcpServer;
     ofxJSONElement jsonElement;
 
-    vector <string> storeText;
-
     uint64_t lastSent;
 
     ofMesh mesh;

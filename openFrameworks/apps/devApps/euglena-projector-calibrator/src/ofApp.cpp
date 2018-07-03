@@ -33,16 +33,26 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+}
+
+//--------------------------------------------------------------
+void ofApp::draw() {
+  drawProjection();
   for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
     if (!tcpServer.isClientConnected(i)) {
       ofLogNotice() << "client " << ofToString(i) << " not connected";
       continue;
     }
+    // get the ip and port of the client
+    string port = ofToString(tcpServer.getClientPort(i));
+    string ip   = tcpServer.getClientIP(i);
+    string info = "client " + ofToString(i) + " connected from " + ip + " on port: " + port;
+    ofLogNotice() << info;
 
-    // if we don't have a string allocated yet, create one
-    if (i >= storeText.size()) {
-      storeText.push_back(string());
-    }
+    // calculate where to draw client info text
+    int xPos = 15;
+    int yPos = 80 + (12 * i * 4);
+    ofDrawBitmapString(info, xPos, yPos);
 
     // receive all the available messages, separated by '\n'
     // and keep only the last one
@@ -50,48 +60,27 @@ void ofApp::update() {
     string tmp;
     do {
       str = tmp;
-
-      // TODO: FIXME: STORE AND DRAW ALL ITEMS RECEIVED (rather than ignoring like this, else what is the point of TCP)
-
-      tmp = tcpServer.receive(i);
+      // if (!str.empty()) {
+      //   ofBackground(0, 0, 0);
+      //   // TODO: draw info string again
+      //   ofDrawBitmapString(str, xPos + 10, yPos + 20);
+      // }
+      tmp = tcpServer.receive(i);      
     } while(tmp != "");
-    storeText[i] = str;
-    // ofLogNotice() << storeText[i];
-  }
-}
 
-//--------------------------------------------------------------
-void ofApp::draw() {
-  drawProjection();
-  for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
-    // if there was a message set it to the corresponding client
-    if (storeText[i].length() > 0) {
-      // get the ip and port of the client
-      string port = ofToString(tcpServer.getClientPort(i));
-      string ip   = tcpServer.getClientIP(i);
-      string info = "client " + ofToString(i) + " connected from " + ip + " on port: " + port;
-      ofLogNotice() << info;
-
-      // calculate client info text and received text below it
-      int xPos = 15;
-      int yPos = 80 + (12 * i * 4);
-      ofDrawBitmapString(info, xPos, yPos);
-      ofDrawBitmapString(storeText[i], xPos + 10, yPos + 20);
-
-      if (jsonElement.parse(storeText[i])) {
-        ofLogNotice() << jsonElement.getRawString();
-        bool shouldClear = jsonElement["shouldClear"].asBool();
-        int x = jsonElement["x"].asInt();
-        int y = jsonElement["y"].asInt();
-        if (shouldClear) {
-          mesh.clear();
-        }
-        if (x >= 0 && y >= 0) {
-          ofPoint point;
-          point.set(x, y);
-          mesh.addVertex(point);
-          mesh.addColor(ofFloatColor(0.0, 0.0, 1.0)); // Blue
-        }
+    if (str.length() > 0 && jsonElement.parse(storeText[i])) {
+      ofLogNotice() << jsonElement.getRawString();
+      bool shouldClear = jsonElement["shouldClear"].asBool();
+      int x = jsonElement["x"].asInt();
+      int y = jsonElement["y"].asInt();
+      if (shouldClear) {
+        mesh.clear();
+      }
+      if (x >= 0 && y >= 0) {
+        ofPoint point;
+        point.set(x, y);
+        mesh.addVertex(point);
+        mesh.addColor(ofFloatColor(0.0, 0.0, 1.0)); // Blue
       }
     }
   }
