@@ -118,7 +118,7 @@ void ofApp::drawPoint(const int x, const int y, const Json::Value& color) {
 
   ofFill();
   ofEnableAlphaBlending();
-    ofSetColor(color[0], color[1], color[2], color[3]);
+    ofSetColor(ofColor(color[0], color[1], color[2]), color[3]);
     ofDrawRectangle(x, y, 1, 1);
   ofDisableAlphaBlending();
 
@@ -144,7 +144,7 @@ void ofApp::drawShape(const Json::Value& vertices, const Json::Value& color, con
     ofFill();
   }
   ofEnableAlphaBlending();
-    ofSetColor(color[0], color[1], color[2], color[3]);
+    ofSetColor(ofColor(color[0], color[1], color[2]), color[3]);
     ofBeginShape();  
       for (size_t i = 0; i < polyline.getVertices().size(); i++) {
         ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);

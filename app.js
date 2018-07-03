@@ -69,7 +69,7 @@ var startDrawLoop = function() {
   // var r = 0;
   // var c = 0;
   // var runInt = setInterval(function() {
-  //   drawPoint(app.projector, c, r++, [0, 0, 255], false);
+  //   drawPoint(app.projector, c, r++, [0, 0, 255, 1], false);
   //   if (r >= canvasHeight) {
   //     r = 0;
   //     c++;
