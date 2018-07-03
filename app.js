@@ -33,17 +33,20 @@ var drawPoint = function(projector, x, y, color, shouldClear) {
 
   if (projector != null && x != null && y != null && color != null && shouldClear != null) {
     console.log('writing')
-    projector.write('{\"x\": ' + x + ', \"y\": ' + y + ', \"color\": ' + color + ', \"shouldClear\": ' + shouldClear + '}\n');
+    projector.write( '{\"type\": \"point\", \"x\": ' + x + ', \"y\": ' + y
+      + ', \"color\": ' + color + ', \"shouldClear\": ' + shouldClear + '}\n');
   }
 };
 
 // vertices is expected as a list of lists
-var drawShape = function(projector, vertices, color, shouldClear) {
+var drawShape = function(projector, vertices, color, shouldFill, shouldClear) {
   console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldClear + '}');
 
   if (projector != null && x != null && y != null && color != null && shouldClear != null) {
     console.log('writing')
-    projector.write('{\"vertices\": ' + vertices + ', \"color\": ' + color + ', \"shouldClear\": ' + shouldClear + '}\n');
+    projector.write('{\"type\": \"shape\", \"vertices\": ' + vertices
+      + ', \"color\": ' + color + ', \"shouldFill\": ' + shouldFill
+      + ', \"shouldClear\": ' + shouldClear + '}\n');
   }
 };
 
@@ -61,18 +64,18 @@ initializeProjector(function(err, projector) {
 });
 
 var startDrawLoop = function() {
-  // Draw points top to bottom, left to right across entire canvas
+  // Draw blue points top to bottom, left to right across entire canvas
   // var r = 0;
   // var c = 0;
   // var runInt = setInterval(function() {
-  //   drawPoint(app.projector, c, r++, 1, 0);
+  //   drawPoint(app.projector, c, r++, [0, 0, 255], false);
   //   if (r >= canvasHeight) {
   //     r = 0;
   //     c++;
   //   }
   // }, 500);
 
-  // Draw triangle from top left to center to middle left
+  // Draw blue triangle from top left to center to middle left
   drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255], 0);
 
   var runInt = setInterval(function() {
