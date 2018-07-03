@@ -3,7 +3,12 @@ var app = {
     startDate: new Date(),
 };
 
-// MARK: - Projector Helper Functions
+// MARK: - Projector
+
+const canvasWidth = 640;
+const canvasHeight = 480;
+// Math.round(canvasHeight * 640 / width) // Set width
+// Math.round(canvasHeight * 480 / height) // Set height
 
 var initializeProjector = function(callback) {
   var net = require('net');
@@ -23,8 +28,8 @@ var lightValues = {
   projectorShouldClear: 1
 };
 
-var projectorSet = function(projector, x, y, color, shouldClear) {
-  console.log('projector = {' + x + ', ' + y + ', ' + color + ', ' + shouldClear + '}');
+var drawPoint = function(projector, x, y, color, shouldClear) {
+  console.log('drawPoint = {' + x + ', ' + y + ', ' + color + ', ' + shouldClear + '}');
 
   if (projector != null && x != null && y != null && color != null && shouldClear != null) {
     console.log('writing')
@@ -32,37 +37,46 @@ var projectorSet = function(projector, x, y, color, shouldClear) {
   }
 };
 
+// vertices is expected as a list of lists
+var drawShape = function(projector, vertices, color, shouldClear) {
+  console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldClear + '}');
+
+  if (projector != null && x != null && y != null && color != null && shouldClear != null) {
+    console.log('writing')
+    projector.write('{\"vertices\": ' + vertices + ', \"color\": ' + color + ', \"shouldClear\": ' + shouldClear + '}\n');
+  }
+};
+
 // MARK: - Run
 
-var canvasWidth = 640;
-var canvasHeight = 480;
-// Math.round(canvasHeight * 640 / width) // Set width
-// Math.round(canvasHeight * 480 / height) // Set height
 initializeProjector(function(err, projector) {
   if (err) {
-    console.log("==== projector failed ====");
+    console.log('==== projector failed ====');
     console.log(err);
   } else {
-    console.log("projector initialized");
+    console.log('projector initialized');
     app.projector = projector;
     startDrawLoop();
   }
 });
 
 var startDrawLoop = function() {
-  var r = 0;
-  var c = 0;
+  // Draw points top to bottom, left to right across entire canvas
+  // var r = 0;
+  // var c = 0;
+  // var runInt = setInterval(function() {
+  //   drawPoint(app.projector, c, r++, 1, 0);
+  //   if (r >= canvasHeight) {
+  //     r = 0;
+  //     c++;
+  //   }
+  // }, 500);
+
+  // Draw triangle from top left to center to middle left
+  drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255], 0);
+
   var runInt = setInterval(function() {
-    projectorSet(app.projector, c, r++, 1, 0);
-    if (r >= canvasHeight) {
-      r = 0;
-      c++;
-    }
+    console.log('spinning')
   }, 500);
 };
-
-// TODO: Figure out how to get these lines to run ^^
-
-// TODO: Figure out how color should be formatted (i.e. experiment with it -- maybe hex string?)
-//       Appears that shirishgoyal set color to blue and only communicates light/no light ...
 
