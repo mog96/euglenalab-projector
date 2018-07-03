@@ -70,7 +70,11 @@ void ofApp::draw() {
 
     if (str.length() > 0 && jsonElement.parse(str)) {
       ofLogNotice() << jsonElement.getRawString();
+      string type = jsonElement["type"].asString();
       bool shouldClear = jsonElement["shouldClear"].asBool();
+
+      // START HERE: SWITCH ON type
+
       int x = jsonElement["x"].asInt();
       int y = jsonElement["y"].asInt();
       if (shouldClear) {
