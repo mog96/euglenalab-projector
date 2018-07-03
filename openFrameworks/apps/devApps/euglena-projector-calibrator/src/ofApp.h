@@ -17,9 +17,9 @@ class ofApp: public ofBaseApp {
 		void update();
 		void draw();
 
-    void drawProjection();
+    void drawProjectionFrame();
     void drawPoint(int x, int y);
-    void drawMesh();
+    void drawShape(const Json::Value& vertices, bool shouldFill);
 		
 		void keyPressed(int key);
 		void keyReleased(int key);

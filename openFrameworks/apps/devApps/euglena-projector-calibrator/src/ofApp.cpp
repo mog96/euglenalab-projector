@@ -37,7 +37,7 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-  drawProjection();
+  drawProjectionFrame();
   for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
     if (!tcpServer.isClientConnected(i)) {
       ofLogNotice() << "client " << ofToString(i) << " not connected";
@@ -70,28 +70,31 @@ void ofApp::draw() {
 
     if (str.length() > 0 && jsonElement.parse(str)) {
       ofLogNotice() << jsonElement.getRawString();
-      string type = jsonElement["type"].asString();
-      bool shouldClear = jsonElement["shouldClear"].asBool();
-
-      // START HERE: SWITCH ON type
-
-      int x = jsonElement["x"].asInt();
-      int y = jsonElement["y"].asInt();
+      const string elementType = jsonElement["type"].asString();
+      const bool shouldClear = jsonElement["shouldClear"].asBool();
       if (shouldClear) {
-        mesh.clear();
+        ofClear(ofColor(255,255,255));
       }
-      if (x >= 0 && y >= 0) {
-        ofPoint point;
-        point.set(x, y);
-        mesh.addVertex(point);
-        mesh.addColor(ofFloatColor(0.0, 0.0, 1.0)); // Blue
+
+      switch (elementType) {
+        case "shape":
+          const Json::Value& vertices = jsonElement["vertices"];
+          drawShape(vertices, shouldFill);
+        case "point":
+        default:
+          const int x = jsonElement["x"].asInt();
+          const int y = jsonElement["y"].asInt();
+
+          // TODO: ADD COLOR
+
+          drawPoint(x, y, color);
       }
     }
   }
   drawMesh();
 }
 
-void ofApp::drawProjection() {
+void ofApp::drawProjectionFrame() {
   glPushMatrix();
 
   glTranslatef(posX, posY, posZ);
@@ -100,19 +103,30 @@ void ofApp::drawProjection() {
   glRotatef(rotZ, 0, 0, 1);
   glScalef(scaleX, scaleY, scaleZ);
 
-  // ofFill();
   ofNoFill();
   ofSetColor(ofColor(255,255,255), 100);
   ofDrawRectangle(0, 0, 640, 480);
 
-  // path.setFillColor(ofColor::red);
-  // path.rectangle(0, 0, 640, 480);
-  // path.rectangle(20, 20, 620, 460);
+  glPopMatrix();
+}
+
+void ofApp::drawPoint(int x, int y) {
+  glPushMatrix();
+
+  glTranslatef(posX, posY, posZ);
+  glRotatef(rotX, 1, 0, 0);
+  glRotatef(rotY, 0, 1, 0);
+  glRotatef(rotZ, 0, 0, 1);
+  glScalef(scaleX, scaleY, scaleZ);
+
+  ofFill();
+  ofSetColor(0, 0, 255);
+  ofDrawRectangle(x, y, 1, 1);
 
   glPopMatrix();
 }
 
-void ofApp::drawMesh() {
+void ofApp::drawShape(const Json::Value& vertices, bool shouldFill) {
   glPushMatrix();
 
   glTranslatef(posX, posY, posZ);
@@ -122,48 +136,21 @@ void ofApp::drawMesh() {
   glScalef(scaleX, scaleY, scaleZ);
 
   ofPolyline polyline;
-  ofPoint pt1;
-  pt1.set(0, 0);
-  polyline.addVertex(pt1);
-  ofPoint pt2;
-  pt2.set(320, 0);
-  polyline.addVertex(pt2);
-  ofPoint pt3;
-  pt3.set(320, 240);
-  polyline.addVertex(pt3);
+  for (Json::ArrayIndex i = 0; i < vertices.size(); ++i) {
+    polyline.addVertex(ofPoint(vertices[i][0], vertices[i][1]));
+  }
   polyline.close();
 
-  // mesh.draw();
-
-  ofFill();
-  ofSetColor(0, 0, 255);
+  if (shouldFill) {
+    ofFill();
+    ofSetColor(0, 0, 255);
+  }
 
   ofBeginShape();  
     for (size_t i = 0; i < polyline.getVertices().size(); i++) {
       ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
     }
   ofEndShape(); 
-
-  glPopMatrix();
-}
-
-void ofApp::drawPoint(int x,int y) {
-  glPushMatrix();
-
-  glTranslatef(posX, posY, posZ);
-  glRotatef(rotX, 1, 0, 0);
-  glRotatef(rotY, 0, 1, 0);
-  glRotatef(rotZ, 0, 0, 1);
-  glScalef(scaleX, scaleY, scaleZ);
-
-  // ofFill();
-  ofNoFill();
-  ofSetColor(ofColor(0, 0, 255), 100);
-  ofDrawRectangle(x, y, 1, 1);
-
-  // path.setFillColor(ofColor::red);
-  // path.rectangle(0, 0, 640, 480);
-  // path.rectangle(20, 20, 620, 460);
 
   glPopMatrix();
 }
