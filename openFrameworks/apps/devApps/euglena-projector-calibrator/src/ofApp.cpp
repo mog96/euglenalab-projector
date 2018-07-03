@@ -68,7 +68,7 @@ void ofApp::draw() {
       tmp = tcpServer.receive(i);      
     } while(tmp != "");
 
-    if (str.length() > 0 && jsonElement.parse(storeText[i])) {
+    if (str.length() > 0 && jsonElement.parse(str)) {
       ofLogNotice() << jsonElement.getRawString();
       bool shouldClear = jsonElement["shouldClear"].asBool();
       int x = jsonElement["x"].asInt();
