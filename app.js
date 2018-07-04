@@ -34,8 +34,8 @@ var boolToString = function(bool) {
 
 var arrayToString = function(array) {
   var arrayString = '[';
-  for (var vertex in vertices) {
-    verticesString += vertex + ', ';
+  for (var element in array) {
+    arrayString += element + ', ';
   }
   arrayString += ']';
   return arrayString
