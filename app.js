@@ -35,7 +35,11 @@ var boolToString = function(bool) {
 var arrayToString = function(array) {
   var arrayString = '[';
   for (var i = 0; i < array.length; i++) {
-    arrayString += array[i];
+    if (Array.isArray(array[i])) {
+      arrayString += '[' + array[i] + ']';
+    } else {
+      arrayString += array[i];
+    }
     if (i < array.length -1) {
       arrayString += ', ';
     }
