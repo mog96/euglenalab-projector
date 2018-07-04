@@ -41,7 +41,7 @@ var drawPoint = function(projector, x, y, color, shouldClear) {
 // vertices is expected as an array of [x, y]
 // color is expected as [r, g, b, a]
 var drawShape = function(projector, vertices, color, shouldFill, shouldClear) {
-  console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldClear + '}');
+  console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldFill + ', ' + shouldClear + '}');
 
   if (projector != null && vertices != null && color != null && shouldFill != null && shouldClear != null) {
     console.log('writing')
@@ -77,7 +77,7 @@ var startDrawLoop = function() {
   // }, 500);
   // Draw blue triangle from top left to center to middle left
   var runInt = setInterval(function() {
-    drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], 0);
+    drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], 1, 0);
   }, 5000);
 };
 
