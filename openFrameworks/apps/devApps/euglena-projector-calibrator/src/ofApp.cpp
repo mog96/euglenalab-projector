@@ -67,7 +67,7 @@ void ofApp::draw() {
       // }
       tmp = tcpServer.receive(i);      
     } while(tmp != "");
-    ofLogNotice() << "STR: " << str;
+    ofLogNotice() << "DRAWING: " << str;
 
     if (str.length() > 0 && jsonElement.parse(str)) {
       ofLogNotice() << jsonElement.getRawString();
@@ -78,6 +78,7 @@ void ofApp::draw() {
         ofClear(ofColor(0, 0, 0));
       }
       if (elementType == "shape") {
+        ofLogNotice() << "SHAPE DETECTED";
         const Json::Value& vertices = jsonElement["vertices"];
         const bool shouldFill = jsonElement["shouldFill"].asBool();
         drawShape(vertices, color, shouldFill);
@@ -142,14 +143,20 @@ void ofApp::drawShape(const Json::Value& vertices, const Json::Value& color, con
   if (shouldFill) {
     ofFill();
   }
-  ofEnableAlphaBlending();
-    ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt(), color[3].asInt());
-    ofBeginShape();  
-      for (size_t i = 0; i < polyline.getVertices().size(); i++) {
-        ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
-      }
-    ofEndShape();
-  ofDisableAlphaBlending();
+  // ofEnableAlphaBlending();
+  //   ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt(), color[3].asInt());
+  //   ofBeginShape();  
+  //     for (size_t i = 0; i < polyline.getVertices().size(); i++) {
+  //       ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
+  //     }
+  //   ofEndShape();
+  // ofDisableAlphaBlending();
+  ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt());
+  ofBeginShape();  
+    for (size_t i = 0; i < polyline.getVertices().size(); i++) {
+      ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
+    }
+  ofEndShape();
 
   glPopMatrix();
 }
