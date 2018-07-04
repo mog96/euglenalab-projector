@@ -67,7 +67,7 @@ void ofApp::draw() {
       // }
       tmp = tcpServer.receive(i);      
     } while(tmp != "");
-    ofLogNotice() << "DRAWING: " << str;
+    ofLogNotice() << "RECEIVED: " << str;
 
     if (str.length() > 0 && jsonElement.parse(str)) {
       ofLogNotice() << jsonElement.getRawString();
