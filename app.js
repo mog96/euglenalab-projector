@@ -75,12 +75,9 @@ var startDrawLoop = function() {
   //     c++;
   //   }
   // }, 500);
-
   // Draw blue triangle from top left to center to middle left
-  drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], 0);
-
   var runInt = setInterval(function() {
-    console.log('spinning')
-  }, 500);
+    drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], 0);
+  }, 5000);
 };
 
