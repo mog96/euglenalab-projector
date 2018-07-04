@@ -36,7 +36,7 @@ var arrayToString = function(array) {
   var arrayString = '[';
   for (var i = 0; i < array.length; i++) {
     arrayString += array[i];
-    if (i < arrayl.length -1) {
+    if (i < array.length -1) {
       arrayString += ', ';
     }
   }
