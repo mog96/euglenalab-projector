@@ -34,20 +34,24 @@ var boolToString = function(bool) {
 
 var arrayToString = function(array) {
   var arrayString = '[';
-  for (var element in array) {
-    arrayString += element + ', ';
+  for (var i = 0; i < array.length; i++) {
+    arrayString += element;
+    if (i < arrayllength -1) {
+      arrayString += ', ';
+    }
   }
   arrayString += ']';
-  return arrayString
+  return arrayString;
 }
 
+// color is expected as [r, g, b, a]
 var drawPoint = function(projector, x, y, color, shouldClear) {
   console.log('drawPoint = {' + x + ', ' + y + ', ' + color + ', ' + shouldClear + '}');
 
   if (projector != null && x != null && y != null && color != null && shouldClear != null) {
     console.log('writing')
     projector.write( '{"type": "point", "x": ' + x + ', "y": ' + y
-      + ', "color": ' + color + ', "shouldClear": ' + boolToString(shouldClear) + '}\n');
+      + ', "color": ' + arrayToString(color) + ', "shouldClear": ' + boolToString(shouldClear) + '}\n');
   }
 };
 
@@ -60,7 +64,7 @@ var drawShape = function(projector, vertices, color, shouldFill, shouldClear) {
     console.log('writing')
     
     projector.write('{"type": "shape", "vertices": ' + arrayToString(vertices)
-      + ', "color": ' + color + ', "shouldFill": ' + boolToString(shouldFill)
+      + ', "color": ' + arrayToString(color) + ', "shouldFill": ' + boolToString(shouldFill)
       + ', "shouldClear": ' + boolToString(shouldClear) + '}\n');
   }
 };
