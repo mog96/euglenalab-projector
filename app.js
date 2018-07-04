@@ -43,7 +43,7 @@ var drawPoint = function(projector, x, y, color, shouldClear) {
 var drawShape = function(projector, vertices, color, shouldFill, shouldClear) {
   console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldClear + '}');
 
-  if (projector != null && x != null && y != null && color != null && shouldClear != null) {
+  if (projector != null && vertices != null && color != null && shouldFill != null && shouldClear != null) {
     console.log('writing')
     projector.write('{\"type\": \"shape\", \"vertices\": ' + vertices
       + ', \"color\": ' + color + ', \"shouldFill\": ' + shouldFill
