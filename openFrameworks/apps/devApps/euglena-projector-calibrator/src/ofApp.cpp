@@ -76,16 +76,14 @@ void ofApp::draw() {
       if (shouldClear) {
         ofClear(ofColor(0, 0, 0));
       }
-      switch (elementType) {
-        case "shape":
-          const Json::Value& vertices = jsonElement["vertices"];
-          const bool shouldFill = jsonElement["shouldFill"].asBool();
-          drawShape(vertices, color, shouldFill);
-        case "point":
-        default:
-          const int x = jsonElement["x"].asInt();
-          const int y = jsonElement["y"].asInt();
-          drawPoint(x, y, color);
+      if (elementType == "shape") {
+        const Json::Value& vertices = jsonElement["vertices"];
+        const bool shouldFill = jsonElement["shouldFill"].asBool();
+        drawShape(vertices, color, shouldFill);
+      } else if (elementType == "point") {
+        const int x = jsonElement["x"].asInt();
+        const int y = jsonElement["y"].asInt();
+        drawPoint(x, y, color);
       }
     }
   }
