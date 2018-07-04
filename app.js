@@ -35,7 +35,7 @@ var boolToString = function(bool) {
 var arrayToString = function(array) {
   var arrayString = '[';
   for (var i = 0; i < array.length; i++) {
-    arrayString += element;
+    arrayString += array[i];
     if (i < arrayllength -1) {
       arrayString += ', ';
     }
