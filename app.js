@@ -28,13 +28,26 @@ var lightValues = {
   projectorShouldClear: 1
 };
 
+var boolToString = function(bool) {
+  return bool ? "true" : "false";
+}
+
+var arrayToString = function(array) {
+  var arrayString = '[';
+  for (var vertex in vertices) {
+    verticesString += vertex + ', ';
+  }
+  arrayString += ']';
+  return arrayString
+}
+
 var drawPoint = function(projector, x, y, color, shouldClear) {
   console.log('drawPoint = {' + x + ', ' + y + ', ' + color + ', ' + shouldClear + '}');
 
   if (projector != null && x != null && y != null && color != null && shouldClear != null) {
     console.log('writing')
     projector.write( '{\"type\": \"point\", \"x\": ' + x + ', \"y\": ' + y
-      + ', \"color\": ' + color + ', \"shouldClear\": ' + shouldClear + '}\n');
+      + ', \"color\": ' + color + ', \"shouldClear\": ' + boolToString(shouldClear) + '}\n');
   }
 };
 
@@ -45,9 +58,10 @@ var drawShape = function(projector, vertices, color, shouldFill, shouldClear) {
 
   if (projector != null && vertices != null && color != null && shouldFill != null && shouldClear != null) {
     console.log('writing')
-    projector.write('{\"type\": \"shape\", \"vertices\": ' + vertices
-      + ', \"color\": ' + color + ', \"shouldFill\": ' + shouldFill
-      + ', \"shouldClear\": ' + shouldClear + '}\n');
+    
+    projector.write('{\"type\": \"shape\", \"vertices\": ' + arrayToString(vertices)
+      + ', \"color\": ' + color + ', \"shouldFill\": ' + boolToString(shouldFill)
+      + ', \"shouldClear\": ' + boolToString(shouldClear) + '}\n');
   }
 };
 
