@@ -72,7 +72,7 @@ void ofApp::draw() {
     if (str.length() > 0 && jsonElement.parse(str)) {
       ofLogNotice() << jsonElement.getRawString();
       const string command = jsonElement["command"].asString();
-      if (command == 'clearScreen') {
+      if (command == "clearScreen") {
         ofClear(ofColor(0, 0, 0));
       } else if (command == "drawPoint") {
         const int x = jsonElement["x"].asInt();
@@ -132,7 +132,7 @@ void ofApp::drawPoint(const int x, const int y, const Json::Value& color) {
 }
 
 // color is expected as an ofxJson array
-void ofApp::drawLine(const Json::Value& vertices, const Json::Value& color, const bool shouldFill) {
+void ofApp::drawLine(const Json::Value& vertices, const Json::Value& color) {
   glPushMatrix();
 
   glTranslatef(posX, posY, posZ);
