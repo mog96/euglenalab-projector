@@ -202,7 +202,11 @@ void ofApp::drawShape(const Json::Value& vertices, const Json::Value& color, con
 // MARK: - Exit
 
 void ofApp::exit() {
+  ofLogNotice() << "disconnecting all clients";
   tcpServer.disconnectAllClients();
+  ofLogNotice() << "===========================";
+  ofLogNotice() << "        terminating        ";
+  ofLogNotice() << "===========================";
 }
 
 // MARK: - Keyboard Input
@@ -210,9 +214,6 @@ void ofApp::exit() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
   if (key == 'q') {
-    ofLogNotice() << "===========================";
-    ofLogNotice() << "        terminating        ";
-    ofLogNotice() << "===========================";
     ofExit();
   } else {
     // Scale X
