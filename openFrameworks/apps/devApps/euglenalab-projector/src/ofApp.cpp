@@ -94,10 +94,10 @@ void ofApp::draw() {
         const bool shouldFill = jsonElement["shouldFill"].asBool();
         drawShape(vertices, color, shouldFill);
       } else if (command == "drawEllipse") {
-        const int x = jsonElement["x"].asInt();
-        const int y = jsonElement["y"].asInt();
-        const int w = jsonElement["w"].asInt();
-        const int h = jsonElement["h"].asInt();
+        const int x = jsonElement["centerX"].asInt();
+        const int y = jsonElement["centerY"].asInt();
+        const int w = jsonElement["width"].asInt();
+        const int h = jsonElement["height"].asInt();
         const Json::Value& color = jsonElement["color"];
         const bool shouldFill = jsonElement["shouldFill"].asBool();
         drawEllipse(x, y, w, h, color, shouldFill);
