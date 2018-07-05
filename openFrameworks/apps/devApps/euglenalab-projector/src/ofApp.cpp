@@ -163,7 +163,8 @@ void ofApp::drawLine(const Json::Value& vertices, const Json::Value& color) {
   glPopMatrix();
 }
 
-void ofApp::drawShape(const Json::Value& vertices, const Json::Value& color, const bool shouldFill) {
+void ofApp::drawShape(const Json::Value& vertices, const Json::Value& color,
+    const bool shouldFill) {
   glPushMatrix();
 
   glTranslatef(posX, posY, posZ);
@@ -195,6 +196,33 @@ void ofApp::drawShape(const Json::Value& vertices, const Json::Value& color, con
       ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
     }
   ofEndShape();
+
+  glPopMatrix();
+}
+
+void ofApp::drawEllipse(const int x, const int y, const int w, const int h,
+    const Json::Value& color, const bool shouldFill) {
+  glPushMatrix();
+
+  glTranslatef(posX, posY, posZ);
+  glRotatef(rotX, 1, 0, 0);
+  glRotatef(rotY, 0, 1, 0);
+  glRotatef(rotZ, 0, 0, 1);
+  glScalef(scaleX, scaleY, scaleZ);
+
+  if (shouldFill) {
+    ofFill();
+  }
+  // ofEnableAlphaBlending();
+  //   ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt(), color[3].asInt());
+  //   ofBeginShape();  
+  //     for (size_t i = 0; i < polyline.getVertices().size(); i++) {
+  //       ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
+  //     }
+  //   ofEndShape();
+  // ofDisableAlphaBlending();
+  ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt());
+  ofDrawEllipse(x, y, w, h);
 
   glPopMatrix();
 }

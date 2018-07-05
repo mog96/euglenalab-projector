@@ -79,21 +79,6 @@ var drawLine = function(projector, vertices, color) {
   }
 };
 
-// color is expected as [r, g, b, a]
-var drawEllipse = function(projector, x, y, w, h, color, shouldFill) {
-  console.log('drawEllipse = {' + x + ', ' + y + ', ' + w + ', ' + h + ', ' + color + '}');
-  if (projector != null && x != null && y != null && color != null) {
-    console.log('writing');
-    projector.write( '{"command": "drawEllipse"'
-      + ', "x": ' + x
-      + ', "y": ' + y
-      + ', "w": ' + w
-      + ', "h": ' + h
-      + ', "color": ' + arrayToString(color)
-      + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
-  }
-};
-
 // vertices is expected as an array of [x, y]
 // color is expected as [r, g, b, a]
 var drawShape = function(projector, vertices, color, shouldFill) {
@@ -104,6 +89,23 @@ var drawShape = function(projector, vertices, color, shouldFill) {
     
     projector.write('{"command": "drawShape"'
       + ', "vertices": ' + arrayToString(vertices)
+      + ', "color": ' + arrayToString(color)
+      + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
+  }
+};
+
+// TODO: FOR ELLIPSE, is x, y top left or origin?
+
+// color is expected as [r, g, b, a]
+var drawEllipse = function(projector, x, y, w, h, color, shouldFill) {
+  console.log('drawEllipse = {' + x + ', ' + y + ', ' + w + ', ' + h + ', ' + color + '}');
+  if (projector != null && x != null && y != null && color != null) {
+    console.log('writing');
+    projector.write( '{"command": "drawEllipse"'
+      + ', "x": ' + x
+      + ', "y": ' + y
+      + ', "w": ' + w
+      + ', "h": ' + h
       + ', "color": ' + arrayToString(color)
       + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
   }
@@ -124,24 +126,33 @@ initializeProjector(function(err, projector) {
 
 var startDrawLoop = function() {
   // Draw blue points top to bottom, left to right across entire canvas
-  var r = 0;
-  var c = 0;
-  var runInt = setInterval(function() {
-    drawPoint(app.projector, c, r++, [0, 0, 255, 1], false);
-    if (r >= canvasHeight) {
-      r = 0;
-      c++;
-    }
-  }, 500);
-  
-  // Draw a filled blue triangle from top left to center to middle left
+  // var r = 0;
+  // var c = 0;
   // var runInt = setInterval(function() {
-  //   drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], true);
-  // }, 5000);
+  //   drawPoint(app.projector, c, r++, [0, 0, 255, 1]);
+  //   if (r >= canvasHeight) {
+  //     r = 0;
+  //     c++;
+  //   }
+  // }, 500);
 
   // Draw two sides of an obtuse blue triangle from top left to center to middle right
   // var runInt = setInterval(function() {
   //   let vertices = [[0, 0], [canvasWidth / 2, canvasHeight / 2], [canvasWidth, canvasHeight / 2]];
   //   drawLine(app.projector, vertices, [0, 0, 255, 1]);
   // }, 5000);
+  
+  // Draw a filled blue triangle from top left to center to middle left
+  // var runInt = setInterval(function() {
+  //   drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], true);
+  // }, 5000);
+
+  // Draw a filled blue ellipse in the center of the screen.
+  var runInt = setInterval(function() {
+    let w = canvasWidth / 2;
+    let h = canvasHeight / 2;
+    let x = canvasWidth / 2 - w / 2;
+    let y = canvasHeight / 2 - h / 2;
+    drawEllipse(app.projector, x, y, w, h, [0, 0, 255, 1], true);
+  }, 5000);
 };

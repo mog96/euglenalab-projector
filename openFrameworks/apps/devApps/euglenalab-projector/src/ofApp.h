@@ -21,7 +21,10 @@ class ofApp: public ofBaseApp {
     void drawProjectionFrame();
     void drawPoint(const int x, const int y, const Json::Value& color);
     void drawLine(const Json::Value& vertices, const Json::Value& color);
-    void drawShape(const Json::Value& vertices, const Json::Value& color, const bool shouldFill);
+    void drawShape(const Json::Value& vertices, const Json::Value& color,
+      const bool shouldFill);
+    void drawEllipse(const int x, const int y, const int w, const int h,
+      const Json::Value& color, const bool shouldFill);
 		
 		void keyPressed(int key);
 		void keyReleased(int key);
