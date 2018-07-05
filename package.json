@@ -1,7 +1,7 @@
 {
   "name": "euglenalab-projector-server",
   "version": "0.0.0",
-  "description": "server that communicates with an iVation IVPJMP70 projector",
+  "description": "server that passes drawing commands to an iVation IVPJMP70 projector",
   "main": "bpu.js",
   "dependencies": {
     "net": "~1.0.2"
