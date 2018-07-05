@@ -60,7 +60,9 @@ var drawPoint = function(projector, x, y, color) {
   console.log('drawPoint = {' + x + ', ' + y + ', ' + color + '}');
   if (projector != null && x != null && y != null && color != null) {
     console.log('writing');
-    projector.write( '{"command": "drawPoint", "x": ' + x + ', "y": ' + y
+    projector.write( '{"command": "drawPoint"'
+      + ', "x": ' + x
+      + ', "y": ' + y
       + ', "color": ' + arrayToString(color) + '}\n');
   }
 };
@@ -71,21 +73,39 @@ var drawLine = function(projector, vertices, color) {
   console.log('drawLine = {' + vertices + ', ' + color + '}');
   if (projector != null && vertices != null && color != null) {
     console.log('writing');
-    projector.write('{"command": "drawLine", "vertices": ' + arrayToString(vertices)
+    projector.write('{"command": "drawLine"'
+      + ', "vertices": ' + arrayToString(vertices)
       + ', "color": ' + arrayToString(color) + '}\n');
+  }
+};
+
+// color is expected as [r, g, b, a]
+var drawEllipse = function(projector, x, y, w, h, color, shouldFill) {
+  console.log('drawEllipse = {' + x + ', ' + y + ', ' + w + ', ' + h + ', ' + color + '}');
+  if (projector != null && x != null && y != null && color != null) {
+    console.log('writing');
+    projector.write( '{"command": "drawEllipse"'
+      + ', "x": ' + x
+      + ', "y": ' + y
+      + ', "w": ' + w
+      + ', "h": ' + h
+      + ', "color": ' + arrayToString(color)
+      + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
   }
 };
 
 // vertices is expected as an array of [x, y]
 // color is expected as [r, g, b, a]
 var drawShape = function(projector, vertices, color, shouldFill) {
-  console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldFill + ', ' + shouldClear + '}');
+  console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldFill + '}');
 
   if (projector != null && vertices != null && color != null && shouldFill != null) {
     console.log('writing');
     
-    projector.write('{"command": "drawShape", "vertices": ' + arrayToString(vertices)
-      + ', "color": ' + arrayToString(color) + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
+    projector.write('{"command": "drawShape"'
+      + ', "vertices": ' + arrayToString(vertices)
+      + ', "color": ' + arrayToString(color)
+      + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
   }
 };
 
