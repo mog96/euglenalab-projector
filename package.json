@@ -1,5 +1,5 @@
 {
-  "name": "euglena-projector",
+  "name": "euglenalab-projector-server",
   "version": "0.0.0",
   "description": "server that communicates with an iVation IVPJMP70 projector",
   "main": "bpu.js",

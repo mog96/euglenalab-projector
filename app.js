@@ -3,30 +3,7 @@ var app = {
     startDate: new Date(),
 };
 
-// MARK: - Projector
-
-const canvasWidth = 640;
-const canvasHeight = 480;
-// Math.round(canvasHeight * 640 / width) // Set width
-// Math.round(canvasHeight * 480 / height) // Set height
-
-var initializeProjector = function(callback) {
-  var net = require('net');
-  var client = new net.Socket();
-  client.connect(32001, 'localhost', function() {
-    callback(null, client);
-  });
-  client.on('error', function(err) {
-    callback(err, client);
-  });
-};
-
-var lightValues = {
-  projectorX: -1,
-  projectorY: -1,
-  projectorColor: 0,
-  projectorShouldClear: 1
-};
+// MARK: - JSON Helpers
 
 var boolToString = function(bool) {
   return bool ? "true" : "false";
@@ -47,6 +24,26 @@ var arrayToString = function(array) {
   arrayString += ']';
   return arrayString;
 }
+
+// MARK: - Projector Client
+
+const canvasWidth = 640;
+const canvasHeight = 480;
+// Math.round(canvasHeight * 640 / width) // Set width
+// Math.round(canvasHeight * 480 / height) // Set height
+const ip = 'localhost';
+const port = 32001;
+
+var initializeProjector = function(callback) {
+  var net = require('net');
+  var client = new net.Socket();
+  client.connect(port, ip, function() {
+    callback(null, client);
+  });
+  client.on('error', function(err) {
+    callback(err, client);
+  });
+};
 
 // color is expected as [r, g, b, a]
 var drawPoint = function(projector, x, y, color, shouldClear) {
@@ -97,6 +94,7 @@ var startDrawLoop = function() {
   //     c++;
   //   }
   // }, 500);
+  
   // Draw blue triangle from top left to center to middle left
   var runInt = setInterval(function() {
     drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], 1, 0);
