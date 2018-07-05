@@ -51,7 +51,7 @@ var clearScreen = function(projector) {
   console.log('clearScreen');
   if (projector != null) {
     console.log('writing');
-    projector.write( '{"command": "clearScreen"}\n');
+    projector.write('{"command": "clearScreen"}\n');
   }
 };
 
@@ -60,7 +60,7 @@ var drawPoint = function(projector, x, y, color) {
   console.log('drawPoint = {' + x + ', ' + y + ', ' + color + '}');
   if (projector != null && x != null && y != null && color != null) {
     console.log('writing');
-    projector.write( '{"command": "drawPoint"'
+    projector.write('{"command": "drawPoint"'
       + ', "x": ' + x
       + ', "y": ' + y
       + ', "color": ' + arrayToString(color) + '}\n');
@@ -83,10 +83,8 @@ var drawLine = function(projector, vertices, color) {
 // color is expected as [r, g, b, a]
 var drawShape = function(projector, vertices, color, shouldFill) {
   console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldFill + '}');
-
   if (projector != null && vertices != null && color != null && shouldFill != null) {
     console.log('writing');
-    
     projector.write('{"command": "drawShape"'
       + ', "vertices": ' + arrayToString(vertices)
       + ', "color": ' + arrayToString(color)
@@ -94,18 +92,19 @@ var drawShape = function(projector, vertices, color, shouldFill) {
   }
 };
 
-// TODO: FOR ELLIPSE, is x, y top left or origin?
-
 // color is expected as [r, g, b, a]
-var drawEllipse = function(projector, x, y, w, h, color, shouldFill) {
-  console.log('drawEllipse = {' + x + ', ' + y + ', ' + w + ', ' + h + ', ' + color + '}');
-  if (projector != null && x != null && y != null && color != null) {
+var drawEllipse = function(projector, centerX, centerY, width, height, color,
+    shouldFill) {
+  console.log('drawEllipse = {' + centerX + ', ' + centerY + ', ' + width
+    + ', ' + height + ', ' + color + '}');
+  if (projector != null && centerX != null && centerY != null && width != null
+    && height != null && color != null && shouldFill != null) {
     console.log('writing');
-    projector.write( '{"command": "drawEllipse"'
-      + ', "x": ' + x
-      + ', "y": ' + y
-      + ', "w": ' + w
-      + ', "h": ' + h
+    projector.write('{"command": "drawEllipse"'
+      + ', "centerX": ' + centerX
+      + ', "centerY": ' + centerY
+      + ', "width": ' + width
+      + ', "height": ' + height
       + ', "color": ' + arrayToString(color)
       + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
   }
@@ -149,10 +148,10 @@ var startDrawLoop = function() {
 
   // Draw a filled blue ellipse in the center of the screen.
   var runInt = setInterval(function() {
+    let x = canvasWidth / 2;
+    let y = canvasHeight / 2;
     let w = canvasWidth / 2;
     let h = canvasHeight / 2;
-    let x = canvasWidth / 2 - w / 2;
-    let y = canvasHeight / 2 - h / 2;
     drawEllipse(app.projector, x, y, w, h, [0, 0, 255, 1], true);
   }, 5000);
 };
