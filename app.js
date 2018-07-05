@@ -13,7 +13,7 @@ var arrayToString = function(array) {
   var arrayString = '[';
   for (var i = 0; i < array.length; i++) {
     if (Array.isArray(array[i])) {
-      arrayString += '[' + array[i] + ']';
+      arrayString += arrayToString(array[i]);
     } else {
       arrayString += array[i];
     }
@@ -45,28 +45,47 @@ var initializeProjector = function(callback) {
   });
 };
 
-// color is expected as [r, g, b, a]
-var drawPoint = function(projector, x, y, color, shouldClear) {
-  console.log('drawPoint = {' + x + ', ' + y + ', ' + color + ', ' + shouldClear + '}');
+// MARK: - Draw Commands
 
-  if (projector != null && x != null && y != null && color != null && shouldClear != null) {
-    console.log('writing')
-    projector.write( '{"type": "point", "x": ' + x + ', "y": ' + y
-      + ', "color": ' + arrayToString(color) + ', "shouldClear": ' + boolToString(shouldClear) + '}\n');
+var clearScreen = function(projector) {
+  console.log('clearScreen');
+  if (projector != null) {
+    console.log('writing');
+    projector.write( '{"command": "clearScreen"}\n');
+  }
+};
+
+// color is expected as [r, g, b, a]
+var drawPoint = function(projector, x, y, color) {
+  console.log('drawPoint = {' + x + ', ' + y + ', ' + color + '}');
+  if (projector != null && x != null && y != null && color != null) {
+    console.log('writing');
+    projector.write( '{"command": "drawPoint", "x": ' + x + ', "y": ' + y
+      + ', "color": ' + arrayToString(color) + '}\n');
   }
 };
 
 // vertices is expected as an array of [x, y]
 // color is expected as [r, g, b, a]
-var drawShape = function(projector, vertices, color, shouldFill, shouldClear) {
+var drawLine = function(projector, vertices, color) {
+  console.log('drawLine = {' + vertices + ', ' + color + '}');
+  if (projector != null && vertices != null && color != null) {
+    console.log('writing');
+    projector.write('{"command": "drawLine", "vertices": ' + arrayToString(vertices)
+      + ', "color": ' + arrayToString(color) + '}\n');
+  }
+};
+
+// vertices is expected as an array of [x, y]
+// color is expected as [r, g, b, a]
+var drawShape = function(projector, vertices, color, shouldFill) {
   console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldFill + ', ' + shouldClear + '}');
 
-  if (projector != null && vertices != null && color != null && shouldFill != null && shouldClear != null) {
-    console.log('writing')
+  if (projector != null && vertices != null && color != null && shouldFill != null) {
+    console.log('writing');
     
-    projector.write('{"type": "shape", "vertices": ' + arrayToString(vertices)
-      + ', "color": ' + arrayToString(color) + ', "shouldFill": ' + boolToString(shouldFill)
-      + ', "shouldClear": ' + boolToString(shouldClear) + '}\n');
+    projector.write('{"command": "drawShape", "vertices": ' + arrayToString(vertices)
+      + ', "color": ' + arrayToString(color) + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
   }
 };
 
@@ -95,9 +114,14 @@ var startDrawLoop = function() {
   //   }
   // }, 500);
   
-  // Draw blue triangle from top left to center to middle left
+  // Draw filled blue triangle from top left to center to middle left
+  // var runInt = setInterval(function() {
+  //   drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], 1, 0);
+  // }, 5000);
+
+  // Draw two sides of blue triangle from top left to center to middle left
   var runInt = setInterval(function() {
-    drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], 1, 0);
+    let vertices = [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]];
+    drawShape(app.projector, vertices, [0, 0, 255, 1], 0, 0);
   }, 5000);
 };
-
