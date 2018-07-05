@@ -1,6 +1,6 @@
 var app = {
-    name: 'app.js',
-    startDate: new Date(),
+  name: 'app.js',
+  startDate: new Date(),
 };
 
 // MARK: - JSON Helpers
