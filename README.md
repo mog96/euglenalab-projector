@@ -1,5 +1,5 @@
 # To get Node.js running
-`npm install`
+`npm install`\n
 `./run.sh`
 
 # To get openFrameworks running
