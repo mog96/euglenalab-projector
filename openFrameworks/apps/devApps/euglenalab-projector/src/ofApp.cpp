@@ -67,25 +67,30 @@ void ofApp::draw() {
       // }
       tmp = tcpServer.receive(i);      
     } while(tmp != "");
-    ofLogNotice() << "RECEIVED: " << str;
+    ofLogNotice() << "RECEIVED STRING: " << str;
 
     if (str.length() > 0 && jsonElement.parse(str)) {
       ofLogNotice() << jsonElement.getRawString();
-      const string elementType = jsonElement["type"].asString();
-      const Json::Value& color = jsonElement["color"];
-      const bool shouldClear = jsonElement["shouldClear"].asBool();
-      if (shouldClear) {
+      const string command = jsonElement["command"].asString();
+      if (command == 'clearScreen') {
         ofClear(ofColor(0, 0, 0));
-      }
-      if (elementType == "shape") {
-        ofLogNotice() << "SHAPE DETECTED";
-        const Json::Value& vertices = jsonElement["vertices"];
-        const bool shouldFill = jsonElement["shouldFill"].asBool();
-        drawShape(vertices, color, shouldFill);
-      } else if (elementType == "point") {
+      } else if (command == "drawPoint") {
         const int x = jsonElement["x"].asInt();
         const int y = jsonElement["y"].asInt();
+        const Json::Value& color = jsonElement["color"];
         drawPoint(x, y, color);
+      } else if (command == "drawLine") {
+        const Json::Value& vertices = jsonElement["vertices"];
+        const Json::Value& color = jsonElement["color"];
+        drawLine(vertices, color);
+      } else if (command == "drawShape") {
+
+        ofLogNotice() << "SHAPE DETECTED";
+
+        const Json::Value& vertices = jsonElement["vertices"];
+        const Json::Value& color = jsonElement["color"];
+        const bool shouldFill = jsonElement["shouldFill"].asBool();
+        drawShape(vertices, color, shouldFill);
       }
     }
   }
@@ -107,6 +112,7 @@ void ofApp::drawProjectionFrame() {
   glPopMatrix();
 }
 
+// color is expected as an ofxJson array
 void ofApp::drawPoint(const int x, const int y, const Json::Value& color) {
   glPushMatrix();
 
@@ -121,6 +127,34 @@ void ofApp::drawPoint(const int x, const int y, const Json::Value& color) {
     ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt(), color[3].asInt());
     ofDrawRectangle(x, y, 1, 1);
   ofDisableAlphaBlending();
+
+  glPopMatrix();
+}
+
+// color is expected as an ofxJson array
+void ofApp::drawLine(const Json::Value& vertices, const Json::Value& color, const bool shouldFill) {
+  glPushMatrix();
+
+  glTranslatef(posX, posY, posZ);
+  glRotatef(rotX, 1, 0, 0);
+  glRotatef(rotY, 0, 1, 0);
+  glRotatef(rotZ, 0, 0, 1);
+  glScalef(scaleX, scaleY, scaleZ);
+
+  ofPolyline polyline;
+  for (Json::ArrayIndex i = 0; i < vertices.size(); ++i) {
+    polyline.addVertex(ofPoint(vertices[i][0].asInt(), vertices[i][1].asInt()));
+  }
+  // ofEnableAlphaBlending();
+  //   ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt(), color[3].asInt());
+  //   ofBeginShape();  
+  //     for (size_t i = 0; i < polyline.getVertices().size(); i++) {
+  //       ofVertex(polyline.getVertices().at(i).x, polyline.getVertices().at(i).y);
+  //     }
+  //   ofEndShape();
+  // ofDisableAlphaBlending();
+  ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt());
+  polyline.draw();
 
   glPopMatrix();
 }

@@ -114,14 +114,14 @@ var startDrawLoop = function() {
   //   }
   // }, 500);
   
-  // Draw filled blue triangle from top left to center to middle left
+  // Draw a filled blue triangle from top left to center to middle left
   // var runInt = setInterval(function() {
   //   drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], 1, 0);
   // }, 5000);
 
-  // Draw two sides of blue triangle from top left to center to middle left
+  // Draw two sides of a blue triangle from top left to center to middle left
   var runInt = setInterval(function() {
     let vertices = [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]];
-    drawShape(app.projector, vertices, [0, 0, 255, 1], 0, 0);
+    drawLine(app.projector, vertices, [0, 0, 255, 1]);
   }, 5000);
 };
