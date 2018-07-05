@@ -93,19 +93,30 @@ void ofApp::draw() {
         const Json::Value& color = jsonElement["color"];
         const bool shouldFill = jsonElement["shouldFill"].asBool();
         drawShape(vertices, color, shouldFill);
+      } else if (command == "drawEllipse") {
+        const int x = jsonElement["x"].asInt();
+        const int y = jsonElement["y"].asInt();
+        const int w = jsonElement["w"].asInt();
+        const int h = jsonElement["h"].asInt();
+        const Json::Value& color = jsonElement["color"];
+        const bool shouldFill = jsonElement["shouldFill"].asBool();
+        drawEllipse(x, y, w, h, color, shouldFill);
       }
     }
   }
 }
 
-void ofApp::drawProjectionFrame() {
-  glPushMatrix();
-
+void applyGLMatrixTransformations() {
   glTranslatef(posX, posY, posZ);
   glRotatef(rotX, 1, 0, 0);
   glRotatef(rotY, 0, 1, 0);
   glRotatef(rotZ, 0, 0, 1);
   glScalef(scaleX, scaleY, scaleZ);
+}
+
+void ofApp::drawProjectionFrame() {
+  glPushMatrix();
+  applyGLMatrixTransformations();
 
   ofNoFill();
   ofSetColor(ofColor(255,255,255), 100);
@@ -117,12 +128,7 @@ void ofApp::drawProjectionFrame() {
 // color is expected as an ofxJson array
 void ofApp::drawPoint(const int x, const int y, const Json::Value& color) {
   glPushMatrix();
-
-  glTranslatef(posX, posY, posZ);
-  glRotatef(rotX, 1, 0, 0);
-  glRotatef(rotY, 0, 1, 0);
-  glRotatef(rotZ, 0, 0, 1);
-  glScalef(scaleX, scaleY, scaleZ);
+  applyGLMatrixTransformations();
 
   ofFill();
   // ofEnableAlphaBlending();
@@ -138,12 +144,7 @@ void ofApp::drawPoint(const int x, const int y, const Json::Value& color) {
 // color is expected as an ofxJson array
 void ofApp::drawLine(const Json::Value& vertices, const Json::Value& color) {
   glPushMatrix();
-
-  glTranslatef(posX, posY, posZ);
-  glRotatef(rotX, 1, 0, 0);
-  glRotatef(rotY, 0, 1, 0);
-  glRotatef(rotZ, 0, 0, 1);
-  glScalef(scaleX, scaleY, scaleZ);
+  applyGLMatrixTransformations();
 
   ofPolyline polyline;
   for (Json::ArrayIndex i = 0; i < vertices.size(); ++i) {
@@ -166,12 +167,7 @@ void ofApp::drawLine(const Json::Value& vertices, const Json::Value& color) {
 void ofApp::drawShape(const Json::Value& vertices, const Json::Value& color,
     const bool shouldFill) {
   glPushMatrix();
-
-  glTranslatef(posX, posY, posZ);
-  glRotatef(rotX, 1, 0, 0);
-  glRotatef(rotY, 0, 1, 0);
-  glRotatef(rotZ, 0, 0, 1);
-  glScalef(scaleX, scaleY, scaleZ);
+  applyGLMatrixTransformations();
 
   ofPolyline polyline;
   for (Json::ArrayIndex i = 0; i < vertices.size(); ++i) {
@@ -203,12 +199,7 @@ void ofApp::drawShape(const Json::Value& vertices, const Json::Value& color,
 void ofApp::drawEllipse(const int x, const int y, const int w, const int h,
     const Json::Value& color, const bool shouldFill) {
   glPushMatrix();
-
-  glTranslatef(posX, posY, posZ);
-  glRotatef(rotX, 1, 0, 0);
-  glRotatef(rotY, 0, 1, 0);
-  glRotatef(rotZ, 0, 0, 1);
-  glScalef(scaleX, scaleY, scaleZ);
+  applyGLMatrixTransformations();
 
   if (shouldFill) {
     ofFill();
