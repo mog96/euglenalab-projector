@@ -35,6 +35,8 @@ void ofApp::setup() {
 void ofApp::update() {
 }
 
+// MARK: - Draw
+
 //--------------------------------------------------------------
 void ofApp::draw() {
   drawProjectionFrame();
@@ -195,74 +197,81 @@ void ofApp::drawShape(const Json::Value& vertices, const Json::Value& color, con
   glPopMatrix();
 }
 
+// MARK: - Exit
+
+void ofApp::exit() {
+  tcpServer.disconnectAllClients();
+}
+
+// MARK: - Keyboard Input
+
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
-  // Scale X
-  if (key == 'm') {
-    scaleX +=0.001;
-  }
+  if (key == 'q') {
+    ofLogNotice() << "===========================";
+    ofLogNotice() << "        terminating        ";
+    ofLogNotice() << "===========================";
+    ofExit();
+  } else {
+    // Scale X
+    if (key == 'm') {
+      scaleX +=0.001;
+    }
+    if (key == 'n') {
+      scaleX -=0.001;
+    }
 
-  if (key == 'n') {
-    scaleX -=0.001;
-  }
+    // Scale Y
+    if (key == 'l') {
+      scaleY += 0.001;
+    }
+    if (key == 'k') {
+      scaleY -= 0.001;
+    }
 
-  // Scale Y
-  if (key == 'l') {
-    scaleY += 0.001;
-  }
+    // Change X/Y position
+    if (key == 'w') {
+      posY +=0.1;
+    }
+    if (key == 'z') {
+      posY -=0.1;
+    }
+    if (key == 'a') {
+      posX -=0.1;
+    }
+    if (key == 'd') {
+      posX +=0.1;
+    }
 
-  if (key == 'k') {
-    scaleY -= 0.001;
-  }
+    // Rotate X
+    if (key == 't') {
+      rotX -= 0.1;
+    }
+    if (key == 'y') {
+      rotX += 0.1;
+    }
 
-  // Change X/Y position
-  if (key == 'w') {
-    posY +=0.1;
-  }
+    // Rotate Y
+    if (key == 'u') {
+      rotY -= 0.1;
+    }
+    if (key == 'i') {
+      rotY += 0.1;
+    }
 
-  if (key == 'z') {
-    posY -=0.1;
-  }
+    // Rotate Z
+    if (key == 'o') {
+      rotZ -=0.1;
+    }
+    if(key=='p'){
+        rotZ +=0.1;
+    }
 
-  if (key == 'a') {
-    posX -=0.1;
+    ofLogNotice() << "==========================";
+    ofLogNotice() << "{" << posX << ", " << posY << ", "  << posZ << "}";
+    ofLogNotice() << "{" << scaleX << ", " << scaleY << ", "  << scaleZ << "}";
+    ofLogNotice() << "{" << rotX << ", " << rotY << ", "  << rotZ << "}";
   }
-
-  if (key == 'd') {
-    posX +=0.1;
-  }
-
-  // Rotate X
-  if (key == 't') {
-    rotX -= 0.1;
-  }
-
-  if (key == 'y') {
-    rotX += 0.1;
-  }
-
-  // Rotate Y
-  if (key == 'u') {
-    rotY -= 0.1;
-  }
-
-  if (key == 'i') {
-    rotY += 0.1;
-  }
-
-  // Rotate Z
-  if (key == 'o') {
-    rotZ -=0.1;
-  }
-
-  if(key=='p'){
-      rotZ +=0.1;
-  }
-
-  ofLogNotice() << "==========================";
-  ofLogNotice() << "{" << posX << ", " << posY << ", "  << posZ << "}";
-  ofLogNotice() << "{" << scaleX << ", " << scaleY << ", "  << scaleZ << "}";
-  ofLogNotice() << "{" << rotX << ", " << rotY << ", "  << rotZ << "}";
 }
 
 //--------------------------------------------------------------
