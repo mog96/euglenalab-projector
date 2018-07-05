@@ -106,7 +106,7 @@ void ofApp::draw() {
   }
 }
 
-void applyGLMatrixTransformations() {
+void ofApp::applyGLMatrixTransformations() {
   glTranslatef(posX, posY, posZ);
   glRotatef(rotX, 1, 0, 0);
   glRotatef(rotY, 0, 1, 0);

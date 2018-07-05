@@ -60,4 +60,7 @@ class ofApp: public ofBaseApp {
     uint64_t lastSent;
 
     ofMesh mesh;
+
+  private:
+    void applyGLMatrixTransformations();
 };
