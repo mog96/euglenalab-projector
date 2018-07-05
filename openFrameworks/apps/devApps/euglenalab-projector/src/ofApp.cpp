@@ -125,10 +125,12 @@ void ofApp::drawPoint(const int x, const int y, const Json::Value& color) {
   glScalef(scaleX, scaleY, scaleZ);
 
   ofFill();
-  ofEnableAlphaBlending();
-    ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt(), color[3].asInt());
-    ofDrawRectangle(x, y, 1, 1);
-  ofDisableAlphaBlending();
+  // ofEnableAlphaBlending();
+  //   ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt(), color[3].asInt());
+  //   ofDrawRectangle(x, y, 1, 1);
+  // ofDisableAlphaBlending();
+  ofSetColor(color[0].asInt(), color[1].asInt(), color[2].asInt(), color[3].asInt());
+  ofDrawRectangle(x, y, 1, 1);
 
   glPopMatrix();
 }
