@@ -1,7 +1,7 @@
 {
   "name": "euglena-projector",
   "version": "0.0.0",
-  "description": "server that communicates with an Ivation projector",
+  "description": "server that communicates with an iVation IVPJMP70 projector",
   "main": "bpu.js",
   "dependencies": {
     "net": "~1.0.2"
