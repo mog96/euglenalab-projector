@@ -16,6 +16,7 @@ class ofApp: public ofBaseApp {
 		void setup();
 		void update();
 		void draw();
+    void exit();
 
     void drawProjectionFrame();
     void drawPoint(const int x, const int y, const Json::Value& color);
