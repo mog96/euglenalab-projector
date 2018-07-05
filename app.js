@@ -116,12 +116,12 @@ var startDrawLoop = function() {
   
   // Draw a filled blue triangle from top left to center to middle left
   // var runInt = setInterval(function() {
-  //   drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], 1, 0);
+  //   drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], true);
   // }, 5000);
 
   // Draw two sides of a blue triangle from top left to center to middle left
   var runInt = setInterval(function() {
-    let vertices = [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]];
+    let vertices = [[0, 0], [canvasWidth / 2, canvasHeight / 2], [canvasWidth, canvasHeight / 2]];
     drawLine(app.projector, vertices, [0, 0, 255, 1]);
   }, 5000);
 };
