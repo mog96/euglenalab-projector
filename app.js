@@ -1,4 +1,4 @@
-var app = {
+var projector = {
   name: 'app.js',
   startDate: new Date(),
 };
@@ -25,7 +25,15 @@ var arrayToString = function(array) {
   return arrayString;
 }
 
-// MARK: - Projector Client
+// MARK: - Projector Server
+
+var initializeProjectorServer = function(callback) {
+
+  // START HERE
+
+}
+
+// MARK: - Local Projector Client
 
 const canvasWidth = 640;
 const canvasHeight = 480;
@@ -47,20 +55,20 @@ var initializeProjector = function(callback) {
 
 // MARK: - Draw Commands
 
-var clearScreen = function(projector) {
+var clearScreen = function(ofApp) {
   console.log('clearScreen');
-  if (projector != null) {
+  if (ofApp != null) {
     console.log('writing');
-    projector.write('{"command": "clearScreen"}\n');
+    ofApp.write('{"command": "clearScreen"}\n');
   }
 };
 
 // color is expected as [r, g, b, a]
-var drawPoint = function(projector, x, y, color) {
+var drawPoint = function(ofApp, x, y, color) {
   console.log('drawPoint = {' + x + ', ' + y + ', ' + color + '}');
-  if (projector != null && x != null && y != null && color != null) {
+  if (ofApp != null && x != null && y != null && color != null) {
     console.log('writing');
-    projector.write('{"command": "drawPoint"'
+    ofApp.write('{"command": "drawPoint"'
       + ', "x": ' + x
       + ', "y": ' + y
       + ', "color": ' + arrayToString(color) + '}\n');
@@ -69,11 +77,11 @@ var drawPoint = function(projector, x, y, color) {
 
 // vertices is expected as an array of [x, y]
 // color is expected as [r, g, b, a]
-var drawLine = function(projector, vertices, color) {
+var drawLine = function(ofApp, vertices, color) {
   console.log('drawLine = {' + vertices + ', ' + color + '}');
-  if (projector != null && vertices != null && color != null) {
+  if (ofApp != null && vertices != null && color != null) {
     console.log('writing');
-    projector.write('{"command": "drawLine"'
+    ofApp.write('{"command": "drawLine"'
       + ', "vertices": ' + arrayToString(vertices)
       + ', "color": ' + arrayToString(color) + '}\n');
   }
@@ -81,11 +89,11 @@ var drawLine = function(projector, vertices, color) {
 
 // vertices is expected as an array of [x, y]
 // color is expected as [r, g, b, a]
-var drawShape = function(projector, vertices, color, shouldFill) {
+var drawShape = function(ofApp, vertices, color, shouldFill) {
   console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldFill + '}');
-  if (projector != null && vertices != null && color != null && shouldFill != null) {
+  if (ofApp != null && vertices != null && color != null && shouldFill != null) {
     console.log('writing');
-    projector.write('{"command": "drawShape"'
+    ofApp.write('{"command": "drawShape"'
       + ', "vertices": ' + arrayToString(vertices)
       + ', "color": ' + arrayToString(color)
       + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
@@ -93,14 +101,14 @@ var drawShape = function(projector, vertices, color, shouldFill) {
 };
 
 // color is expected as [r, g, b, a]
-var drawEllipse = function(projector, centerX, centerY, width, height, color,
+var drawEllipse = function(ofApp, centerX, centerY, width, height, color,
     shouldFill) {
   console.log('drawEllipse = {' + centerX + ', ' + centerY + ', ' + width
     + ', ' + height + ', ' + color + '}');
-  if (projector != null && centerX != null && centerY != null && width != null
+  if (ofApp != null && centerX != null && centerY != null && width != null
     && height != null && color != null && shouldFill != null) {
     console.log('writing');
-    projector.write('{"command": "drawEllipse"'
+    ofApp.write('{"command": "drawEllipse"'
       + ', "centerX": ' + centerX
       + ', "centerY": ' + centerY
       + ', "width": ' + width
@@ -110,25 +118,14 @@ var drawEllipse = function(projector, centerX, centerY, width, height, color,
   }
 };
 
-// MARK: - Run
+// MARK: - Initialization
 
-initializeProjector(function(err, projector) {
-  if (err) {
-    console.log('==== projector failed ====');
-    console.log(err);
-  } else {
-    console.log('projector initialized');
-    app.projector = projector;
-    startDrawLoop();
-  }
-});
-
-var startDrawLoop = function() {
+var runLoop = function() {
   // Draw blue points top to bottom, left to right across entire canvas
   // var r = 0;
   // var c = 0;
   // var runInt = setInterval(function() {
-  //   drawPoint(app.projector, c, r++, [0, 0, 255, 1]);
+  //   drawPoint(projector.ofApp, c, r++, [0, 0, 255, 1]);
   //   if (r >= canvasHeight) {
   //     r = 0;
   //     c++;
@@ -138,20 +135,54 @@ var startDrawLoop = function() {
   // Draw two sides of an obtuse blue triangle from top left to center to middle right
   // var runInt = setInterval(function() {
   //   let vertices = [[0, 0], [canvasWidth / 2, canvasHeight / 2], [canvasWidth, canvasHeight / 2]];
-  //   drawLine(app.projector, vertices, [0, 0, 255, 1]);
+  //   drawLine(projector.ofApp, vertices, [0, 0, 255, 1]);
   // }, 5000);
   
   // Draw a filled blue triangle from top left to center to middle left
   // var runInt = setInterval(function() {
-  //   drawShape(app.projector, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], true);
+  //   drawShape(projector.ofApp, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], true);
   // }, 5000);
 
   // Draw a filled blue ellipse in the center of the screen.
+  // var runInt = setInterval(function() {
+  //   let x = canvasWidth / 2;
+  //   let y = canvasHeight / 2;
+  //   let w = canvasWidth / 2;
+  //   let h = canvasHeight / 2;
+  //   drawEllipse(projector.ofApp, x, y, w, h, [0, 0, 255, 1], true);
+  // }, 5000);
+
   var runInt = setInterval(function() {
-    let x = canvasWidth / 2;
-    let y = canvasHeight / 2;
-    let w = canvasWidth / 2;
-    let h = canvasHeight / 2;
-    drawEllipse(app.projector, x, y, w, h, [0, 0, 255, 1], true);
+    console.log('alive');
   }, 5000);
 };
+
+initializeProjector(function(err, ofApp) {
+  if (err) {
+    console.log('==== projector failed to connect ====');
+    console.log(err);
+  } else {
+    console.log('projector connected');
+    projector.ofApp = ofApp;
+    runLoop();
+  }
+});
+
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+server.listen(80);
+
+app.get('/', function (req, res) {
+  res.sendfile(__dirname + '/index.html');
+});
+
+io.on('connection', function (socket) {
+  socket.emit('reply', { message: ':: welcome to euglenalab-projector-server ::' });
+  socket.on('clearScreen', function (data) {
+    console.log('socket-io: clearScreen - ' + data);
+    clearScreen(projector.ofApp);
+    socket.emit('reply', { message: 'screen cleared' });
+  });
+});
