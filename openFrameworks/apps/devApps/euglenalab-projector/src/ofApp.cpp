@@ -39,7 +39,7 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-  // drawProjectionFrame();
+  drawProjectionFrame();
   for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
     if (!tcpServer.isClientConnected(i)) {
       ofLogNotice() << "client " << ofToString(i) << " not connected";
