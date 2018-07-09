@@ -25,41 +25,13 @@ var arrayToString = function(array) {
   return arrayString;
 }
 
-// MARK: - Projector Server
-
-var initializeProjectorServer = function(callback) {
-
-  // START HERE
-
-}
-
-// MARK: - Local Projector Client
-
-const canvasWidth = 640;
-const canvasHeight = 480;
-// Math.round(canvasHeight * 640 / width) // Set width
-// Math.round(canvasHeight * 480 / height) // Set height
-const ip = 'localhost';
-const port = 32001;
-
-var initializeProjector = function(callback) {
-  var net = require('net');
-  var client = new net.Socket();
-  client.connect(port, ip, function() {
-    callback(null, client);
-  });
-  client.on('error', function(err) {
-    callback(err, client);
-  });
-};
-
 // MARK: - Draw Commands
 
 var clearScreen = function(ofApp) {
   console.log('clearScreen');
   if (ofApp != null) {
     console.log('writing');
-    ofApp.write('{"command": "clearScreen"}\n');
+    ofApp.write('{"command": "clearScreen"}\n'); // \n marks end of message
   }
 };
 
@@ -120,6 +92,24 @@ var drawEllipse = function(ofApp, centerX, centerY, width, height, color,
 
 // MARK: - Initialization
 
+const canvasWidth = 640;
+const canvasHeight = 480;
+// Math.round(canvasHeight * 640 / width) // Set width
+// Math.round(canvasHeight * 480 / height) // Set height
+const ip = 'localhost';
+const port = 32001;
+
+var initializeProjector = function(callback) {
+  var net = require('net');
+  var client = new net.Socket();
+  client.connect(port, ip, function() {
+    callback(null, client);
+  });
+  client.on('error', function(err) {
+    callback(err, client);
+  });
+};
+
 var runLoop = function() {
   // Draw blue points top to bottom, left to right across entire canvas
   // var r = 0;
@@ -177,6 +167,8 @@ server.listen(80);
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
+
+// MARK: - Socket.IO Commands
 
 io.on('connection', function (socket) {
   socket.emit('reply', { message: ':: welcome to euglenalab-projector-server ::' });
