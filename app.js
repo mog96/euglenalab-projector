@@ -96,13 +96,13 @@ const canvasWidth = 640;
 const canvasHeight = 480;
 // Math.round(canvasHeight * 640 / width) // Set width
 // Math.round(canvasHeight * 480 / height) // Set height
-const ip = 'localhost';
-const port = 32001;
+const projectorIp = 'localhost';
+const projectorPort = 32001;
 
 var initializeProjector = function(callback) {
   var net = require('net');
   var client = new net.Socket();
-  client.connect(port, ip, function() {
+  client.connect(projectorPort, projectorIp, function() {
     callback(null, client);
   });
   client.on('error', function(err) {
@@ -162,7 +162,8 @@ var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-server.listen(80);
+const projectorServerPort = 32003;
+server.listen(projectorServerPort);
 
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
