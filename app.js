@@ -172,9 +172,10 @@ app.get('/', function (req, res) {
 // MARK: - Socket.IO Commands
 
 io.on('connection', function (socket) {
+  console.log('socket-io: connection');
   socket.emit('reply', { message: ':: welcome to euglenalab-projector-server ::' });
   socket.on('clearScreen', function (data) {
-    console.log('socket-io: clearScreen - ' + data);
+    console.log('socket-io: clearScreen - ' + JSON.stringify(data, null, 2));
     clearScreen(projector.ofApp);
     socket.emit('reply', { message: 'screen cleared' });
   });
