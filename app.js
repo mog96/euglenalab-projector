@@ -174,9 +174,9 @@ app.get('/', function (req, res) {
 io.on('connection', function (socket) {
   console.log('socket-io: connection');
   socket.emit('reply', { message: ':: welcome to euglenalab-projector-server ::' });
-  socket.on('clearScreen', function (data) {
-    console.log('socket-io: clearScreen - ' + JSON.stringify(data, null, 2));
+  socket.on('command', function (data) {
+    console.log('socket-io: command - ' + JSON.stringify(data, null, 2));
     clearScreen(projector.ofApp);
-    socket.emit('reply', { message: 'screen cleared' });
+    socket.emit('reply', { message: 'command received' });
   });
 });
