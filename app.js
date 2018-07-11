@@ -128,7 +128,7 @@ projectorServer.projector = new net.Socket()
     console.log('projector connected');
     projector.ofApp = ofApp;
     runLoop();
-  });
+  })
   .on('error', function(error) {
     console.log('==== projector failed to connect ====');
     console.log(error);
