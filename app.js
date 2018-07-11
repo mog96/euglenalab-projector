@@ -156,6 +156,8 @@ io.on('connection', function (socket) {
     console.log('socket-io: command - ' + JSON.stringify(data, null, 2));
     if (!app.projector) {
       socket.emit('reply', { error: 'projector is down' });
+    } else if (!data) {
+      socket.emit('reply', { error: 'no payload found' });
     } else if (!data['command']) {
       socket.emit('reply', { error: 'command must be one of '
         + arrayToString(commands) });
