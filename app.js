@@ -1,13 +1,95 @@
-var projector = {
+var app = {
   name: 'app.js',
   startDate: new Date(),
 };
 
-// MARK: - JSON Helpers
+// MARK: - Projector Draw Commands
 
-var boolToString = function(bool) {
-  return bool ? "true" : "false";
-}
+var commands = ['clearScreen', 'drawPoint', 'drawLine', 'drawShape', 'drawEllipse'];
+
+var clearScreen = function(command) {
+  console.log('clearScreen');
+  if (app.projector != null) {
+    console.log('writing');
+    app.projector.write(JSON.stringify(command) + '\n');
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// x, y are expected as integers
+// color is expected as [r, g, b, a]
+var drawPointParams = ['x', 'y', 'color'];
+var drawPoint = function(command) {
+  if (app.projector != null
+      && command[x] != null
+      && command[y] != null
+      && command[color] != null) {
+    console.log('writing');
+    app.projector.write(JSON.stringify(command) + '\n');
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// vertices is expected as an array of [x, y]
+// color is expected as [r, g, b, a]
+var drawLineParams = ['vertices', 'color'];
+var drawLine = function(command) {
+  console.log('drawLine');
+  if (app.projector != null
+      && command[vertices] != null
+      && command[color] != null) {
+    console.log('writing');
+    app.projector.write(JSON.stringify(command) + '\n');
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// vertices is expected as an array of [x, y]
+// color is expected as [r, g, b, a]
+// shouldFill is expected as a boolean
+var drawShapeParams = ['vertices', 'color', 'shouldFill'];
+var drawShape = function(command) {
+  console.log('drawShape');
+  if (app.projector != null
+      && command[vertices] != null
+      && command[color] != null
+      && command[shouldFill] != null) {
+    console.log('writing');
+    app.projector.write(JSON.stringify(command) + '\n');
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// centerX, centerY, width, heighe are expected as integers
+// color is expected as [r, g, b, a]
+// shouldFill is expected as a boolean
+var drawShapeParams = ['centerX', 'centerY', 'width', 'height', 'color', 'shouldFill'];
+var drawEllipse = function(command) {
+  console.log('drawEllipse');
+  if (app.projector != null
+      && command[centerX] != null
+      && command[centerY] != null
+      && command[width] != null
+      && command[height] != null
+      && command[color] != null
+      && command[shouldFill] != null) {
+    console.log('writing');
+    app.projector.write(JSON.stringify(command) + '\n');
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// MARK: - JSON Helpers
 
 var arrayToString = function(array) {
   var arrayString = '[';
@@ -25,158 +107,98 @@ var arrayToString = function(array) {
   return arrayString;
 }
 
-// MARK: - Draw Commands
-
-var clearScreen = function(ofApp) {
-  console.log('clearScreen');
-  if (ofApp != null) {
-    console.log('writing');
-    ofApp.write('{"command": "clearScreen"}\n'); // \n marks end of message
-  }
-};
-
-// color is expected as [r, g, b, a]
-var drawPoint = function(ofApp, x, y, color) {
-  console.log('drawPoint = {' + x + ', ' + y + ', ' + color + '}');
-  if (ofApp != null && x != null && y != null && color != null) {
-    console.log('writing');
-    ofApp.write('{"command": "drawPoint"'
-      + ', "x": ' + x
-      + ', "y": ' + y
-      + ', "color": ' + arrayToString(color) + '}\n');
-  }
-};
-
-// vertices is expected as an array of [x, y]
-// color is expected as [r, g, b, a]
-var drawLine = function(ofApp, vertices, color) {
-  console.log('drawLine = {' + vertices + ', ' + color + '}');
-  if (ofApp != null && vertices != null && color != null) {
-    console.log('writing');
-    ofApp.write('{"command": "drawLine"'
-      + ', "vertices": ' + arrayToString(vertices)
-      + ', "color": ' + arrayToString(color) + '}\n');
-  }
-};
-
-// vertices is expected as an array of [x, y]
-// color is expected as [r, g, b, a]
-var drawShape = function(ofApp, vertices, color, shouldFill) {
-  console.log('drawShape = {' + vertices + ', ' + color + ', ' + shouldFill + '}');
-  if (ofApp != null && vertices != null && color != null && shouldFill != null) {
-    console.log('writing');
-    ofApp.write('{"command": "drawShape"'
-      + ', "vertices": ' + arrayToString(vertices)
-      + ', "color": ' + arrayToString(color)
-      + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
-  }
-};
-
-// color is expected as [r, g, b, a]
-var drawEllipse = function(ofApp, centerX, centerY, width, height, color,
-    shouldFill) {
-  console.log('drawEllipse = {' + centerX + ', ' + centerY + ', ' + width
-    + ', ' + height + ', ' + color + '}');
-  if (ofApp != null && centerX != null && centerY != null && width != null
-    && height != null && color != null && shouldFill != null) {
-    console.log('writing');
-    ofApp.write('{"command": "drawEllipse"'
-      + ', "centerX": ' + centerX
-      + ', "centerY": ' + centerY
-      + ', "width": ' + width
-      + ', "height": ' + height
-      + ', "color": ' + arrayToString(color)
-      + ', "shouldFill": ' + boolToString(shouldFill) + '}\n');
-  }
-};
-
 // MARK: - Initialization
 
 const canvasWidth = 640;
 const canvasHeight = 480;
 // Math.round(canvasHeight * 640 / width) // Set width
 // Math.round(canvasHeight * 480 / height) // Set height
-const projectorIp = 'localhost';
-const projectorPort = 32001;
-
-var initializeProjector = function(callback) {
-  var net = require('net');
-  var client = new net.Socket();
-  client.connect(projectorPort, projectorIp, function() {
-    callback(null, client);
-  });
-  client.on('error', function(err) {
-    callback(err, client);
-  });
-};
 
 var runLoop = function() {
-  // Draw blue points top to bottom, left to right across entire canvas
-  // var r = 0;
-  // var c = 0;
-  // var runInt = setInterval(function() {
-  //   drawPoint(projector.ofApp, c, r++, [0, 0, 255, 1]);
-  //   if (r >= canvasHeight) {
-  //     r = 0;
-  //     c++;
-  //   }
-  // }, 500);
-
-  // Draw two sides of an obtuse blue triangle from top left to center to middle right
-  // var runInt = setInterval(function() {
-  //   let vertices = [[0, 0], [canvasWidth / 2, canvasHeight / 2], [canvasWidth, canvasHeight / 2]];
-  //   drawLine(projector.ofApp, vertices, [0, 0, 255, 1]);
-  // }, 5000);
-  
-  // Draw a filled blue triangle from top left to center to middle left
-  // var runInt = setInterval(function() {
-  //   drawShape(projector.ofApp, [[0, 0], [canvasWidth / 2, canvasHeight / 2], [0, canvasHeight / 2]], [0, 0, 255, 1], true);
-  // }, 5000);
-
-  // Draw a filled blue ellipse in the center of the screen.
-  // var runInt = setInterval(function() {
-  //   let x = canvasWidth / 2;
-  //   let y = canvasHeight / 2;
-  //   let w = canvasWidth / 2;
-  //   let h = canvasHeight / 2;
-  //   drawEllipse(projector.ofApp, x, y, w, h, [0, 0, 255, 1], true);
-  // }, 5000);
-
   var runInt = setInterval(function() {
     console.log('alive');
   }, 5000);
 };
 
-initializeProjector(function(err, ofApp) {
-  if (err) {
-    console.log('==== projector failed to connect ====');
-    console.log(err);
-  } else {
+const projectorIp = 'localhost';
+const projectorPort = 32001;
+var net = require('net');
+projectorServer.projector = new net.Socket()
+  .connect(projectorPort, projectorIp, function() {
     console.log('projector connected');
     projector.ofApp = ofApp;
     runLoop();
-  }
-});
+  });
+  .on('error', function(error) {
+    console.log('==== projector failed to connect ====');
+    console.log(error);
+  });
 
-var app = require('express')();
-var server = require('http').Server(app);
+// MARK: - Socket.IO
+
+var expressApp = require('express')();
+var server = require('http').Server(expressApp);
 var io = require('socket.io')(server);
 
 const projectorServerPort = 32003;
 server.listen(projectorServerPort);
 
-app.get('/', function (req, res) {
+expressApp.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
-
-// MARK: - Socket.IO Commands
 
 io.on('connection', function (socket) {
   console.log('socket-io: connection');
   socket.emit('reply', { message: ':: welcome to euglenalab-projector-server ::' });
   socket.on('command', function (data) {
     console.log('socket-io: command - ' + JSON.stringify(data, null, 2));
-    clearScreen(projector.ofApp);
-    socket.emit('reply', { message: 'command received' });
+    if (!app.projector) {
+      socket.emit('reply', { error: 'projector is down' });
+    } else {
+      switch (data['command']) {
+        case 'clearScreen':
+          if (clearScreen(command)) {
+            socket.emit('reply', { message: 'clearScreen command received' });
+          } else {
+            socket.emit('reply', { error: 'clearScreen command - unable to execute' });
+          }
+          break;
+        case 'drawPoint':
+          if (drawPoint(command)) {
+            socket.emit('reply', { message: 'drawPoint command received' });
+          } else {
+            socket.emit('reply', { error: 'drawPoint command requires '
+              + arrayToString(drawPointParams) });
+          }
+          break;
+        case 'drawLine':
+          if (drawLine(command)) {
+            socket.emit('reply', { message: 'drawLine command received' });
+          } else {
+            socket.emit('reply', { error: 'drawLine command requires '
+              + arrayToString(drawLineParams) });
+          }
+          break;
+        case 'drawShape':
+          if (drawShape(command)) {
+            socket.emit('reply', { message: 'drawShape command received' });
+          } else {
+            socket.emit('reply', { error: 'drawShape command requires '
+              + arrayToString(drawShapeParams) });
+          }
+          break;
+        case 'drawEllipse':
+          if (drawEllipse(command)) {
+            socket.emit('reply', { message: 'drawEllipse command received' });
+          } else {
+            socket.emit('reply', { error: 'drawEllipse command requires '
+              + arrayToString(drawEllipseParams) });
+          }
+          break;
+        default:
+          socket.emit('reply', { error: 'command must be one of '
+            + arrayToString(commands) });
+      }
+    }
   });
 });
