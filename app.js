@@ -164,14 +164,14 @@ io.on('connection', function (socket) {
     } else {
       switch (data['command']) {
         case 'clearScreen':
-          if (clearScreen(data['command'])) {
+          if (clearScreen(data)) {
             socket.emit('reply', { message: 'clearScreen command received' });
           } else {
             socket.emit('reply', { error: 'clearScreen command - unable to execute' });
           }
           break;
         case 'drawPoint':
-          if (drawPoint(data['command'])) {
+          if (drawPoint(data)) {
             socket.emit('reply', { message: 'drawPoint command received' });
           } else {
             socket.emit('reply', { error: 'drawPoint command requires '
@@ -179,7 +179,7 @@ io.on('connection', function (socket) {
           }
           break;
         case 'drawLine':
-          if (drawLine(data['command'])) {
+          if (drawLine(data)) {
             socket.emit('reply', { message: 'drawLine command received' });
           } else {
             socket.emit('reply', { error: 'drawLine command requires '
@@ -187,7 +187,7 @@ io.on('connection', function (socket) {
           }
           break;
         case 'drawShape':
-          if (drawShape(data['command'])) {
+          if (drawShape(data)) {
             socket.emit('reply', { message: 'drawShape command received' });
           } else {
             socket.emit('reply', { error: 'drawShape command requires '
@@ -195,7 +195,7 @@ io.on('connection', function (socket) {
           }
           break;
         case 'drawEllipse':
-          if (drawEllipse(data['command'])) {
+          if (drawEllipse(data)) {
             socket.emit('reply', { message: 'drawEllipse command received' });
           } else {
             socket.emit('reply', { error: 'drawEllipse command requires '
