@@ -96,15 +96,15 @@ var drawEllipse = function(command) {
 
 // MARK: - JSON Helpers
 
-var arrayToString = function(array) {
+var paramArrayToString = function(paramArray) {
   var arrayString = '[';
-  for (var i = 0; i < array.length; i++) {
-    if (Array.isArray(array[i])) {
-      arrayString += arrayToString(array[i]);
+  for (var i = 0; i < paramArray.length; i++) {
+    if (Array.isArray(paramArray[i])) {
+      arrayString += arrayToString(paramArray[i]);
     } else {
-      arrayString += array[i];
+      arrayString += '"' + paramArray[i] + '"';
     }
-    if (i < array.length -1) {
+    if (i < paramArray.length -1) {
       arrayString += ', ';
     }
   }
@@ -160,7 +160,7 @@ io.on('connection', function (socket) {
       socket.emit('reply', { error: 'no payload found' });
     } else if (!data['command']) {
       socket.emit('reply', { error: 'command must be one of '
-        + arrayToString(commands) });
+        + paramArrayToString(commands) });
     } else {
       switch (data['command']) {
         case 'clearScreen':
@@ -175,7 +175,7 @@ io.on('connection', function (socket) {
             socket.emit('reply', { message: 'drawPoint command received' });
           } else {
             socket.emit('reply', { error: 'drawPoint command requires '
-              + arrayToString(drawPointParams) });
+              + paramArrayToString(drawPointParams) });
           }
           break;
         case 'drawLine':
@@ -183,7 +183,7 @@ io.on('connection', function (socket) {
             socket.emit('reply', { message: 'drawLine command received' });
           } else {
             socket.emit('reply', { error: 'drawLine command requires '
-              + arrayToString(drawLineParams) });
+              + paramArrayToString(drawLineParams) });
           }
           break;
         case 'drawShape':
@@ -191,7 +191,7 @@ io.on('connection', function (socket) {
             socket.emit('reply', { message: 'drawShape command received' });
           } else {
             socket.emit('reply', { error: 'drawShape command requires '
-              + arrayToString(drawShapeParams) });
+              + paramArrayToString(drawShapeParams) });
           }
           break;
         case 'drawEllipse':
@@ -199,12 +199,12 @@ io.on('connection', function (socket) {
             socket.emit('reply', { message: 'drawEllipse command received' });
           } else {
             socket.emit('reply', { error: 'drawEllipse command requires '
-              + arrayToString(drawEllipseParams) });
+              + paramArrayToString(drawEllipseParams) });
           }
           break;
         default:
           socket.emit('reply', { error: 'command must be one of '
-            + arrayToString(commands) });
+            + paramArrayToString(commands) });
       }
     }
   });
