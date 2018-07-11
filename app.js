@@ -123,10 +123,9 @@ var runLoop = function() {
 const projectorIp = 'localhost';
 const projectorPort = 32001;
 var net = require('net');
-projectorServer.projector = new net.Socket()
+app.projector = new net.Socket()
   .connect(projectorPort, projectorIp, function() {
     console.log('projector connected');
-    projector.ofApp = ofApp;
     runLoop();
   })
   .on('error', function(error) {
@@ -150,6 +149,9 @@ expressApp.get('/', function (req, res) {
 io.on('connection', function (socket) {
   console.log('socket-io: connection');
   socket.emit('reply', { message: ':: welcome to euglenalab-projector-server ::' });
+  if (!app.projector) {
+    socket.emit('reply', { message: 'warning: projector is down' });
+  }
   socket.on('command', function (data) {
     console.log('socket-io: command - ' + JSON.stringify(data, null, 2));
     if (!app.projector) {
