@@ -94,7 +94,7 @@ var drawEllipse = function(command) {
   }
 };
 
-// MARK: - JSON Helpers
+// MARK: - Print Helpers
 
 var paramArrayToString = function(paramArray) {
   var arrayString = '[';
