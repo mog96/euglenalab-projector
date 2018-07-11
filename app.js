@@ -76,7 +76,7 @@ var drawShape = function(command) {
 // centerX, centerY, width, heighe are expected as integers
 // color is expected as [r, g, b, a]
 // shouldFill is expected as a boolean
-var drawShapeParams = ['centerX', 'centerY', 'width', 'height', 'color', 'shouldFill'];
+var drawEllipseParams = ['centerX', 'centerY', 'width', 'height', 'color', 'shouldFill'];
 var drawEllipse = function(command) {
   console.log('drawEllipse');
   if (app.projector != null
