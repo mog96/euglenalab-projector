@@ -102,7 +102,7 @@ var paramArrayToString = function(paramArray) {
     if (Array.isArray(paramArray[i])) {
       arrayString += arrayToString(paramArray[i]);
     } else {
-      arrayString += '"' + paramArray[i] + '"';
+      arrayString += "'" + paramArray[i] + "'";
     }
     if (i < paramArray.length -1) {
       arrayString += ', ';
