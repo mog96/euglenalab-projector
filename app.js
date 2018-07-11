@@ -28,9 +28,9 @@ var clearScreen = function(command) {
 var drawPointParams = ['x', 'y', 'color'];
 var drawPoint = function(command) {
   if (app.projector != null
-      && command[x] != null
-      && command[y] != null
-      && command[color] != null) {
+      && command['x'] != null
+      && command['y'] != null
+      && command['color'] != null) {
     console.log('writing');
     app.projector.write(JSON.stringify(command) + '\n');
     return true;
@@ -45,8 +45,8 @@ var drawLineParams = ['vertices', 'color'];
 var drawLine = function(command) {
   console.log('drawLine');
   if (app.projector != null
-      && command[vertices] != null
-      && command[color] != null) {
+      && command['vertices'] != null
+      && command['color'] != null) {
     console.log('writing');
     app.projector.write(JSON.stringify(command) + '\n');
     return true;
@@ -62,9 +62,9 @@ var drawShapeParams = ['vertices', 'color', 'shouldFill'];
 var drawShape = function(command) {
   console.log('drawShape');
   if (app.projector != null
-      && command[vertices] != null
-      && command[color] != null
-      && command[shouldFill] != null) {
+      && command['vertices'] != null
+      && command['color'] != null
+      && command['shouldFill'] != null) {
     console.log('writing');
     app.projector.write(JSON.stringify(command) + '\n');
     return true;
@@ -80,12 +80,12 @@ var drawShapeParams = ['centerX', 'centerY', 'width', 'height', 'color', 'should
 var drawEllipse = function(command) {
   console.log('drawEllipse');
   if (app.projector != null
-      && command[centerX] != null
-      && command[centerY] != null
-      && command[width] != null
-      && command[height] != null
-      && command[color] != null
-      && command[shouldFill] != null) {
+      && command['centerX'] != null
+      && command['centerY'] != null
+      && command['width'] != null
+      && command['height'] != null
+      && command['color'] != null
+      && command['shouldFill'] != null) {
     console.log('writing');
     app.projector.write(JSON.stringify(command) + '\n');
     return true;
