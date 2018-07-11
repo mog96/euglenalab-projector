@@ -3,6 +3,11 @@ var app = {
   startDate: new Date(),
 };
 
+const canvasWidth = 640;
+const canvasHeight = 480;
+// Math.round(canvasHeight * 640 / width) // Set width
+// Math.round(canvasHeight * 480 / height) // Set height
+
 // MARK: - Projector Draw Commands
 
 var commands = ['clearScreen', 'drawPoint', 'drawLine', 'drawShape', 'drawEllipse'];
@@ -109,11 +114,6 @@ var arrayToString = function(array) {
 
 // MARK: - Initialization
 
-const canvasWidth = 640;
-const canvasHeight = 480;
-// Math.round(canvasHeight * 640 / width) // Set width
-// Math.round(canvasHeight * 480 / height) // Set height
-
 var runLoop = function() {
   var runInt = setInterval(function() {
     console.log('alive');
@@ -164,14 +164,14 @@ io.on('connection', function (socket) {
     } else {
       switch (data['command']) {
         case 'clearScreen':
-          if (clearScreen(command)) {
+          if (clearScreen(data['command'])) {
             socket.emit('reply', { message: 'clearScreen command received' });
           } else {
             socket.emit('reply', { error: 'clearScreen command - unable to execute' });
           }
           break;
         case 'drawPoint':
-          if (drawPoint(command)) {
+          if (drawPoint(data['command'])) {
             socket.emit('reply', { message: 'drawPoint command received' });
           } else {
             socket.emit('reply', { error: 'drawPoint command requires '
@@ -179,7 +179,7 @@ io.on('connection', function (socket) {
           }
           break;
         case 'drawLine':
-          if (drawLine(command)) {
+          if (drawLine(data['command'])) {
             socket.emit('reply', { message: 'drawLine command received' });
           } else {
             socket.emit('reply', { error: 'drawLine command requires '
@@ -187,7 +187,7 @@ io.on('connection', function (socket) {
           }
           break;
         case 'drawShape':
-          if (drawShape(command)) {
+          if (drawShape(data['command'])) {
             socket.emit('reply', { message: 'drawShape command received' });
           } else {
             socket.emit('reply', { error: 'drawShape command requires '
@@ -195,7 +195,7 @@ io.on('connection', function (socket) {
           }
           break;
         case 'drawEllipse':
-          if (drawEllipse(command)) {
+          if (drawEllipse(data['command'])) {
             socket.emit('reply', { message: 'drawEllipse command received' });
           } else {
             socket.emit('reply', { error: 'drawEllipse command requires '
