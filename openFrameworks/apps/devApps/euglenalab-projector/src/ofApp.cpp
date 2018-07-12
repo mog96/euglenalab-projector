@@ -48,6 +48,8 @@ void ofApp::draw() {
   const Json::Value& color = jsonElement["color"];
   const bool shouldFill = jsonElement["shouldFill"].asBool();
   drawEllipse(x, y, w, h, color, shouldFill);
+  ofLogNotice() << "DRAWING";
+
   // for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
   //   if (!tcpServer.isClientConnected(i)) {
   //     ofLogNotice() << "client " << ofToString(i) << " not connected";
