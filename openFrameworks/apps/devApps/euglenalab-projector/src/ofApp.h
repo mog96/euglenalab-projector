@@ -25,24 +25,23 @@ class ofApp: public ofBaseApp {
       const bool shouldFill);
     void drawEllipse(const int x, const int y, const int w, const int h,
       const Json::Value& color, const bool shouldFill);
-		
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y);
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
+  	void keyPressed(int key);
+  	void keyReleased(int key);
+  	void mouseMoved(int x, int y);
+  	void mouseDragged(int x, int y, int button);
+  	void mousePressed(int x, int y, int button);
+  	void mouseReleased(int x, int y, int button);
+  	void mouseEntered(int x, int y);
+  	void mouseExited(int x, int y);
+  	void windowResized(int w, int h);
+  	void dragEvent(ofDragInfo dragInfo);
+  	void gotMessage(ofMessage msg);
 
-		Mode mode;
+    Mode mode;
 
-		float lastTime;
+    float lastTime;
 
-		float posX;
+    float posX;
     float posY;
     float posZ;
 
@@ -56,6 +55,7 @@ class ofApp: public ofBaseApp {
 
     ofxTCPServer tcpServer;
     ofxJSONElement jsonElement;
+    vector<string> drawCommands;
 
     uint64_t lastSent;
 

@@ -33,6 +33,46 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+  for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
+    if (!tcpServer.isClientConnected(i)) {
+      ofLogNotice() << "client " << ofToString(i) << " not connected";
+      continue;
+    }
+    // get the ip and port of the client
+    string port = ofToString(tcpServer.getClientPort(i));
+    string ip   = tcpServer.getClientIP(i);
+    string info = "client " + ofToString(i) + " connected from " + ip + " on port: " + port;
+    ofLogNotice() << info;
+
+    // calculate where to draw client info text
+    int xPos = 15;
+    int yPos = 80 + (12 * i * 4);
+    ofDrawBitmapString(info, xPos, yPos);
+
+    // receive all the available messages, separated by '\n'
+    // and keep only the last one
+    string str;
+    string tmp;
+    do {
+      str = tmp;
+      // if (!str.empty()) {
+      //   ofBackground(0, 0, 0);
+      //   // TODO: draw info string again
+      //   ofDrawBitmapString(str, xPos + 10, yPos + 20);
+      // }
+      tmp = tcpServer.receive(i);      
+    } while(tmp != "");
+    ofLogNotice() << "RECEIVED STRING: " << str;
+    if (str.length() > 0 && jsonElement.parse(str)) {
+      ofLogNotice() << jsonElement.getRawString();
+      const string command = jsonElement["command"].asString();
+      if (command == "clearScreen") {
+        drawCommands.clear();
+      } else {
+        drawCommands.push_back(str);
+      }
+    }
+  }
 }
 
 // MARK: - Draw
@@ -40,77 +80,33 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw() {
   drawProjectionFrame();
-  jsonElement.parse("{\"centerX\":320,\"centerY\":240,\"width\":320,\"height\":240,\"color\":[0,0,255,1],\"shouldFill\":true}");
-  const int x = jsonElement["centerX"].asInt();
-  const int y = jsonElement["centerY"].asInt();
-  const int w = jsonElement["width"].asInt();
-  const int h = jsonElement["height"].asInt();
-  const Json::Value& color = jsonElement["color"];
-  const bool shouldFill = jsonElement["shouldFill"].asBool();
-  drawEllipse(x, y, w, h, color, shouldFill);
-  ofLogNotice() << "DRAWING";
-
-  // for (unsigned int i = 0; i <= (unsigned int) tcpServer.getLastID(); i++) {
-  //   if (!tcpServer.isClientConnected(i)) {
-  //     ofLogNotice() << "client " << ofToString(i) << " not connected";
-  //     continue;
-  //   }
-  //   // get the ip and port of the client
-  //   string port = ofToString(tcpServer.getClientPort(i));
-  //   string ip   = tcpServer.getClientIP(i);
-  //   string info = "client " + ofToString(i) + " connected from " + ip + " on port: " + port;
-  //   ofLogNotice() << info;
-
-  //   // calculate where to draw client info text
-  //   int xPos = 15;
-  //   int yPos = 80 + (12 * i * 4);
-  //   ofDrawBitmapString(info, xPos, yPos);
-
-  //   // receive all the available messages, separated by '\n'
-  //   // and keep only the last one
-  //   string str;
-  //   string tmp;
-  //   do {
-  //     str = tmp;
-  //     // if (!str.empty()) {
-  //     //   ofBackground(0, 0, 0);
-  //     //   // TODO: draw info string again
-  //     //   ofDrawBitmapString(str, xPos + 10, yPos + 20);
-  //     // }
-  //     tmp = tcpServer.receive(i);      
-  //   } while(tmp != "");
-  //   ofLogNotice() << "RECEIVED STRING: " << str;
-
-  //   if (str.length() > 0 && jsonElement.parse(str)) {
-  //     ofLogNotice() << jsonElement.getRawString();
-  //     const string command = jsonElement["command"].asString();
-  //     if (command == "clearScreen") {
-  //       ofClear(ofColor(0, 0, 0));
-  //     } else if (command == "drawPoint") {
-  //       const int x = jsonElement["x"].asInt();
-  //       const int y = jsonElement["y"].asInt();
-  //       const Json::Value& color = jsonElement["color"];
-  //       drawPoint(x, y, color);
-  //     } else if (command == "drawLine") {
-  //       const Json::Value& vertices = jsonElement["vertices"];
-  //       const Json::Value& color = jsonElement["color"];
-  //       drawLine(vertices, color);
-  //     } else if (command == "drawShape") {
-  //       const Json::Value& vertices = jsonElement["vertices"];
-  //       const Json::Value& color = jsonElement["color"];
-  //       const bool shouldFill = jsonElement["shouldFill"].asBool();
-  //       drawShape(vertices, color, shouldFill);
-  //     } else if (command == "drawEllipse") {
-  //       const int x = jsonElement["centerX"].asInt();
-  //       const int y = jsonElement["centerY"].asInt();
-  //       const int w = jsonElement["width"].asInt();
-  //       const int h = jsonElement["height"].asInt();
-  //       const Json::Value& color = jsonElement["color"];
-  //       const bool shouldFill = jsonElement["shouldFill"].asBool();
-  //       drawEllipse(x, y, w, h, color, shouldFill);
-  //     }
-  //   }
-  // }
+  for (auto commandString : drawCommands) {
+    jsonElement.parse(commandString);
+    const string command = jsonElement["command"].asString();
+    if (command == "drawPoint") {
+      const int x = jsonElement["x"].asInt();
+      const int y = jsonElement["y"].asInt();
+      const Json::Value& color = jsonElement["color"];
+      drawPoint(x, y, color);
+    } else if (command == "drawLine") {
+      const Json::Value& vertices = jsonElement["vertices"];
+      const Json::Value& color = jsonElement["color"];
+      drawLine(vertices, color);
+    } else if (command == "drawShape") {
+      const Json::Value& vertices = jsonElement["vertices"];
+      const Json::Value& color = jsonElement["color"];
+      const bool shouldFill = jsonElement["shouldFill"].asBool();
+      drawShape(vertices, color, shouldFill);
+    } else if (command == "drawEllipse") {
+      const int x = jsonElement["centerX"].asInt();
+      const int y = jsonElement["centerY"].asInt();
+      const int w = jsonElement["width"].asInt();
+      const int h = jsonElement["height"].asInt();
+      const Json::Value& color = jsonElement["color"];
+      const bool shouldFill = jsonElement["shouldFill"].asBool();
+      drawEllipse(x, y, w, h, color, shouldFill);
+    }
+  }
 }
 
 void ofApp::applyGLMatrixTransformations() {
