@@ -40,7 +40,7 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw() {
   drawProjectionFrame();
-  jsonElement.parse("{\"centerX\":320,\"centerY\":240,\"color\":[0,0,255,1],\"shouldFill\":true}");
+  jsonElement.parse("{\"centerX\":320,\"centerY\":240,\"width\":320,\"height\":240,\"color\":[0,0,255,1],\"shouldFill\":true}");
   const int x = jsonElement["centerX"].asInt();
   const int y = jsonElement["centerY"].asInt();
   const int w = jsonElement["width"].asInt();
