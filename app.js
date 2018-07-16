@@ -80,7 +80,7 @@ var drawEllipseParams = ['centerX', 'centerY', 'width', 'height', 'color', 'shou
 var drawEllipse = function(command) {
   console.log('drawEllipse');
   if (app.projector != null
-      && command['centerX'] != null
+      && command['centerX'] != null   // TODO: typeof ___ != 'number'
       && command['centerY'] != null
       && command['width'] != null
       && command['height'] != null
